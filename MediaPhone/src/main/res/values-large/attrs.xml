@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- TODO: remember to update normal values at the same time -->
+	<!-- TODO: remember to update normal values at the same time -->
 
+	<!-- frame icons -->
+	<dimen name="frame_icon_text_padding">8dp</dimen>
 
-    <!-- frame icons -->
-    <dimen name="frame_icon_text_padding">8dp</dimen>
-
-    <!-- text related -->
-    <integer name="text_snippet_length">100</integer>
+	<!-- text related -->
+	<integer name="text_snippet_length">100</integer>
 
 </resources>
