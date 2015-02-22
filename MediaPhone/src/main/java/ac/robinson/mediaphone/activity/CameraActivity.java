@@ -901,17 +901,6 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	@Override
 	protected void onBackgroundTaskCompleted(int taskId) {
 		switch (taskId) {
-<<<<<<< HEAD
-			case R.id.split_frame_task_complete:
-				((ImageView) findViewById(R.id.camera_result)).setImageBitmap(null); // otherwise we copy to new frame
-				mHasEditedMedia = true; // because now the original media item has a new id, so must reload in editor
-				setBackButtonIcons(CameraActivity.this, R.id.button_finished_picture, 0, false);
-				if (mDisplayMode != DisplayMode.TAKE_PICTURE) {
-					switchToCamera(mCameraConfiguration.usingFrontCamera, false);
-				}
-				break;
-=======
->>>>>>> long-running-media
 			case R.id.import_external_media_succeeded:
 				mHasEditedMedia = true; // to force an icon update
 				onBackPressed();

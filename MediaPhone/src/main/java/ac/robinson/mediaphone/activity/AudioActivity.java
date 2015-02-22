@@ -824,36 +824,9 @@ public class AudioActivity extends MediaPhoneActivity {
 			case R.id.audio_switch_to_playback_task_complete:
 				onBackPressed();
 				break;
-<<<<<<< HEAD
-			case R.id.split_frame_task_complete:
-				// reset when split frame task has finished
-				mHasEditedMedia = true; // because now the original media item has a new id, so must reload in editor
-				setBackButtonIcons(AudioActivity.this, R.id.button_finished_audio, R.id.button_cancel_recording, false);
-				mAudioDuration = 0;
-				updateAudioRecordingText(0);
-
-				// new frames have no content, so make sure to start in recording mode
-				if (mDisplayMode != DisplayMode.RECORD_AUDIO) {
-					MediaItem audioMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
-							mMediaItemInternalId);
-					if (audioMediaItem != null) {
-						switchToRecording(audioMediaItem.getFile());
-					}
-				}
-
-				// resume recording state if necessary
-				if (mContinueRecordingAfterSplit) {
-					mContinueRecordingAfterSplit = false;
-					startRecording();
-				}
-				break;
-			case R.id.audio_switch_frame_task_complete:
-				completeSwitchFrames();
-=======
 			case R.id.audio_add_frame_after_task_complete:
 				switchToPlayback(false); // first switch to playback, so we exit from addFrameAfter()
 				addFrameAfter();
->>>>>>> long-running-media
 				break;
 			case R.id.import_external_media_succeeded:
 				mHasEditedMedia = true; // to force an icon update
