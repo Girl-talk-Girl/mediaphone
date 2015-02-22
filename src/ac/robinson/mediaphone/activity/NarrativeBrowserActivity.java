@@ -107,9 +107,6 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			// initialise preferences on first run, and perform an upgrade if applicable
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
 			UpgradeManager.upgradeApplication(NarrativeBrowserActivity.this);
-
-			// delete old media on startup (but not on screen rotation) - immediate task so we don't block the queue
-			runImmediateBackgroundTask(getMediaCleanupRunnable());
 		}
 
 		initialiseNarrativesView();
@@ -169,6 +166,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 	protected void onDestroy() {
 		if (isFinishing()) {
 			updateListPositions(0, 0);
+			runQueuedBackgroundTask(getMediaCleanupRunnable()); // delete old media on exit
 		}
 		ImageCacheUtilities.cleanupCache();
 		super.onDestroy();
@@ -561,7 +559,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 	}
 
 	private class FrameClickListener implements AdapterView.OnItemClickListener {
-		public void onItemClick(AdapterView<?> parent, View view, int position, long insertNewFrameBefore) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long insertNewFrameAfter) {
 			if (view != null && parent != null) {
 				getAndSaveNarrativeId(parent);
 				final FrameViewHolder holder = (FrameViewHolder) view.getTag();
@@ -570,12 +568,12 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 				} else if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId)
 						|| FrameItem.KEY_FRAME_ID_END.equals(holder.frameInternalId)) {
 					if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId)) {
-						insertFrame(mCurrentSelectedNarrativeId, FrameItem.KEY_FRAME_ID_START);
+						insertFrameAfter(mCurrentSelectedNarrativeId, FrameItem.KEY_FRAME_ID_START);
 					} else {
-						insertFrame(mCurrentSelectedNarrativeId, null);
+						insertFrameAfter(mCurrentSelectedNarrativeId, null); // null = insert at end
 					}
-				} else if (insertNewFrameBefore != 0) {
-					insertFrame(mCurrentSelectedNarrativeId, holder.frameInternalId);
+				} else if (insertNewFrameAfter != 0) {
+					insertFrameAfter(mCurrentSelectedNarrativeId, holder.frameInternalId);
 				} else {
 					editFrame(holder.frameInternalId);
 				}
@@ -586,13 +584,13 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 	private class FrameLongClickListener implements AdapterView.OnItemLongClickListener {
 		@Override
 		// this is a hack to allow long pressing one or two items via the same listener
-		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long insertNewFrameBefore) {
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long insertNewFrameAfter) {
 			if (view != null && parent != null) {
 				getAndSaveNarrativeId(parent);
 				final FrameViewHolder holder = (FrameViewHolder) view.getTag();
-				if (insertNewFrameBefore != 0) {
+				if (insertNewFrameAfter != 0) {
 					// used to be just on single press, but that made it confusing when a long double press did nothing
-					insertFrame(mCurrentSelectedNarrativeId, holder.frameInternalId);
+					insertFrameAfter(mCurrentSelectedNarrativeId, holder.frameInternalId);
 				} else {
 					playNarrative(holder.frameInternalId);
 				}
@@ -601,10 +599,10 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 		}
 	}
 
-	private void insertFrame(String parentId, String insertBeforeId) {
+	private void insertFrameAfter(String parentId, String insertAfterId) {
 		final Intent frameEditorIntent = new Intent(NarrativeBrowserActivity.this, FrameEditorActivity.class);
 		frameEditorIntent.putExtra(getString(R.string.extra_parent_id), parentId);
-		frameEditorIntent.putExtra(getString(R.string.extra_insert_before_id), insertBeforeId);
+		frameEditorIntent.putExtra(getString(R.string.extra_insert_after_id), insertAfterId);
 		startActivityForResult(frameEditorIntent, MediaPhone.R_id_intent_frame_editor);
 	}
 
@@ -615,7 +613,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 	}
 
 	private void playNarrative(String startFrameId) {
-		final Intent framePlayerIntent = new Intent(NarrativeBrowserActivity.this, NarrativePlayerActivity.class);
+		final Intent framePlayerIntent = new Intent(NarrativeBrowserActivity.this, PlaybackActivity.class);
 		framePlayerIntent.putExtra(getString(R.string.extra_internal_id), startFrameId);
 		startActivityForResult(framePlayerIntent, MediaPhone.R_id_intent_narrative_player);
 	}
@@ -627,7 +625,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(NarrativeBrowserActivity.this);
 			builder.setTitle(R.string.title_add);
 			builder.setIcon(android.R.drawable.ic_dialog_info);
-			builder.setNegativeButton(android.R.string.cancel, null);
+			builder.setNegativeButton(R.string.button_cancel, null);
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int item) {

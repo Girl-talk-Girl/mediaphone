@@ -39,21 +39,27 @@ public class MediaItem implements BaseColumns {
 	public static final Uri CONTENT_URI = Uri.parse(MediaPhoneProvider.URI_PREFIX + MediaPhoneProvider.URI_AUTHORITY
 			+ MediaPhoneProvider.URI_SEPARATOR + MediaPhoneProvider.MEDIA_LOCATION);
 
-	public static final String[] PROJECTION_ALL = new String[] { MediaItem._ID, MediaItem.INTERNAL_ID,
-			MediaItem.PARENT_ID, MediaItem.DATE_CREATED, MediaItem.FILE_EXTENSION, MediaItem.DURATION, MediaItem.TYPE,
-			MediaItem.DELETED };
-
-	public static final String[] PROJECTION_INTERNAL_ID = new String[] { MediaItem.INTERNAL_ID };
+	public static final Uri CONTENT_URI_LINK = Uri.parse(MediaPhoneProvider.URI_PREFIX
+			+ MediaPhoneProvider.URI_AUTHORITY + MediaPhoneProvider.URI_SEPARATOR
+			+ MediaPhoneProvider.MEDIA_LINKS_LOCATION);
 
 	public static final String INTERNAL_ID = "internal_id";
 	public static final String PARENT_ID = "parent_id";
 	public static final String DATE_CREATED = "date_created";
-	public static final String FILE_EXTENSION = "file_name"; //incorrect name for legacy compatibility
+	public static final String FILE_EXTENSION = "file_name"; // incorrect name for legacy compatibility
 	public static final String DURATION = "duration";
 	public static final String TYPE = "type";
+	public static final String SPAN_FRAMES = "span_frames";
 	public static final String DELETED = "deleted";
 
-	public static final String DEFAULT_SORT_ORDER = MediaItem.TYPE + " ASC, " + DATE_CREATED + " ASC";
+	public static final String[] PROJECTION_ALL = new String[] { MediaItem._ID, INTERNAL_ID, PARENT_ID, DATE_CREATED,
+			FILE_EXTENSION, DURATION, TYPE, SPAN_FRAMES, DELETED };
+
+	public static final String[] PROJECTION_INTERNAL_ID = new String[] { INTERNAL_ID };
+
+	public static final String[] PROJECTION_PARENT_ID = new String[] { PARENT_ID };
+
+	public static final String DEFAULT_SORT_ORDER = TYPE + " ASC, " + DATE_CREATED + " ASC";
 
 	private String mInternalId;
 	private String mParentId;
@@ -61,6 +67,7 @@ public class MediaItem implements BaseColumns {
 	private String mFileExtension;
 	private int mDuration;
 	private int mType;
+	private int mSpanFrames;
 	private int mDeleted;
 
 	public MediaItem(String internalId, String parentId, String fileExtension, int type) {
@@ -70,6 +77,7 @@ public class MediaItem implements BaseColumns {
 		setFileExtension(fileExtension);
 		mDuration = -1;
 		mType = type;
+		mSpanFrames = 0;
 		mDeleted = 0;
 	}
 
@@ -100,7 +108,7 @@ public class MediaItem implements BaseColumns {
 	public String getFileExtension() {
 		return mFileExtension;
 	}
-	
+
 	public void setFileExtension(String fileExtension) {
 		mFileExtension = (fileExtension != null ? fileExtension.toLowerCase(Locale.ENGLISH) : null);
 	}
@@ -144,6 +152,24 @@ public class MediaItem implements BaseColumns {
 		return mDuration;
 	}
 
+	/**
+	 * Whether this media item is set to span multiple frames
+	 * 
+	 * @return
+	 */
+	public boolean getSpanFrames() {
+		return mSpanFrames == 0 ? false : true;
+	}
+
+	/**
+	 * Set whether this media item should span multiple frames
+	 * 
+	 * @param spanFrames
+	 */
+	public void setSpanFrames(boolean spanFrames) {
+		mSpanFrames = spanFrames ? 1 : 0;
+	}
+
 	public boolean getDeleted() {
 		return mDeleted == 0 ? false : true;
 	}
@@ -151,7 +177,7 @@ public class MediaItem implements BaseColumns {
 	public void setDeleted(boolean deleted) {
 		mDeleted = deleted ? 1 : 0;
 	}
-	
+
 	/**
 	 * 
 	 * @return The bitmap representing this media item, or null if it is not an image or video
@@ -179,14 +205,17 @@ public class MediaItem implements BaseColumns {
 		return mediaBitmap;
 	}
 
+	/**
+	 * Get the duration of a text string (number of words/lines * word duration in settings), or 0 if empty
+	 * 
+	 * @param textString
+	 * @return
+	 */
 	public static int getTextDurationMilliseconds(String textString) {
-		int frameDuration = MediaPhone.PLAYBACK_EXPORT_MINIMUM_FRAME_DURATION;
+		int frameDuration = 0;
 		if (!TextUtils.isEmpty(textString)) {
 			String[] stringLines = textString.split("[ \\n]+");
 			frameDuration = MediaPhone.PLAYBACK_EXPORT_WORD_DURATION * stringLines.length;
-			if (frameDuration < MediaPhone.PLAYBACK_EXPORT_MINIMUM_FRAME_DURATION) {
-				frameDuration = MediaPhone.PLAYBACK_EXPORT_MINIMUM_FRAME_DURATION;
-			}
 		}
 		return frameDuration;
 	}
@@ -199,7 +228,16 @@ public class MediaItem implements BaseColumns {
 		values.put(FILE_EXTENSION, mFileExtension);
 		values.put(DURATION, mDuration);
 		values.put(TYPE, mType);
+		values.put(SPAN_FRAMES, mSpanFrames);
 		values.put(DELETED, mDeleted);
+		return values;
+	}
+
+	public static ContentValues getLinkContentValues(String frameId, String mediaId) {
+		final ContentValues values = new ContentValues();
+		values.put(INTERNAL_ID, mediaId);
+		values.put(PARENT_ID, frameId);
+		values.put(DELETED, 0);
 		return values;
 	}
 
@@ -212,6 +250,7 @@ public class MediaItem implements BaseColumns {
 		media.mCreationDate = newCreationDate;
 		media.mDuration = existing.mDuration;
 		media.mType = existing.mType;
+		media.mSpanFrames = existing.mSpanFrames;
 		media.mDeleted = existing.mDeleted;
 		return media;
 	}
@@ -224,6 +263,7 @@ public class MediaItem implements BaseColumns {
 		media.mCreationDate = c.getLong(c.getColumnIndexOrThrow(DATE_CREATED));
 		media.mDuration = c.getInt(c.getColumnIndex(DURATION));
 		media.mType = c.getInt(c.getColumnIndexOrThrow(TYPE));
+		media.mSpanFrames = c.getInt(c.getColumnIndexOrThrow(SPAN_FRAMES));
 		media.mDeleted = c.getInt(c.getColumnIndexOrThrow(DELETED));
 		return media;
 	}
@@ -231,6 +271,6 @@ public class MediaItem implements BaseColumns {
 	@Override
 	public String toString() {
 		return this.getClass().getName() + "[" + mInternalId + "," + mParentId + "," + mCreationDate + ","
-				+ mFileExtension + "," + mDuration + "," + mType + "," + mDeleted + "]";
+				+ mFileExtension + "," + mDuration + "," + mType + "," + mSpanFrames + "," + mDeleted + "]";
 	}
 }

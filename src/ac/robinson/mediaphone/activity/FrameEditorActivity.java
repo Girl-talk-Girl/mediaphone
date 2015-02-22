@@ -48,6 +48,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -58,9 +60,6 @@ import android.view.View;
 
 public class FrameEditorActivity extends MediaPhoneActivity {
 
-	// not in MediaPhone.java because it needs more than just this to add more audio items (layouts need updating too)
-	private final int MAX_AUDIO_ITEMS = 3;
-
 	private String mFrameInternalId;
 	private boolean mHasEditedMedia = false;
 	private boolean mShowOptionsMenu = false;
@@ -69,6 +68,14 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 	private boolean mDeleteFrameOnExit = false;
 
 	private LinkedHashMap<String, Integer> mFrameAudioItems = new LinkedHashMap<String, Integer>();
+
+	// the ids of inherited (spanned) media items from previous frames
+	private String mImageInherited;
+	private int mImageLinkingDrawable;
+	private String mAudioInherited;
+	private int mAudioLinkingIndex; // we only allow one inherited audio item, but need to know which one it is
+	private int mAudioLinkingDrawable;
+	private String mTextInherited;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -107,22 +114,24 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 			if (mAddNewFrame) {
 				mAddNewFrame = false;
 				addNewFrame();
-				saveLastEditedFrame(mFrameInternalId); // this is now the last edited frame
+				loadFrameElements();
 			} else {
 				// change the frame that is displayed, if applicable
 				changeFrames(loadLastEditedFrame());
 
-				// do image loading here so that we know the layout's size for sizing the image
-				if (mReloadImagePath != null) {
-					reloadFrameImage(mReloadImagePath);
-					mReloadImagePath = null;
-				}
-
+				// never have to show the options menu after creating a new frame
 				if (mShowOptionsMenu) {
 					mShowOptionsMenu = false;
 					openOptionsMenu();
 				}
 			}
+
+			// do image loading here so that we know the layout's size for sizing the image
+			if (mReloadImagePath != null) {
+				reloadFrameImage(mReloadImagePath);
+				mReloadImagePath = null;
+			}
+
 			registerForSwipeEvents(); // here to avoid crashing due to double-swiping
 		}
 	}
@@ -134,69 +143,69 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 			return;
 		}
 
-		// delete frame/narrative if required
-		Resources resources = getResources();
+		// make sure to always scroll to the correct frame even if we've done next/prev
+		saveLastEditedFrame(mFrameInternalId);
+
+		// delete frame/narrative if required; don't allow frames with just links and no actual media
 		ContentResolver contentResolver = getContentResolver();
 		final FrameItem editedFrame = FramesManager.findFrameByInternalId(contentResolver, mFrameInternalId);
-		if (MediaManager.countMediaByParentId(contentResolver, mFrameInternalId) <= 0 || mDeleteFrameOnExit) {
+		String newStartFrameId = null;
+		String nextFrameId = null;
+		if (editedFrame != null
+				&& (MediaManager.countMediaByParentId(contentResolver, mFrameInternalId, false) <= 0 || mDeleteFrameOnExit)) {
 			// need the next frame id for scrolling (but before we update it to be deleted)
 			ArrayList<String> frameIds = FramesManager.findFrameIdsByParentId(contentResolver,
 					editedFrame.getParentId());
 
+			// save the next frame's id for updating icons/media; also deal with scrolling - if we're the first/last
+			// frame scroll to ensure frames don't show off screen TODO: do this in the horizontal list view instead
+			// (otherwise, there's no need to scroll - better to leave items in place than scroll to previous or next)
 			int numFrames = frameIds.size();
-			if (numFrames > 1) { // don't save if we're the last frame
-				int i = 0;
-				int foundId = -1;
-				for (String id : frameIds) {
-					if (mFrameInternalId.equals(id)) {
-						foundId = i;
-						break;
-					}
-					i += 1;
-				}
-				if (foundId >= 0) {
-					int idCount = numFrames - 2; // so we scroll to the last frame after this is deleted
-					foundId = foundId > idCount ? idCount : foundId;
-					saveLastEditedFrame(frameIds.get(foundId)); // scroll to this frame after exiting
+			if (numFrames > 1) {
+				int currentFrameIndex = frameIds.indexOf(mFrameInternalId);
+				if (currentFrameIndex == 0) {
+					nextFrameId = frameIds.get(1);
+					saveLastEditedFrame(newStartFrameId); // scroll to new first frame after exiting
+				} else if (currentFrameIndex > numFrames - 2) {
+					saveLastEditedFrame(frameIds.get(numFrames - 2)); // scroll to new last frame after exiting
+				} else {
+					nextFrameId = frameIds.get(currentFrameIndex + 1); // just store the frame to start updates from
 				}
 			}
 
+			// delete this frame
 			editedFrame.setDeleted(true);
 			FramesManager.updateFrame(contentResolver, editedFrame);
-		} else {
-			saveLastEditedFrame(mFrameInternalId); // so we always get the id even if we've done next/prev
-		}
 
-		// delete, or added no frame content
-		if (editedFrame.getDeleted()) {
-			// no narrative content - delete the narrative first for a better interface experience
-			// (don't have to wait for the frame to disappear)
-			int numFrames = FramesManager.countFramesByParentId(contentResolver, editedFrame.getParentId());
-			if (numFrames == 0) {
+			// if there's no narrative content after we've been deleted - delete the narrative first for a better
+			// interface experience (doing this means we don't have to wait for the frame icon to disappear)
+			if (numFrames == 1) {
 				NarrativeItem narrativeToDelete = NarrativesManager.findNarrativeByInternalId(contentResolver,
 						editedFrame.getParentId());
 				narrativeToDelete.setDeleted(true);
 				NarrativesManager.updateNarrative(contentResolver, narrativeToDelete);
 
-			} else if (numFrames > 0) {
-				// if we're the first frame, update the second frame's icon to be the main icon (i.e. with overlay)
-				FrameItem nextFrame = FramesManager
-						.findFirstFrameByParentId(contentResolver, editedFrame.getParentId());
-				if (editedFrame.getNarrativeSequenceId() < nextFrame.getNarrativeSequenceId()) {
-					FramesManager.reloadFrameIcon(resources, contentResolver, nextFrame, true);
-				}
+			} else if (numFrames > 1 && nextFrameId != null) {
+				// otherwise we need to delete our media from subsequent frames; always update the next frame's icon
+				ArrayList<String> frameComponents = MediaManager.findMediaIdsByParentId(contentResolver,
+						mFrameInternalId, false);
+				inheritMediaAndDeleteItemLinks(nextFrameId, null, frameComponents);
 			}
 		}
 
 		setResult(Activity.RESULT_OK);
-		super.onBackPressed();
+		try {
+			// if they've managed to swipe and open another activity between, this will crash as result can't be sent
+			super.onBackPressed();
+		} catch (RuntimeException e) {
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO: if we couldn't open a temporary directory then exporting won't work
 		MenuInflater inflater = getMenuInflater();
-		setupMenuNavigationButtons(inflater, menu, mFrameInternalId, mHasEditedMedia);
+		setupFrameMenuNavigationButtons(inflater, menu, mFrameInternalId, mHasEditedMedia, false);
 		inflater.inflate(R.menu.play_narrative, menu);
 		inflater.inflate(R.menu.make_template, menu);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -211,7 +220,7 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 		switch (itemId) {
 			case R.id.menu_previous_frame:
 			case R.id.menu_next_frame:
-				switchFrames(mFrameInternalId, itemId, R.string.extra_internal_id, true, FrameEditorActivity.class);
+				switchFrames(mFrameInternalId, itemId, null, true);
 				return true;
 
 			case R.id.menu_export_narrative:
@@ -224,7 +233,7 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 
 			case R.id.menu_play_narrative:
 				if (MediaManager.countMediaByParentId(getContentResolver(), mFrameInternalId) > 0) {
-					final Intent framePlayerIntent = new Intent(FrameEditorActivity.this, NarrativePlayerActivity.class);
+					final Intent framePlayerIntent = new Intent(FrameEditorActivity.this, PlaybackActivity.class);
 					framePlayerIntent.putExtra(getString(R.string.extra_internal_id), mFrameInternalId);
 					startActivityForResult(framePlayerIntent, MediaPhone.R_id_intent_narrative_player);
 				} else {
@@ -252,15 +261,17 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				ContentResolver resolver = getContentResolver();
 				if (MediaManager.countMediaByParentId(resolver, mFrameInternalId) > 0) {
 					FrameItem currentFrame = FramesManager.findFrameByInternalId(resolver, mFrameInternalId);
-					runQueuedBackgroundTask(getNarrativeTemplateRunnable(currentFrame.getParentId(),
-							MediaPhoneProvider.getNewInternalId(), true)); // don't need the id
+					runQueuedBackgroundTask(getNarrativeTemplateRunnable(currentFrame.getParentId(), true));
 				} else {
 					UIUtilities.showToast(FrameEditorActivity.this, R.string.make_template_add_content);
 				}
 				return true;
 
 			case R.id.menu_delete_narrative:
-				deleteNarrativeDialog(mFrameInternalId);
+				FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(), mFrameInternalId);
+				if (currentFrame != null) {
+					deleteNarrativeDialog(currentFrame.getParentId());
+				}
 				return true;
 
 			case R.id.menu_back_without_editing:
@@ -291,7 +302,6 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 	}
 
 	private void loadFrameElements() {
-		mAddNewFrame = false;
 		if (mFrameInternalId == null) {
 			// editing an existing frame
 			final Intent intent = getIntent();
@@ -303,48 +313,88 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 			// adding a new frame
 			if (mFrameInternalId == null) {
 				mAddNewFrame = true;
+				return; // we'll add the new frame and load elements in onWindowFocusChanged for a better UI experience
 			}
 		}
 
-		// reset interface
+		// reset interface and media inheritance
 		mReloadImagePath = null;
 		mFrameAudioItems.clear();
-		((CenteredImageTextButton) findViewById(R.id.button_take_picture_video))
-				.setCompoundDrawablesWithIntrinsicBounds(0, android.R.drawable.ic_menu_camera, 0, 0);
+		CenteredImageTextButton imageButton = (CenteredImageTextButton) findViewById(R.id.button_take_picture_video);
+		imageButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_frame_image, 0, 0);
 		// (audio buttons are loaded/reset after audio files are loaded)
-		((CenteredImageTextButton) findViewById(R.id.button_add_text)).setText("");
+		CenteredImageTextButton textButton = (CenteredImageTextButton) findViewById(R.id.button_add_text);
+		textButton.setText("");
+		textButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_frame_text, 0, 0);
 
-		// load existing content into buttons
-		if (!mAddNewFrame) {
-			ArrayList<MediaItem> frameComponents = MediaManager.findMediaByParentId(getContentResolver(),
-					mFrameInternalId);
-			boolean imageLoaded = false;
-			boolean audioLoaded = false;
-			boolean textLoaded = false;
-			for (MediaItem currentItem : frameComponents) {
-				final int currentType = currentItem.getType();
-				if (!imageLoaded
-						&& (currentType == MediaPhoneProvider.TYPE_IMAGE_BACK
-								|| currentType == MediaPhoneProvider.TYPE_IMAGE_FRONT || currentType == MediaPhoneProvider.TYPE_VIDEO)) {
-					mReloadImagePath = currentItem.getFile().getAbsolutePath();
-					imageLoaded = true;
+		// reset media inheritance
+		mImageInherited = null;
+		mImageLinkingDrawable = 0;
+		mAudioInherited = null;
+		mAudioLinkingIndex = -1;
+		mAudioLinkingDrawable = 0;
+		mTextInherited = null;
 
-				} else if (!audioLoaded && currentType == MediaPhoneProvider.TYPE_AUDIO) {
-					mFrameAudioItems.put(currentItem.getInternalId(), currentItem.getDurationMilliseconds());
-					if (mFrameAudioItems.size() >= MAX_AUDIO_ITEMS) {
-						audioLoaded = true;
+		// load existing content into buttons (no need to do any of this on new frames)
+		ArrayList<MediaItem> frameComponents = MediaManager.findMediaByParentId(getContentResolver(), mFrameInternalId);
+		boolean imageLoaded = false;
+		boolean audioLoaded = false;
+		boolean textLoaded = false;
+		for (MediaItem currentItem : frameComponents) {
+			final int currentType = currentItem.getType();
+			final boolean spanFrames = currentItem.getSpanFrames();
+			final boolean inheritedMedia = !currentItem.getParentId().equals(mFrameInternalId);
+			if (!imageLoaded
+					&& (currentType == MediaPhoneProvider.TYPE_IMAGE_BACK
+							|| currentType == MediaPhoneProvider.TYPE_IMAGE_FRONT || currentType == MediaPhoneProvider.TYPE_VIDEO)) {
+				mReloadImagePath = currentItem.getFile().getAbsolutePath();
+				if (spanFrames) {
+					// this was originally going to be done in onDraw of CenteredImageTextButton, but there's a
+					// bizarre bug that causes the canvas to be translated just over 8000 pixels to the left before
+					// it's given to our onDraw method - instead we now use a layer drawable when loading
+					if (inheritedMedia) {
+						mImageInherited = currentItem.getInternalId();
+						mImageLinkingDrawable = R.drawable.ic_frame_image_locked;
+					} else {
+						mImageLinkingDrawable = R.drawable.ic_frame_image_spanning;
 					}
-
-				} else if (!textLoaded && currentType == MediaPhoneProvider.TYPE_TEXT) {
-					String textSnippet = IOUtilities.getFileContentSnippet(currentItem.getFile().getAbsolutePath(),
-							getResources().getInteger(R.integer.text_snippet_length));
-					((CenteredImageTextButton) findViewById(R.id.button_add_text)).setText(textSnippet);
-					textLoaded = true;
 				}
-			}
+				imageLoaded = true;
 
-			saveLastEditedFrame(mFrameInternalId); // this is now the last edited frame
+			} else if (!audioLoaded && currentType == MediaPhoneProvider.TYPE_AUDIO) {
+				// we could inherit multiple audio items, but this becomes too complex, so we currently only allow one
+				mFrameAudioItems.put(currentItem.getInternalId(), currentItem.getDurationMilliseconds());
+				if (spanFrames) {
+					mAudioLinkingIndex = mFrameAudioItems.size() - 1;
+					if (inheritedMedia) {
+						mAudioInherited = currentItem.getInternalId();
+						mAudioLinkingDrawable = R.drawable.ic_frame_audio_locked;
+					} else {
+						mAudioLinkingDrawable = R.drawable.ic_frame_audio_spanning;
+					}
+				}
+				if (mFrameAudioItems.size() >= MediaPhone.MAX_AUDIO_ITEMS) {
+					audioLoaded = true;
+				}
+
+			} else if (!textLoaded && currentType == MediaPhoneProvider.TYPE_TEXT) {
+				String textSnippet = IOUtilities.getFileContentSnippet(currentItem.getFile().getAbsolutePath(),
+						getResources().getInteger(R.integer.text_snippet_length));
+				textButton.setText(textSnippet);
+				if (spanFrames) {
+					if (inheritedMedia) {
+						mTextInherited = currentItem.getInternalId();
+						textButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_frame_text_locked, 0, 0);
+					} else {
+						textButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_frame_text_spanning, 0, 0);
+					}
+				}
+				textLoaded = true;
+			}
 		}
+
+		// this is now the last edited frame - save our position
+		saveLastEditedFrame(mFrameInternalId);
 
 		// update the interface (image is loaded in onWindowFocusChanged so we know the button's size)
 		reloadAudioButtons();
@@ -354,27 +404,27 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 		final Intent intent = getIntent();
 		if (intent == null) {
 			UIUtilities.showToast(FrameEditorActivity.this, R.string.error_loading_frame_editor);
+			mFrameInternalId = "-1"; // so we exit
 			onBackPressed();
 			return;
 		}
 
+		ContentResolver contentResolver = getContentResolver();
 		String intentNarrativeId = intent.getStringExtra(getString(R.string.extra_parent_id));
 		final boolean insertNewNarrative = intentNarrativeId == null;
 		final String narrativeId = insertNewNarrative ? MediaPhoneProvider.getNewInternalId() : intentNarrativeId;
-		final String insertBeforeId = intent.getStringExtra(getString(R.string.extra_insert_before_id));
-		final String insertAfterId = intent.getStringExtra(getString(R.string.extra_insert_after_id));
+
+		// default to inserting at the end if no before/after id is given
+		final String afterId = intent.getStringExtra(getString(R.string.extra_insert_after_id));
+		final String insertAfterId = afterId == null ? FramesManager.findLastFrameByParentId(contentResolver,
+				narrativeId) : afterId;
 
 		// don't load the frame's icon yet - it will be loaded (or deleted) when we return
-		Resources res = getResources();
-		ContentResolver contentResolver = getContentResolver();
 		FrameItem newFrame = new FrameItem(narrativeId, -1);
-		FramesManager.addFrame(res, contentResolver, newFrame, false);
+		FramesManager.addFrame(getResources(), contentResolver, newFrame, false);
 		mFrameInternalId = newFrame.getInternalId();
 
-		// note: not a background task any more, because it causes concurrency problems with deleting after back press
-		int narrativeSequenceIdIncrement = res.getInteger(R.integer.frame_narrative_sequence_increment);
 		int narrativeSequenceId = 0;
-
 		if (insertNewNarrative) {
 			// new narrative required
 			NarrativeItem newNarrative = new NarrativeItem(narrativeId,
@@ -382,54 +432,21 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 			NarrativesManager.addNarrative(contentResolver, newNarrative);
 
 		} else {
-			// default to inserting at the end if no before/after id is given
-			if (insertBeforeId == null && insertAfterId == null) {
-				narrativeSequenceId = FramesManager.findLastFrameNarrativeSequenceId(contentResolver, narrativeId)
-						+ narrativeSequenceIdIncrement;
+			narrativeSequenceId = adjustNarrativeSequenceIds(narrativeId, insertAfterId);
 
-			} else {
-				// insert new frame - increment necessary frames after the new frame's position
-				boolean insertAtStart = FrameItem.KEY_FRAME_ID_START.equals(insertBeforeId);
-				ArrayList<FrameItem> narrativeFrames = FramesManager.findFramesByParentId(contentResolver, narrativeId);
-				narrativeFrames.remove(0); // don't edit the newly inserted frame yet
-
-				int previousNarrativeSequenceId = -1;
-				boolean frameFound = false;
-				for (FrameItem frame : narrativeFrames) {
-					if (!frameFound && (insertAtStart || frame.getInternalId().equals(insertBeforeId))) {
-						frameFound = true;
-						narrativeSequenceId = frame.getNarrativeSequenceId();
-					}
-					if (frameFound) {
-						int currentNarrativeSequenceId = frame.getNarrativeSequenceId();
-						if (currentNarrativeSequenceId <= narrativeSequenceId
-								|| currentNarrativeSequenceId <= previousNarrativeSequenceId) {
-
-							frame.setNarrativeSequenceId(currentNarrativeSequenceId
-									+ Math.max(narrativeSequenceId - currentNarrativeSequenceId,
-											previousNarrativeSequenceId - currentNarrativeSequenceId) + 1);
-							if (insertAtStart) {
-								FramesManager.updateFrame(res, contentResolver, frame, true);
-								insertAtStart = false;
-							} else {
-								FramesManager.updateFrame(contentResolver, frame);
-							}
-							previousNarrativeSequenceId = frame.getNarrativeSequenceId();
-						} else {
-							break;
-						}
-					}
-					if (!frameFound && frame.getInternalId().equals(insertAfterId)) {
-						frameFound = true;
-						narrativeSequenceId = frame.getNarrativeSequenceId() + narrativeSequenceIdIncrement;
+			if (insertAfterId != null && !FrameItem.KEY_FRAME_ID_START.equals(insertAfterId)) {
+				// get and update any inherited media
+				ArrayList<MediaItem> inheritedMedia = MediaManager.findMediaByParentId(contentResolver, insertAfterId);
+				for (final MediaItem media : inheritedMedia) {
+					if (media.getSpanFrames()) {
+						MediaManager.addMediaLink(contentResolver, mFrameInternalId, media.getInternalId());
 					}
 				}
 			}
 		}
 
-		FrameItem thisFrame = FramesManager.findFrameByInternalId(contentResolver, mFrameInternalId);
-		thisFrame.setNarrativeSequenceId(narrativeSequenceId);
-		FramesManager.updateFrame(contentResolver, thisFrame);
+		newFrame.setNarrativeSequenceId(narrativeSequenceId);
+		FramesManager.updateFrame(contentResolver, newFrame);
 	}
 
 	private void reloadAudioButtons() {
@@ -438,10 +455,18 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				(CenteredImageTextButton) findViewById(R.id.button_record_audio_3) };
 		audioButtons[2].setText("");
 
+		// reset locked (inherited) media
+		for (CenteredImageTextButton button : audioButtons) {
+			button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_frame_audio, 0, 0);
+		}
+
 		// load the audio content
 		int audioIndex = 0;
 		for (Entry<String, Integer> audioMedia : mFrameAudioItems.entrySet()) {
 			audioButtons[audioIndex].setText(StringUtilities.millisecondsToTimeString(audioMedia.getValue(), false));
+			if (audioIndex == mAudioLinkingIndex) {
+				audioButtons[audioIndex].setCompoundDrawablesWithIntrinsicBounds(0, mAudioLinkingDrawable, 0, 0);
+			}
 			audioIndex += 1;
 		}
 
@@ -470,7 +495,17 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				.getWidth() : cameraButton.getHeight()) * resourceValue.getFloat());
 		BitmapDrawable cachedIcon = new BitmapDrawable(resources, BitmapUtilities.loadAndCreateScaledBitmap(imagePath,
 				pictureSize, pictureSize, BitmapUtilities.ScalingLogic.CROP, true));
-		cameraButton.setCompoundDrawablesWithIntrinsicBounds(null, cachedIcon, null, null);
+		if (mImageLinkingDrawable != 0) {
+			Drawable[] layers = new Drawable[2];
+			layers[0] = cachedIcon;
+			layers[1] = resources.getDrawable(mImageLinkingDrawable);
+			LayerDrawable layerDrawable = new LayerDrawable(layers);
+			layerDrawable.setLayerInset(1, pictureSize - layers[1].getIntrinsicHeight(),
+					pictureSize - layers[1].getIntrinsicWidth(), 0, 0);
+			cameraButton.setCompoundDrawablesWithIntrinsicBounds(null, layerDrawable, null, null);
+		} else {
+			cameraButton.setCompoundDrawablesWithIntrinsicBounds(null, cachedIcon, null, null);
+		}
 	}
 
 	private void changeFrames(String newFrameId) {
@@ -495,14 +530,12 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 
 	@Override
 	protected boolean swipeNext() {
-		return switchFrames(mFrameInternalId, R.id.menu_next_frame, R.string.extra_internal_id, false,
-				FrameEditorActivity.class);
+		return switchFrames(mFrameInternalId, R.id.menu_next_frame, null, false);
 	}
 
 	@Override
 	protected boolean swipePrevious() {
-		return switchFrames(mFrameInternalId, R.id.menu_previous_frame, R.string.extra_internal_id, false,
-				FrameEditorActivity.class);
+		return switchFrames(mFrameInternalId, R.id.menu_previous_frame, null, false);
 	}
 
 	private int getAudioIndex(int buttonId) {
@@ -517,6 +550,42 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 		return -1;
 	}
 
+	private void editImage(String parentId) {
+		final Intent takePictureIntent = new Intent(FrameEditorActivity.this, CameraActivity.class);
+		takePictureIntent.putExtra(getString(R.string.extra_parent_id), parentId);
+		startActivityForResult(takePictureIntent, MediaPhone.R_id_intent_picture_editor);
+	}
+
+	private void editAudio(String parentId, int selectedAudioIndex, boolean preventSpanning) {
+		final Intent recordAudioIntent = new Intent(FrameEditorActivity.this, AudioActivity.class);
+		recordAudioIntent.putExtra(getString(R.string.extra_parent_id), parentId);
+
+		// index of -1 means don't edit existing
+		if (selectedAudioIndex >= 0) {
+			int currentIndex = 0;
+			for (String audioMediaId : mFrameAudioItems.keySet()) {
+				if (currentIndex == selectedAudioIndex) {
+					recordAudioIntent.putExtra(getString(R.string.extra_internal_id), audioMediaId);
+					break;
+				}
+				currentIndex += 1;
+			}
+		}
+
+		// unless we're editing (or replacing) inherited audio, or editing a single item we need to stop frame spanning
+		if (preventSpanning) {
+			recordAudioIntent.putExtra(getString(R.string.extra_prevent_frame_spanning), true);
+		}
+
+		startActivityForResult(recordAudioIntent, MediaPhone.R_id_intent_audio_editor);
+	}
+
+	private void editText(String parentId) {
+		final Intent addTextIntent = new Intent(FrameEditorActivity.this, TextActivity.class);
+		addTextIntent.putExtra(getString(R.string.extra_parent_id), parentId);
+		startActivityForResult(addTextIntent, MediaPhone.R_id_intent_text_editor);
+	}
+
 	public void handleButtonClicks(View currentButton) {
 		if (!verifyButtonClick(currentButton)) {
 			return;
@@ -529,32 +598,108 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				break;
 
 			case R.id.button_take_picture_video:
-				final Intent takePictureIntent = new Intent(FrameEditorActivity.this, CameraActivity.class);
-				takePictureIntent.putExtra(getString(R.string.extra_parent_id), mFrameInternalId);
-				startActivityForResult(takePictureIntent, MediaPhone.R_id_intent_picture_editor);
+				if (mImageInherited != null) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(FrameEditorActivity.this);
+					builder.setTitle(R.string.span_media_edit_image_title);
+					builder.setMessage(R.string.span_media_edit_image);
+					builder.setIcon(android.R.drawable.ic_dialog_info);
+					builder.setNegativeButton(R.string.span_media_edit_original, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// find the parent frame of the media item we want to edit, switch to it, then edit
+							MediaItem inheritedImage = MediaManager.findMediaByInternalId(getContentResolver(),
+									mImageInherited);
+							if (inheritedImage != null) {
+								final String newFrameId = inheritedImage.getParentId();
+								saveLastEditedFrame(newFrameId);
+								editImage(newFrameId);
+							}
+						}
+					});
+					builder.setPositiveButton(R.string.span_media_add_new, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton) {
+							endLinkedMediaItem(mImageInherited, mFrameInternalId); // remove the existing media link
+							editImage(mFrameInternalId);
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
+				} else {
+					editImage(mFrameInternalId);
+				}
 				break;
 
 			case R.id.button_record_audio_1:
 			case R.id.button_record_audio_2:
 			case R.id.button_record_audio_3:
-				final Intent recordAudioIntent = new Intent(FrameEditorActivity.this, AudioActivity.class);
-				recordAudioIntent.putExtra(getString(R.string.extra_parent_id), mFrameInternalId);
-				int selectedAudioIndex = getAudioIndex(buttonId);
-				int currentIndex = 0;
-				for (String audioMediaId : mFrameAudioItems.keySet()) {
-					if (currentIndex == selectedAudioIndex) {
-						recordAudioIntent.putExtra(getString(R.string.extra_internal_id), audioMediaId);
-						break;
-					}
-					currentIndex += 1;
+				final int selectedAudioIndex = getAudioIndex(buttonId);
+				if (mAudioInherited != null && selectedAudioIndex == mAudioLinkingIndex) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(FrameEditorActivity.this);
+					builder.setTitle(R.string.span_media_edit_audio_title);
+					builder.setMessage(R.string.span_media_edit_audio);
+					builder.setIcon(android.R.drawable.ic_dialog_info);
+					builder.setNegativeButton(R.string.span_media_edit_original, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// find the parent frame of the media item we want to edit, switch to it, then edit
+							MediaItem inheritedAudio = MediaManager.findMediaByInternalId(getContentResolver(),
+									mAudioInherited);
+							if (inheritedAudio != null) {
+								final String newFrameId = inheritedAudio.getParentId();
+								saveLastEditedFrame(newFrameId);
+								editAudio(mFrameInternalId, selectedAudioIndex, false);
+							}
+						}
+					});
+					builder.setPositiveButton(R.string.span_media_add_new, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// remove the existing media links and edit a new audio item
+							endLinkedMediaItem(mAudioInherited, mFrameInternalId);
+							editAudio(mFrameInternalId, -1, false); // spanning is now allowed
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
+				} else {
+					boolean preventSpanning = mAudioLinkingIndex >= 0 && selectedAudioIndex != mAudioLinkingIndex;
+					editAudio(mFrameInternalId, selectedAudioIndex, preventSpanning); // no spanning if not already
 				}
-				startActivityForResult(recordAudioIntent, MediaPhone.R_id_intent_audio_editor);
 				break;
 
 			case R.id.button_add_text:
-				final Intent addTextIntent = new Intent(FrameEditorActivity.this, TextActivity.class);
-				addTextIntent.putExtra(getString(R.string.extra_parent_id), mFrameInternalId);
-				startActivityForResult(addTextIntent, MediaPhone.R_id_intent_text_editor);
+				if (mTextInherited != null) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(FrameEditorActivity.this);
+					builder.setTitle(R.string.span_media_edit_text_title);
+					builder.setMessage(R.string.span_media_edit_text);
+					builder.setIcon(android.R.drawable.ic_dialog_info);
+					builder.setNegativeButton(R.string.span_media_edit_original, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// find the parent frame of the media item we want to edit, switch to it, then edit
+							MediaItem inheritedText = MediaManager.findMediaByInternalId(getContentResolver(),
+									mTextInherited);
+							if (inheritedText != null) {
+								final String newFrameId = inheritedText.getParentId();
+								saveLastEditedFrame(newFrameId);
+								editText(newFrameId);
+							}
+						}
+					});
+					builder.setPositiveButton(R.string.span_media_add_new, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// remove the existing media links and edit a new text item
+							endLinkedMediaItem(mTextInherited, mFrameInternalId);
+							editText(mFrameInternalId);
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
+				} else {
+					editText(mFrameInternalId);
+				}
 				break;
 
 			case R.id.button_delete_frame:
@@ -562,7 +707,7 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				builder.setTitle(R.string.delete_frame_confirmation);
 				builder.setMessage(R.string.delete_frame_hint);
 				builder.setIcon(android.R.drawable.ic_dialog_alert);
-				builder.setNegativeButton(android.R.string.cancel, null);
+				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
@@ -593,13 +738,8 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 						setBackButtonIcons(FrameEditorActivity.this, R.id.button_finished_editing, 0, true);
 					}
 
-				} else if (resultCode == R.id.result_audio_ok_exit) {
-					// no point reloading if we're going to exit
-					// done this way (rather than reloading in this activity) so we get switching right/left animations
-					onBackPressed();
-				} else if (resultCode == R.id.result_audio_cancelled_exit) {
-					onBackPressed();
 				} else if (resultCode == R.id.result_narrative_deleted_exit) {
+					// no point reloading if we're going to exit
 					onBackPressed();
 				}
 				break;

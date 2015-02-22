@@ -7,6 +7,11 @@
 
     <style name="default_dark_theme" parent="@android:Theme.Black.NoTitleBar" />
 
+    <style name="fullscreen_theme" parent="android:Theme.NoTitleBar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
     <style name="default_dialog" parent="@android:Theme.Dialog" />
 
     <style name="default_vertical_linear_layout">
@@ -22,6 +27,8 @@
     </style>
 
     <style name="default_coloured_button">
+
+        <!-- <item name="android:background">@null</item> TODO: possible fix for extra padding -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:textColor">@color/button_text_default</item>

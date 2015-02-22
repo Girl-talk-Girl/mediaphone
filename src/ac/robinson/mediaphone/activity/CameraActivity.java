@@ -90,10 +90,8 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 
 	private String mMediaItemInternalId = null;
 	private boolean mHasEditedMedia = false;
-	private boolean mShowOptionsMenu = false;
-	private boolean mSwitchedFrames = false;
-	private int mSwitchToLandscape = -1;
 	private boolean mImagePickerShown = false;
+	private int mSwitchToLandscape = -1;
 
 	private boolean mDoesNotHaveCamera;
 	private CameraView mCameraView;
@@ -115,7 +113,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	private boolean mAddToMediaLibrary = false;
 
 	private enum DisplayMode {
-		DISPLAY_PICTURE, TAKE_PICTURE, SWITCHING_FRAME
+		DISPLAY_PICTURE, TAKE_PICTURE
 	};
 
 	private DisplayMode mDisplayMode;
@@ -133,14 +131,11 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 
 		mDisplayMode = DisplayMode.TAKE_PICTURE;
 		mMediaItemInternalId = null;
-		mShowOptionsMenu = false;
-		mSwitchedFrames = false;
 
 		// load previous id on screen rotation
 		if (savedInstanceState != null) {
 			mMediaItemInternalId = savedInstanceState.getString(getString(R.string.extra_internal_id));
 			mHasEditedMedia = savedInstanceState.getBoolean(getString(R.string.extra_media_edited), true);
-			mSwitchedFrames = savedInstanceState.getBoolean(getString(R.string.extra_switched_frames));
 			mSwitchToLandscape = savedInstanceState.getInt(getString(R.string.extra_switch_to_landscape_camera), -1);
 			mImagePickerShown = savedInstanceState.getBoolean(getString(R.string.extra_external_chooser_shown), false);
 			if (mHasEditedMedia) {
@@ -157,22 +152,9 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		// no need to save display mode as we don't allow rotation when actually taking a picture
 		savedInstanceState.putString(getString(R.string.extra_internal_id), mMediaItemInternalId);
 		savedInstanceState.putBoolean(getString(R.string.extra_media_edited), mHasEditedMedia);
-		savedInstanceState.putBoolean(getString(R.string.extra_switched_frames), mSwitchedFrames);
 		savedInstanceState.putInt(getString(R.string.extra_switch_to_landscape_camera), mSwitchToLandscape);
 		savedInstanceState.putBoolean(getString(R.string.extra_external_chooser_shown), mImagePickerShown);
 		super.onSaveInstanceState(savedInstanceState);
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus) {
-			if (mShowOptionsMenu) {
-				mShowOptionsMenu = false;
-				openOptionsMenu();
-			}
-			registerForSwipeEvents(); // here to avoid crashing due to double-swiping
-		}
 	}
 
 	@Override
@@ -214,17 +196,22 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		if (imageMediaItem != null) {
 			switch (mDisplayMode) {
 				case DISPLAY_PICTURE:
-					// deleted the picture (media item already set deleted) - update the icon
-					if (mHasEditedMedia) {
-						runImmediateBackgroundTask(getFrameIconUpdaterRunnable(imageMediaItem.getParentId()));
+					if (imageMediaItem.getDeleted()) {
+						// we've been deleted - propagate changes to our parent frame and any following frames
+						inheritMediaAndDeleteItemLinks(imageMediaItem.getParentId(), imageMediaItem, null);
+					} else if (mHasEditedMedia) {
+						// imported, rotated or otherwise edited the image - update icons
+						updateMediaFrameIcons(imageMediaItem, null);
 					}
 					break;
 
 				case TAKE_PICTURE:
+					// display if they took a picture, exit otherwise
 					if (imageMediaItem.getFile().length() > 0) {
 						// took a new picture (rather than just cancelling the camera) - update the icon
 						if (mHasEditedMedia) {
-							runImmediateBackgroundTask(getFrameIconUpdaterRunnable(imageMediaItem.getParentId()));
+							// update this frame's icon with the new image; propagate to following frames if applicable
+							updateMediaFrameIcons(imageMediaItem, null);
 							setBackButtonIcons(CameraActivity.this, R.id.button_finished_picture, 0, true);
 
 							// if we do this then we can't tell whether to change icons on screen rotation; disabled
@@ -238,20 +225,14 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 						// so we don't leave an empty stub
 						imageMediaItem.setDeleted(true);
 						MediaManager.updateMedia(contentResolver, imageMediaItem);
-					}
-					break;
 
-				case SWITCHING_FRAME:
-					// this mode means we were in TAKE_PICTURE, but are now switching frames
-					// - there's no icon to update because no picture was taken
-					if (imageMediaItem.getFile().length() <= 0) {
-						// so we don't leave an empty stub
-						imageMediaItem.setDeleted(true);
-						MediaManager.updateMedia(contentResolver, imageMediaItem);
+						// we've been deleted - propagate changes to our parent frame and any following frames
+						inheritMediaAndDeleteItemLinks(imageMediaItem.getParentId(), imageMediaItem, null);
 					}
 					break;
 			}
 
+			// save the id of the frame we're part of so that the frame editor gets notified
 			saveLastEditedFrame(imageMediaItem.getParentId());
 		}
 
@@ -281,24 +262,29 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		setupMenuNavigationButtonsFromMedia(inflater, menu, getContentResolver(), mMediaItemInternalId, mHasEditedMedia);
+		createMediaMenuNavigationButtons(inflater, menu, mHasEditedMedia);
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		final int itemId = item.getItemId();
-		switch (itemId) {
-			case R.id.menu_previous_frame:
-			case R.id.menu_next_frame:
-				performSwitchFrames(itemId, true);
-				return true;
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		prepareMediaMenuNavigationButtons(menu, mMediaItemInternalId);
+		return super.onPrepareOptionsMenu(menu);
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
 			case R.id.menu_add_frame:
-				MediaItem imageMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+				final MediaItem imageMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
 						mMediaItemInternalId);
 				if (imageMediaItem != null && imageMediaItem.getFile().length() > 0) {
-					runQueuedBackgroundTask(getFrameSplitterRunnable(mMediaItemInternalId));
+					final String newFrameId = insertFrameAfterMedia(imageMediaItem);
+					final Intent addImageIntent = new Intent(CameraActivity.this, CameraActivity.class);
+					addImageIntent.putExtra(getString(R.string.extra_parent_id), newFrameId);
+					startActivity(addImageIntent);
+
+					onBackPressed();
 				} else {
 					UIUtilities.showToast(CameraActivity.this, R.string.split_image_add_content);
 				}
@@ -349,11 +335,6 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 			final Intent intent = getIntent();
 			if (intent != null) {
 				parentInternalId = intent.getStringExtra(getString(R.string.extra_parent_id));
-				mShowOptionsMenu = intent.getBooleanExtra(getString(R.string.extra_show_options_menu), false);
-				mSwitchedFrames = intent.getBooleanExtra(getString(R.string.extra_switched_frames), false);
-				if (mSwitchedFrames) {
-					firstLaunch = false; // so we don't show hints
-				}
 			}
 			if (parentInternalId == null) {
 				UIUtilities.showToast(CameraActivity.this, R.string.error_loading_image_editor);
@@ -362,7 +343,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 				return;
 			}
 
-			// get existing content if it exists
+			// get existing content if it exists (ignores links)
 			mMediaItemInternalId = FrameItem.getImageContentId(contentResolver, parentInternalId);
 
 			// add a new media item if it doesn't already exist
@@ -377,6 +358,8 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		// load the existing image
 		final MediaItem imageMediaItem = MediaManager.findMediaByInternalId(contentResolver, mMediaItemInternalId);
 		if (imageMediaItem != null) {
+			updateSpanFramesButtonIcon(R.id.button_toggle_mode_picture, imageMediaItem.getSpanFrames(), false);
+
 			if (mSwitchToLandscape < 0 && imageMediaItem.getFile().length() > 0) {
 				if (imageMediaItem.getType() == MediaPhoneProvider.TYPE_IMAGE_FRONT) {
 					mCameraConfiguration.usingFrontCamera = true;
@@ -719,13 +702,13 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		}
 	};
 
+	// TODO: move to normal queued/immediate background task?
 	private class SavePreviewFrameTask extends AsyncTask<byte[], Void, Boolean> {
 
 		@Override
 		protected Boolean doInBackground(byte[]... params) {
 			byte[] data = params[0];
 			if (data == null) {
-				UIUtilities.showToast(CameraActivity.this, R.string.save_picture_failed);
 				if (MediaPhone.DEBUG)
 					Log.d(DebugUtilities.getLogTag(this), "SavePreviewFrameTask: data is null");
 				return false;
@@ -766,7 +749,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 					if (!BitmapUtilities.saveYUYToJPEG(data, imageMediaItem.getFile(), pictureConfig.imageFormat,
 							mJpegSaveQuality, pictureConfig.width, pictureConfig.height, rotation,
 							mCameraConfiguration.usingFrontCamera)) {
-						UIUtilities.showToast(CameraActivity.this, R.string.save_picture_failed);
+						return false;
 					}
 
 				} else if (pictureConfig.imageFormat == ImageFormat.JPEG) {
@@ -775,7 +758,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 
 					if (!BitmapUtilities.saveJPEGToJPEG(data, imageMediaItem.getFile(),
 							mCameraConfiguration.usingFrontCamera)) {
-						UIUtilities.showToast(CameraActivity.this, R.string.save_picture_failed);
+						return false;
 					}
 
 				} else {
@@ -788,7 +771,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 						rawBitmap.recycle();
 					}
 					if (rawBitmap == null || !success) {
-						UIUtilities.showToast(CameraActivity.this, R.string.save_picture_failed);
+						return false;
 					}
 				}
 
@@ -798,13 +781,13 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 					runImmediateBackgroundTask(getMediaLibraryAdderRunnable(imageMediaItem.getFile().getAbsolutePath(),
 							Environment.DIRECTORY_DCIM));
 				}
+				return true;
+
 			} else {
-				UIUtilities.showToast(CameraActivity.this, R.string.save_picture_failed);
 				if (MediaPhone.DEBUG)
 					Log.d(DebugUtilities.getLogTag(this), "Save image failed: no MediaItem to save to");
 				return false;
 			}
-			return true;
 		}
 
 		protected void onPostExecute(Boolean saveSucceeded) {
@@ -830,14 +813,17 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 					}
 				}
 
-				onBackPressed();
+			} else {
+				UIUtilities.showToast(CameraActivity.this, R.string.save_picture_failed);
+			}
 
-				synchronized (mSavingInProgress) {
-					mSavingInProgress = false;
-					if (mBackPressedDuringPhoto) {
-						mBackPressedDuringPhoto = false;
-						onBackPressed(); // second press doesn't really work, but don't want pressing back while saving
-					}
+			onBackPressed();
+
+			synchronized (mSavingInProgress) {
+				mSavingInProgress = false;
+				if (mBackPressedDuringPhoto) {
+					mBackPressedDuringPhoto = false;
+					onBackPressed(); // second press doesn't really work, but don't want pressing back while saving
 				}
 			}
 		}
@@ -915,6 +901,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	@Override
 	protected void onBackgroundTaskCompleted(int taskId) {
 		switch (taskId) {
+<<<<<<< HEAD
 			case R.id.split_frame_task_complete:
 				((ImageView) findViewById(R.id.camera_result)).setImageBitmap(null); // otherwise we copy to new frame
 				mHasEditedMedia = true; // because now the original media item has a new id, so must reload in editor
@@ -923,6 +910,8 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 					switchToCamera(mCameraConfiguration.usingFrontCamera, false);
 				}
 				break;
+=======
+>>>>>>> long-running-media
 			case R.id.import_external_media_succeeded:
 				mHasEditedMedia = true; // to force an icon update
 				onBackPressed();
@@ -938,12 +927,13 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 				break;
 			case R.id.image_rotate_completed:
 				mStopImageRotationAnimation = true;
+				mHasEditedMedia = true; // to force an icon update
 				setBackButtonIcons(CameraActivity.this, R.id.button_finished_picture, 0, true); // changed the image
 				MediaItem imageMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
 						mMediaItemInternalId);
 				if (imageMediaItem != null) {
 					loadScreenSizedImageInBackground((ImageView) findViewById(R.id.camera_result), imageMediaItem
-							.getFile().getAbsolutePath(), true, true); // reload the image
+							.getFile().getAbsolutePath(), true, MediaPhoneActivity.FadeType.FADEIN); // reload image
 				}
 				findViewById(R.id.button_rotate_clockwise).setEnabled(true);
 				findViewById(R.id.button_rotate_anticlockwise).setEnabled(true);
@@ -951,38 +941,14 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		}
 	}
 
-	private boolean performSwitchFrames(int itemId, boolean showOptionsMenu) {
-		if (mMediaItemInternalId != null) {
-			MediaItem imageMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
-			if (imageMediaItem != null) {
-				if (mDisplayMode == DisplayMode.TAKE_PICTURE) {
-					mDisplayMode = DisplayMode.SWITCHING_FRAME; // so we exit properly
-				}
-				return switchFrames(imageMediaItem.getParentId(), itemId, R.string.extra_parent_id, showOptionsMenu,
-						CameraActivity.class);
-			}
-		}
-		return false;
-	}
-
-	@Override
-	protected boolean swipeNext() {
-		return performSwitchFrames(R.id.menu_next_frame, false);
-	}
-
-	@Override
-	protected boolean swipePrevious() {
-		return performSwitchFrames(R.id.menu_previous_frame, false);
-	}
-
 	private void setFlashButtonIcon(String flashMode) {
-		int currentDrawable = R.drawable.ic_flash_auto; // auto mode is the default
+		int currentDrawable = R.drawable.ic_image_flash_auto; // auto mode is the default
 		if (Camera.Parameters.FLASH_MODE_OFF.equals(flashMode)) {
-			currentDrawable = R.drawable.ic_flash_off;
+			currentDrawable = R.drawable.ic_image_flash_off;
 		} else if (Camera.Parameters.FLASH_MODE_ON.equals(flashMode)) {
-			currentDrawable = R.drawable.ic_flash_on;
+			currentDrawable = R.drawable.ic_image_flash_on;
 		} else if (Camera.Parameters.FLASH_MODE_RED_EYE.equals(flashMode)) {
-			currentDrawable = R.drawable.ic_flash_red_eye;
+			currentDrawable = R.drawable.ic_image_flash_redeye;
 		}
 
 		Resources res = getResources();
@@ -1051,12 +1017,27 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 				retakePicture();
 				break;
 
+			case R.id.button_toggle_mode_picture:
+				final MediaItem imageMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+						mMediaItemInternalId);
+				if (imageMediaItem != null && imageMediaItem.getFile().length() > 0) {
+					mHasEditedMedia = true; // so we update/inherit on exit and show the media edited icon
+					setBackButtonIcons(CameraActivity.this, R.id.button_finished_picture, 0, true);
+					boolean frameSpanning = toggleFrameSpanningMedia(imageMediaItem);
+					updateSpanFramesButtonIcon(R.id.button_toggle_mode_picture, frameSpanning, true);
+					UIUtilities.showToast(CameraActivity.this, frameSpanning ? R.string.span_image_multiple_frames
+							: R.string.span_image_single_frame);
+				} else {
+					UIUtilities.showToast(CameraActivity.this, R.string.span_image_add_content);
+				}
+				break;
+
 			case R.id.button_delete_picture:
 				AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
 				builder.setTitle(R.string.delete_image_confirmation);
 				builder.setMessage(R.string.delete_image_hint);
 				builder.setIcon(android.R.drawable.ic_dialog_alert);
-				builder.setNegativeButton(android.R.string.cancel, null);
+				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
@@ -1064,7 +1045,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 						MediaItem imageToDelete = MediaManager.findMediaByInternalId(contentResolver,
 								mMediaItemInternalId);
 						if (imageToDelete != null) {
-							mHasEditedMedia = true;
+							mHasEditedMedia = true; // so the frame editor updates its display
 							imageToDelete.setDeleted(true);
 							MediaManager.updateMedia(contentResolver, imageToDelete);
 							UIUtilities.showToast(CameraActivity.this, R.string.delete_image_succeeded);
@@ -1072,8 +1053,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 						}
 					}
 				});
-				AlertDialog alert = builder.create();
-				alert.show();
+				builder.show();
 				break;
 
 			case R.id.button_import_image:
@@ -1143,15 +1123,23 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	private void animateButtonRotation(Resources res, int animation, int button, int icon, int previousRotation) {
 		CenteredImageTextButton imageButton = (CenteredImageTextButton) findViewById(button);
 		Bitmap currentBitmap = BitmapFactory.decodeResource(res, icon);
-		Drawable buttonIcon = new BitmapDrawable(res, BitmapUtilities.rotate(currentBitmap, previousRotation,
-				currentBitmap.getWidth() / 2, currentBitmap.getHeight() / 2)); // need previous rotation to correct diff
-		buttonIcon.setBounds(0, 0, buttonIcon.getIntrinsicWidth(), buttonIcon.getIntrinsicHeight());
-		Animation rotationAnimation = AnimationUtils.loadAnimation(this, animation);
-		rotationAnimation.initialize(buttonIcon.getIntrinsicWidth(), buttonIcon.getIntrinsicHeight(),
-				imageButton.getWidth(), imageButton.getHeight());
-		rotationAnimation.start();
-		imageButton.setCompoundDrawablesWithIntrinsicBounds(null, new AnimateDrawable(buttonIcon, rotationAnimation),
-				null, null);
+		if (currentBitmap == null) { // the take picture icon is an xml drawable - it must be loaded as such
+			Drawable bitmapDrawable = res.getDrawable(icon);
+			if (bitmapDrawable instanceof BitmapDrawable) {
+				currentBitmap = ((BitmapDrawable) bitmapDrawable).getBitmap();
+			}
+		}
+		if (currentBitmap != null) {
+			Drawable buttonIcon = new BitmapDrawable(res, BitmapUtilities.rotate(currentBitmap, previousRotation,
+					currentBitmap.getWidth() / 2, currentBitmap.getHeight() / 2));
+			buttonIcon.setBounds(0, 0, buttonIcon.getIntrinsicWidth(), buttonIcon.getIntrinsicHeight());
+			Animation rotationAnimation = AnimationUtils.loadAnimation(this, animation);
+			rotationAnimation.initialize(buttonIcon.getIntrinsicWidth(), buttonIcon.getIntrinsicHeight(),
+					imageButton.getWidth(), imageButton.getHeight());
+			rotationAnimation.start();
+			imageButton.setCompoundDrawablesWithIntrinsicBounds(null,
+					new AnimateDrawable(buttonIcon, rotationAnimation), null, null);
+		}
 	}
 
 	@Override
@@ -1180,47 +1168,51 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 			mCameraView.setRotation(mDisplayOrientation, mDisplayOrientation);
 		}
 
-		// get the difference between the current and previous orientations
-		int animation = 0;
-		int rotationDifference = ((mIconRotation - correctedRotation + 360) % 360);
-		switch (rotationDifference) {
-			case 270:
-				animation = R.anim.rotate_clockwise_90;
-				break;
-			case 90:
-				animation = R.anim.rotate_anticlockwise_90;
-				break;
-			case 180:
-				animation = R.anim.rotate_clockwise_180;
-				break;
-		}
+		// we only need to animate rotations if we're in camera mode
+		if (mDisplayMode == DisplayMode.TAKE_PICTURE) {
 
-		if (animation == 0) {
-			return; // no need to change icons - no difference in orientation
-		}
+			// get the difference between the current and previous orientations
+			int animation = 0;
+			int rotationDifference = ((mIconRotation - correctedRotation + 360) % 360);
+			switch (rotationDifference) {
+				case 270:
+					animation = R.anim.rotate_clockwise_90;
+					break;
+				case 90:
+					animation = R.anim.rotate_anticlockwise_90;
+					break;
+				case 180:
+					animation = R.anim.rotate_clockwise_180;
+					break;
+			}
 
-		// animate rotating the button icons
-		Resources res = getResources();
-		animateButtonRotation(res, animation, R.id.button_take_picture, android.R.drawable.ic_menu_camera,
-				mIconRotation);
-		animateButtonRotation(res, animation, R.id.button_import_image, android.R.drawable.ic_menu_gallery,
-				mIconRotation);
+			if (animation == 0) {
+				return; // no need to change icons - no difference in orientation
+			}
 
-		if (findViewById(R.id.button_cancel_camera).getVisibility() == View.VISIBLE) {
-			animateButtonRotation(res, animation, R.id.button_cancel_camera, android.R.drawable.ic_menu_revert,
+			// animate rotating the button icons
+			Resources res = getResources();
+			animateButtonRotation(res, animation, R.id.button_take_picture, R.drawable.ic_menu_take_picture,
 					mIconRotation);
-		}
+			animateButtonRotation(res, animation, R.id.button_import_image, R.drawable.ic_menu_import_picture,
+					mIconRotation);
 
-		if (findViewById(R.id.button_switch_camera).getVisibility() == View.VISIBLE) {
-			animateButtonRotation(res, animation, R.id.button_switch_camera, R.drawable.ic_switch_camera, mIconRotation);
-		}
+			if (findViewById(R.id.button_cancel_camera).getVisibility() == View.VISIBLE) {
+				animateButtonRotation(res, animation, R.id.button_cancel_camera, R.drawable.ic_menu_back, mIconRotation);
+			}
 
-		// the flash button is done differently as its icon changes each time it is pressed
-		View flashButton = findViewById(R.id.button_toggle_flash);
-		if (flashButton.getVisibility() == View.VISIBLE) {
-			Integer imageTag = (Integer) flashButton.getTag();
-			if (imageTag != null) {
-				animateButtonRotation(res, animation, R.id.button_toggle_flash, imageTag, mIconRotation);
+			if (findViewById(R.id.button_switch_camera).getVisibility() == View.VISIBLE) {
+				animateButtonRotation(res, animation, R.id.button_switch_camera, R.drawable.ic_image_switch_camera,
+						mIconRotation);
+			}
+
+			// the flash button is done differently as its icon changes each time it is pressed
+			View flashButton = findViewById(R.id.button_toggle_flash);
+			if (flashButton.getVisibility() == View.VISIBLE) {
+				Integer imageTag = (Integer) flashButton.getTag();
+				if (imageTag != null) {
+					animateButtonRotation(res, animation, R.id.button_toggle_flash, imageTag, mIconRotation);
+				}
 			}
 		}
 

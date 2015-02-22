@@ -59,8 +59,26 @@ public class FramesManager {
 		mDeletedSelection = selection.toString();
 	}
 
+	/**
+	 * Update a list of frame icons, removing all icons from the cache first to ensure the old version is not displayed
+	 * 
+	 * @param frameIds
+	 */
+	public static void reloadFrameIcons(Resources resources, ContentResolver contentResolver, ArrayList<String> frameIds) {
+		for (String frameId : frameIds) {
+			ImageCacheUtilities.setLoadingIcon(FrameItem.getCacheId(frameId));
+		}
+		for (String frameId : frameIds) {
+			reloadFrameIcon(resources, contentResolver, frameId);
+		}
+	}
+
 	public static void reloadFrameIcon(Resources resources, ContentResolver contentResolver, FrameItem frame,
 			boolean frameIsInDatabase) {
+		if (frame == null) {
+			return; // if run from switchFrames then the existing frame could have been deleted - ignore
+		}
+
 		final String frameCacheId = frame.getCacheId();
 		ImageCacheUtilities.setLoadingIcon(frameCacheId);
 
@@ -108,8 +126,8 @@ public class FramesManager {
 	}
 
 	/**
-	 * Note: to delete a frame item, do setDeleted the item itself and then update to the database. On the next
-	 * application launch, the frame's media files will be deleted and the database entry will be cleaned up. This
+	 * Note: to delete a frame item, do setDeleted on the item itself and then update to the database. On the next
+	 * application exit, the frame's media files will be deleted and the database entry will be cleaned up. This
 	 * approach speeds up interaction and means that we only need one background thread semi-regularly for deletion
 	 */
 	public static boolean deleteFrameFromBackgroundTask(ContentResolver contentResolver, String frameId) {
@@ -230,16 +248,16 @@ public class FramesManager {
 		return null;
 	}
 
-	public static int findLastFrameNarrativeSequenceId(ContentResolver contentResolver, String parentId) {
+	public static String findLastFrameByParentId(ContentResolver contentResolver, String parentId) {
 		final String[] arguments1 = mArguments1;
 		arguments1[0] = parentId;
 		Cursor c = null;
 		try {
-			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_SEQEUENCE_ID,
-					mFrameParentIdSelection, arguments1, FrameItem.DEFAULT_SORT_ORDER);
+			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_INTERNAL_ID, mFrameParentIdSelection,
+					arguments1, FrameItem.DEFAULT_SORT_ORDER);
 			if (c.moveToLast()) {
 				// for speed, don't get the whole FrameItem
-				final int lastId = c.getInt(c.getColumnIndexOrThrow(FrameItem.SEQUENCE_ID));
+				final String lastId = c.getString(c.getColumnIndexOrThrow(FrameItem.INTERNAL_ID));
 				return lastId;
 			}
 		} finally {
@@ -247,13 +265,13 @@ public class FramesManager {
 				c.close();
 			}
 		}
-		return -1; // no existing frames (but should not happen)
+		return null; // no existing frames (but should not happen)
 	}
 
 	public static int countFramesByParentId(ContentResolver contentResolver, String parentId) {
 		final String[] arguments1 = mArguments1;
 		arguments1[0] = parentId;
-		Cursor c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_SEQEUENCE_ID, // doesn't matter
+		Cursor c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_INTERNAL_ID,
 				mFrameParentIdSelection, arguments1, FrameItem.DEFAULT_SORT_ORDER);
 		final int count = c.getCount();
 		c.close();
@@ -278,5 +296,54 @@ public class FramesManager {
 			}
 		}
 		return frameIds;
+	}
+
+	/**
+	 * Returns a list of the frame ids following the given frame id. If includePrevious is set then the frame before the
+	 * given frame will also be included. If not then the list will start from one after the current frame. If
+	 * includePrevious is true, the first element of the returned list may be null (as the start frame could be the
+	 * first frame of the narrative).
+	 * 
+	 * @param frameId
+	 * @param includeCurrentAndPrevious Whether to include the previous frame in the list as well
+	 */
+	public static ArrayList<String> getFollowingFrameIds(ContentResolver contentResolver, String frameId,
+			boolean includeCurrentAndPrevious) {
+		if (frameId == null) {
+			return null;
+		}
+		FrameItem parentFrame = findFrameByInternalId(contentResolver, frameId);
+		return getFollowingFrameIds(contentResolver, parentFrame, includeCurrentAndPrevious);
+	}
+
+	public static ArrayList<String> getFollowingFrameIds(ContentResolver contentResolver, FrameItem parentFrame,
+			boolean includePrevious) {
+		if (parentFrame == null) {
+			return null;
+		}
+
+		final String parentFrameId = parentFrame.getInternalId();
+		ArrayList<String> narrativeFrameIds = findFrameIdsByParentId(contentResolver, parentFrame.getParentId());
+		ArrayList<String> idsToRemove = new ArrayList<String>();
+
+		// used to use an iterator here, but it turns out that remove() can fail silently (!)
+		String previousFrameId = null;
+		for (final String frameId : narrativeFrameIds) {
+			idsToRemove.add(frameId);
+			if (parentFrameId.equals(frameId)) {
+				break;
+			}
+			previousFrameId = frameId;
+		}
+
+		// remove irrelevant frames; preserve previous if necessary
+		if (includePrevious) {
+			idsToRemove.remove(previousFrameId);
+		}
+		narrativeFrameIds.removeAll(idsToRemove);
+		if (includePrevious && previousFrameId == null) {
+			narrativeFrameIds.add(0, null); // need this null to show that no previous frame is present
+		}
+		return narrativeFrameIds;
 	}
 }

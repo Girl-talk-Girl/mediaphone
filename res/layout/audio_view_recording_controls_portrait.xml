@@ -15,7 +15,7 @@
             style="@style/default_coloured_button"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:drawableTop="@android:drawable/ic_menu_revert"
+            android:drawableTop="@drawable/ic_menu_back"
             android:visibility="gone" />
 
         <ac.robinson.view.CenteredImageTextButton
@@ -23,7 +23,7 @@
             style="@style/default_coloured_button"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/ic_menu_audio" />
+            android:drawableTop="@drawable/ic_menu_import_music" />
     </LinearLayout>
 
 </merge>

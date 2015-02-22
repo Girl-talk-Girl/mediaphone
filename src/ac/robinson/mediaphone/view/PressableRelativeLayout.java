@@ -30,10 +30,10 @@ import android.widget.RelativeLayout;
 
 public class PressableRelativeLayout extends RelativeLayout {
 
-	public static final int PLAY_ICON = android.R.drawable.ic_media_play; // or ic_menu_play_clip
-	public static final int EDIT_ICON = android.R.drawable.ic_menu_manage;
-	public static final int EDIT_ICON_LEFT = R.drawable.edit_icon_left;
-	public static final int EDIT_ICON_RIGHT = R.drawable.edit_icon_right;
+	public static final int PLAY_ICON = R.drawable.ic_menu_play;
+	public static final int EDIT_ICON = R.drawable.ic_menu_settings;
+	public static final int EDIT_ICON_LEFT = R.drawable.ic_narratives_insert_left;
+	public static final int EDIT_ICON_RIGHT = R.drawable.ic_narratives_insert_right;
 
 	private ImageView mOverlayView;
 	private Integer mOverlayResource;

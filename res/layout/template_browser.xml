@@ -12,7 +12,7 @@
         android:layout_height="@dimen/navigation_button_height"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/button_padding"
-        android:drawableTop="@android:drawable/ic_menu_revert" />
+        android:drawableTop="@drawable/ic_menu_back" />
 
     <ac.robinson.mediaphone.view.NarrativesListView
         android:id="@+id/list_templates"

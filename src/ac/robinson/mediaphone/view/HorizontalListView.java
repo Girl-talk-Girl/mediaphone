@@ -672,10 +672,10 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 						resetPressState();
 
 						// this is a hack to pass both ids in a standard event handler
-						int maxId = Math.max(primaryViewId, secondaryViewId);
+						int minId = Math.min(primaryViewId, secondaryViewId);
 						if (mOnItemLongClicked != null) {
 							mOnItemLongClicked.onItemLongClick(HorizontalListView.this,
-									(maxId == primaryViewId ? primaryView : secondaryView), mLeftViewIndex + 1 + maxId,
+									(minId == primaryViewId ? primaryView : secondaryView), mLeftViewIndex + 1 + minId,
 									1);
 						}
 					}
@@ -832,10 +832,10 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 						View secondaryView = getChildAt(secondaryViewId);
 
 						// this is a hack to pass both ids in a standard event handler
-						int maxId = Math.max(selectedChild, secondaryViewId);
+						int minId = Math.min(selectedChild, secondaryViewId);
 						playSoundEffect(SoundEffectConstants.CLICK); // play the default button click (respects prefs)
-						mOnItemClicked.onItemClick(HorizontalListView.this, (maxId == selectedChild ? child
-								: secondaryView), mLeftViewIndex + 1 + maxId, 1);
+						mOnItemClicked.onItemClick(HorizontalListView.this, (minId == selectedChild ? child
+								: secondaryView), mLeftViewIndex + 1 + minId, 1);
 					}
 				}
 

@@ -86,8 +86,10 @@
             android:label="@string/title_frame_editor"
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
-            android:name=".activity.NarrativePlayerActivity"
-            android:label="@string/title_playback" />
+            android:name=".activity.PlaybackActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_playback"
+            android:theme="@style/fullscreen_theme" />
         <activity
             android:name=".activity.SaveNarrativeActivity"
             android:excludeFromRecents="true"

@@ -22,7 +22,6 @@ package ac.robinson.mediaphone.provider;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import ac.robinson.mediaphone.MediaPhone;
 import ac.robinson.mediaphone.R;
@@ -36,10 +35,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.Paint.Align;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
@@ -55,8 +54,6 @@ public class FrameItem implements BaseColumns {
 
 	public static final String[] PROJECTION_ALL = new String[] { FrameItem._ID, FrameItem.INTERNAL_ID,
 			FrameItem.PARENT_ID, FrameItem.SEQUENCE_ID, FrameItem.DATE_CREATED, FrameItem.DELETED };
-
-	public static final String[] PROJECTION_SEQEUENCE_ID = new String[] { FrameItem.SEQUENCE_ID };
 
 	public static final String[] PROJECTION_INTERNAL_ID = new String[] { FrameItem.INTERNAL_ID };
 
@@ -147,14 +144,15 @@ public class FrameItem implements BaseColumns {
 	}
 
 	/**
-	 * Get existing text content if it exists
+	 * Get existing text content if it exists. Note: does <b>not</b> include links.
 	 * 
 	 * @param contentResolver
 	 * @param parentInternalId The internal ID of the frame to search within
 	 * @return The internal ID of the text content, or null if none exists
 	 */
 	public static String getTextContentId(ContentResolver contentResolver, String parentInternalId) {
-		ArrayList<MediaItem> frameComponents = MediaManager.findMediaByParentId(contentResolver, parentInternalId);
+		ArrayList<MediaItem> frameComponents = MediaManager.findMediaByParentId(contentResolver, parentInternalId,
+				false);
 		for (MediaItem media : frameComponents) {
 			if (media.getType() == MediaPhoneProvider.TYPE_TEXT) {
 				return media.getInternalId();
@@ -164,14 +162,15 @@ public class FrameItem implements BaseColumns {
 	}
 
 	/**
-	 * Get existing image content if it exists
+	 * Get existing image content if it exists. Note: does <b>not</b> include links.
 	 * 
 	 * @param contentResolver
 	 * @param parentInternalId The internal ID of the frame to search within
 	 * @return The internal ID of the image content, or null if none exists
 	 */
 	public static String getImageContentId(ContentResolver contentResolver, String parentInternalId) {
-		ArrayList<MediaItem> frameComponents = MediaManager.findMediaByParentId(contentResolver, parentInternalId);
+		ArrayList<MediaItem> frameComponents = MediaManager.findMediaByParentId(contentResolver, parentInternalId,
+				false);
 		for (MediaItem media : frameComponents) {
 			switch (media.getType()) {
 				case MediaPhoneProvider.TYPE_IMAGE_BACK:
@@ -222,9 +221,7 @@ public class FrameItem implements BaseColumns {
 		int iconHeight = res.getDimensionPixelSize(R.dimen.frame_icon_height);
 
 		// load the image icon and prepare the other media items
-		Iterator<MediaItem> iterator = frameComponents.iterator();
-		while (iterator.hasNext()) {
-			MediaItem currentItem = iterator.next();
+		for (MediaItem currentItem : frameComponents) {
 			int currentType = currentItem.getType();
 
 			if (!imageLoaded

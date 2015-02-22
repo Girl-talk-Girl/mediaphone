@@ -24,7 +24,6 @@ import ac.robinson.mediaphone.BrowserActivity;
 import ac.robinson.mediaphone.MediaPhone;
 import ac.robinson.mediaphone.R;
 import ac.robinson.mediaphone.provider.FrameAdapter;
-import ac.robinson.mediaphone.provider.MediaPhoneProvider;
 import ac.robinson.mediaphone.provider.NarrativeAdapter;
 import ac.robinson.mediaphone.provider.NarrativeItem;
 import ac.robinson.mediaphone.provider.NarrativesManager;
@@ -73,7 +72,6 @@ public class TemplateBrowserActivity extends BrowserActivity {
 	private boolean mFingerUp = true;
 
 	private View mFrameAdapterEmptyView = null;
-	private String mNewNarrativeInternalId = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -356,10 +354,8 @@ public class TemplateBrowserActivity extends BrowserActivity {
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			// sometimes we get the event without the view (they released at the last minute?)
 			if (view != null && parent != null) {
-				mNewNarrativeInternalId = MediaPhoneProvider.getNewInternalId();
 				runQueuedBackgroundTask(getNarrativeTemplateRunnable(
-						((FrameAdapter) ((HorizontalListView) parent).getAdapter()).getParentFilter(),
-						mNewNarrativeInternalId, false));
+						((FrameAdapter) ((HorizontalListView) parent).getAdapter()).getParentFilter(), false));
 			}
 		}
 	}
@@ -383,7 +379,7 @@ public class TemplateBrowserActivity extends BrowserActivity {
 				builder.setTitle(R.string.template_actions);
 				// builder.setMessage(R.string.edit_template_hint);
 				builder.setIcon(android.R.drawable.ic_dialog_info);
-				builder.setNegativeButton(android.R.string.cancel, null);
+				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setItems(items, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int item) {
@@ -396,7 +392,7 @@ public class TemplateBrowserActivity extends BrowserActivity {
 								builder.setTitle(R.string.delete_template_confirmation);
 								builder.setMessage(R.string.delete_template_hint);
 								builder.setIcon(android.R.drawable.ic_dialog_alert);
-								builder.setNegativeButton(android.R.string.cancel, null);
+								builder.setNegativeButton(R.string.button_cancel, null);
 								builder.setPositiveButton(R.string.button_delete,
 										new DialogInterface.OnClickListener() {
 											@Override
@@ -410,15 +406,13 @@ public class TemplateBrowserActivity extends BrowserActivity {
 														R.string.delete_template_succeeded);
 											}
 										});
-								AlertDialog alert = builder.create();
-								alert.show();
+								builder.show();
 								break;
 						}
 						dialog.dismiss();
 					}
 				});
-				AlertDialog alert = builder.create();
-				alert.show();
+				builder.show();
 			}
 			return true;
 		}

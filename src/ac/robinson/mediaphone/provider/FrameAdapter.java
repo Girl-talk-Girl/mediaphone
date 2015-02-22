@@ -46,7 +46,7 @@ import android.widget.ProgressBar;
 
 public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 
-	//TODO: switch to Loader like in NarrativeAdapter (and load these at query time)
+	// TODO: switch to Loader like in NarrativeAdapter (and load these at query time)
 	private final int mInternalIdIndex;
 	private final int mParentIdIndex;
 
@@ -183,7 +183,7 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 
 		final CrossFadeDrawable transition = new CrossFadeDrawable(mDefaultIconBitmap, null);
 		transition.setCallback(view);
-		transition.setCrossFadeEnabled(true);
+		transition.setCrossFadeEnabled(false);
 		holder.transition = transition;
 
 		return view;
@@ -199,7 +199,7 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 
 		if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId)
 				|| FrameItem.KEY_FRAME_ID_END.equals(holder.frameInternalId)) {
-			holder.display.setImageResource(R.drawable.ic_menu_add);
+			holder.display.setImageResource(R.drawable.ic_narratives_add);
 			// holder.display.setBackgroundResource(R.drawable.button_white_small);
 			holder.loader.setVisibility(View.GONE);
 			holder.queryIcon = false;

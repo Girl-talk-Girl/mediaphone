@@ -54,6 +54,7 @@
     <integer name="camera_jpeg_save_quality">80</integer>
     <integer name="camera_autofocus_interval">0</integer> <!-- 0 to disable; 1500 is good normally -->
     <string name="camera_shutter_sound_path">file:///system/media/audio/ui/camera_click.ogg</string>
+
     <integer name="camera_icon_rotation_duration">200</integer>
     <integer name="camera_rotate_image_icon_rotation_duration">800</integer>
 
@@ -64,6 +65,7 @@
     <dimen name="audio_preview_icon_padding">10dp</dimen>
 
     <!-- UI parameters -->
+    <integer name="animation_span_frames_button_duration">10</integer>
     <integer name="animation_fade_transition_duration">175</integer>
     <integer name="animation_icon_show_delay">350</integer>
     <integer name="animation_icon_refresh_delay">250</integer>
@@ -156,7 +158,6 @@
     <string name="extra_internal_id">internal_id</string>
     <string name="extra_parent_id">parent_id</string>
     <string name="extra_media_edited">media_edited</string>
-    <string name="extra_insert_before_id">insert_before_id</string>
     <string name="extra_insert_after_id">insert_after_id</string>
     <string name="extra_switched_frames">switched_frames</string>
     <string name="extra_external_chooser_shown">external_chooser_shown</string>
@@ -165,19 +166,23 @@
     <string name="extra_playback_offset">playback_offset</string>
     <string name="extra_playback_non_audio_offset">playback_non_audio_offset</string>
     <string name="extra_switch_to_landscape_camera">switch_to_landscape_camera</string>
+    <string name="extra_start_recording_audio">start_recording_audio</string>
+    <string name="extra_prevent_frame_spanning">prevent_frame_spanning</string>
     <string name="extra_start_scrolled_to_end">start_scrolled_to_end</string>
 
     <!-- layout related -->
     <dimen name="button_padding">5dp</dimen>
     <dimen name="navigation_button_height">60dp</dimen>
-    <dimen name="media_controller_height">100dp</dimen>
+    <dimen name="media_controller_height">90dp</dimen> <!-- TODO: remove after moving to PlaybackController fully -->
     <dimen name="add_narrative_button_size">40dp</dimen>
     <dimen name="add_narrative_button_padding">4dp</dimen>
     <dimen name="add_narrative_button_text_size">20sp</dimen>
     <dimen name="button_text">22sp</dimen>
     <dimen name="edit_text">22sp</dimen>
     <dimen name="audio_status_text">32sp</dimen>
-    <dimen name="playback_text">32sp</dimen>
+    <dimen name="playback_maximum_text_size">32sp</dimen>
+    <dimen name="playback_minimum_text_size">12sp</dimen> <!-- from http://developer.android.com/design/style/typography.html -->
+
 
     <!-- percentage of the frame editor image button's height, so the image doesn't overlap the edge of the button -->
     <item name="image_button_fill_percentage" format="float" type="attr">0.9</item>

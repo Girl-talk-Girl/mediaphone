@@ -11,6 +11,9 @@
     <string name="html_feature_coming_soon">Coming soon — HTML import</string>
 
     <!-- defaults/generic -->
+    <string name="button_ok">OK</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
     <string name="button_delete">Delete</string>
     <string name="button_continue">Continue</string>
     <string name="current_value_as_sentence">Current: %1$s.</string>
@@ -27,7 +30,8 @@
     <string name="import_file">Import</string>
     <string name="import_progress">Processing new narrative files…</string>
     <string name="import_finished">Successfully imported new narrative files</string>
-    <string name="mov_export_mov_incompatible">This narrative contains audio that is incompatible with MOV files (currently M4A, MP3, AMR and WAV are supported). This audio will not be included in the video. Continue exporting?</string>
+    <string name="mov_export_mov_incompatible_title">Warning</string>
+    <string name="mov_export_mov_incompatible_summary">This narrative contains audio that is incompatible with MOV files (currently M4A, MP3, AMR and WAV are supported). This audio will not be included in the video. Continue exporting?</string>
     <string name="mov_export_task_progress">Creating video file – this may take some time…</string>
     <string name="mov_export_run_in_background">Run in background</string>
     <string name="mov_export_task_complete">Video creation completed</string>
@@ -67,6 +71,9 @@
     <string name="delete_text_hint">All the text on this frame will be permanently deleted</string>
     <string name="delete_text_succeeded">The text has been deleted</string>
     <string name="split_text_add_content">Please add text before creating a new frame</string>
+    <string name="span_text_add_content">Please add text before spanning to other frames</string>
+    <string name="span_text_multiple_frames">This text will now show on all frames after this one, up to the next frame with text</string>
+    <string name="span_text_single_frame">This text will now show on this frame only</string>
 
     <!-- image editor -->
     <string name="error_loading_image_editor">Error loading image editor – please try again</string>
@@ -83,6 +90,9 @@
     <string name="delete_image_hint">The image will be permanently deleted</string>
     <string name="delete_image_succeeded">The image has been deleted</string>
     <string name="split_image_add_content">Please add an image before creating a new frame</string>
+    <string name="span_image_add_content">Please add an image before spanning to other frames</string>
+    <string name="span_image_multiple_frames">This image will now show on all frames after this one, up to the next frame with an image</string>
+    <string name="span_image_single_frame">This image will now show on this frame only</string>
 
     <!-- audio editor -->
     <string name="error_loading_audio_editor">Error loading sound editor – please try again</string>
@@ -99,6 +109,9 @@
     <string name="delete_audio_succeeded">The sound has been deleted</string>
     <string name="split_audio_add_content">Please record audio before creating a new frame</string>
     <string name="retake_audio_forbidden">Sorry, this audio is in a format that cannot be edited. To replace it, please delete the current recording first</string>
+    <string name="span_audio_add_content">Please record audio before spanning to other frames</string>
+    <string name="span_audio_multiple_frames">This audio will now play over all frames after this one, up to the next frame with audio</string>
+    <string name="span_audio_single_frame">This audio will now play on this frame only</string>
 
     <!-- frame editor -->
     <string name="error_loading_frame_editor">Error loading frame editor – please try again</string>
@@ -113,6 +126,14 @@
     <string name="delete_narrative_confirmation">Delete narrative?</string>
     <string name="delete_narrative_hint">The narrative this frame belongs to will be permanently deleted</string>
     <string name="delete_narrative_second_confirmation">Please confirm</string>
+    <string name="span_media_edit_image_title">Edit image</string>
+    <string name="span_media_edit_image">This image is from another frame – would you like to add a new image here, or edit the original?</string>
+    <string name="span_media_edit_audio_title">Edit audio</string>
+    <string name="span_media_edit_audio">This audio is from another frame – would you like to add new audio here, or edit the original?</string>
+    <string name="span_media_edit_text_title">Edit text</string>
+    <string name="span_media_edit_text">This text is from another frame – would you like to add new text here, or edit the original?</string>
+    <string name="span_media_edit_original">Edit original</string>
+    <string name="span_media_add_new">Add new</string>
 
     <plurals name="delete_narrative_second_hint">
         <item quantity="one">The entire narrative (one frame) will be permanently deleted</item>
@@ -148,7 +169,7 @@
     <string name="title_audio">Add sounds</string>
     <string name="title_text">Add text</string>
     <string name="title_template_browser">Open a template</string>
-    <string name="title_playback">Narrative playing</string>
+    <string name="title_playback">Narrative player</string>
     <string name="title_save_locally">Save to SD card</string>
     <string name="title_preferences">Settings</string>
     <string name="title_select_import_directory">Select the import directory</string>
@@ -168,9 +189,9 @@
     <string name="preferences_audio_bitrate_summary">Try changing if you have audio recording problems. Higher quality causes slower export</string>
     <string name="preferences_playback_export">Playback and export</string>
     <string name="preferences_minimum_frame_duration_title">Frame duration</string>
-    <string name="preferences_minimum_frame_duration_summary">Minimum duration for each frame. Double tap here to reset to default</string>
+    <string name="preferences_minimum_frame_duration_summary">Default duration for each frame. Double tap here to reset</string>
     <string name="preferences_word_duration_title">Word duration</string>
-    <string name="preferences_word_duration_summary">Minimum duration for each word of text. Double tap here to reset to default</string>
+    <string name="preferences_word_duration_summary">Default duration for each word of text. Double tap here to reset</string>
     <string name="preferences_import">Import</string>
     <string name="preferences_watch_for_files_title">Scan for new narratives</string>
     <string name="preferences_watch_for_files_summary_off">Narratives sent via Bluetooth will not be imported automatically; you can import via the \'Scan and Import\' menu option</string>
@@ -221,6 +242,7 @@
     <string name="menu_delete_narrative">Delete narrative</string>
     <string name="menu_previous_frame">Previous frame</string>
     <string name="menu_next_frame">Next frame</string>
+    <string name="menu_edit_frame">Edit frame</string>
     <string name="menu_back_without_editing">Back</string>
     <string name="menu_finished_editing">Done</string>
     <string name="menu_add_frame">Add frame after</string>

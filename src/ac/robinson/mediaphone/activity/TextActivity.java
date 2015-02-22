@@ -55,8 +55,6 @@ public class TextActivity extends MediaPhoneActivity {
 
 	private String mMediaItemInternalId = null;
 	private boolean mHasEditedMedia = false;
-	private boolean mShowOptionsMenu = false;
-	private boolean mSwitchedFrames = false;
 
 	private EditText mEditText;
 
@@ -71,14 +69,11 @@ public class TextActivity extends MediaPhoneActivity {
 
 		mEditText = (EditText) findViewById(R.id.text_view);
 		mMediaItemInternalId = null;
-		mShowOptionsMenu = false;
-		mSwitchedFrames = false;
 
 		// load previous state on screen rotation
 		if (savedInstanceState != null) {
 			mMediaItemInternalId = savedInstanceState.getString(getString(R.string.extra_internal_id));
 			mHasEditedMedia = savedInstanceState.getBoolean(getString(R.string.extra_media_edited));
-			mSwitchedFrames = savedInstanceState.getBoolean(getString(R.string.extra_switched_frames));
 			if (mHasEditedMedia) {
 				setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
 			}
@@ -92,26 +87,13 @@ public class TextActivity extends MediaPhoneActivity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		savedInstanceState.putString(getString(R.string.extra_internal_id), mMediaItemInternalId);
 		savedInstanceState.putBoolean(getString(R.string.extra_media_edited), mHasEditedMedia);
-		savedInstanceState.putBoolean(getString(R.string.extra_switched_frames), mSwitchedFrames);
 		super.onSaveInstanceState(savedInstanceState);
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus) {
-			if (mShowOptionsMenu) {
-				mShowOptionsMenu = false;
-				openOptionsMenu();
-			}
-			registerForSwipeEvents(); // here to avoid crashing due to double-swiping
-		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// we want to get notifications when the text is changed (but after adding existing text)
+		// we want to get notifications when the text is changed (but after adding existing text in onCreate)
 		mEditText.addTextChangedListener(mTextWatcher);
 	}
 
@@ -126,7 +108,7 @@ public class TextActivity extends MediaPhoneActivity {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			if (!mHasEditedMedia) {
-				mHasEditedMedia = true; // so the action bar refreshes to the correct icon
+				mHasEditedMedia = true; // so we keep the same icon on rotation
 				setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
 			}
 			mHasEditedMedia = true;
@@ -151,7 +133,48 @@ public class TextActivity extends MediaPhoneActivity {
 
 		final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
 		if (textMediaItem != null) {
-			saveCurrentText(textMediaItem);
+			// check whether we need to save the text or delete the media item (if empty)
+			final Editable mediaText = mEditText.getText();
+			if (!TextUtils.isEmpty(mediaText)) {
+				if (mHasEditedMedia) {
+
+					// update the text duration if not user-set (note negative value)
+					if (textMediaItem.getDurationMilliseconds() <= 0) {
+						textMediaItem.setDurationMilliseconds(-MediaItem.getTextDurationMilliseconds(mediaText
+								.toString()));
+						MediaManager.updateMedia(getContentResolver(), textMediaItem);
+					}
+
+					Runnable textUpdateRunnable = new Runnable() {
+						@Override
+						public void run() {
+							// save the current text
+							FileOutputStream fileOutputStream = null;
+							try {
+								fileOutputStream = new FileOutputStream(textMediaItem.getFile());
+								fileOutputStream.write(mediaText.toString().getBytes());
+								// fileOutputStream.flush(); // does nothing in FileOutputStream
+							} catch (Throwable t) {
+								// no need to update the icon - nothing has changed
+							} finally {
+								IOUtilities.closeStream(fileOutputStream);
+							}
+						}
+					};
+
+					// update this frame's icon with the new text; propagate to following frames if applicable
+					updateMediaFrameIcons(textMediaItem, textUpdateRunnable);
+				}
+			} else {
+				// delete the media item
+				textMediaItem.setDeleted(true);
+				MediaManager.updateMedia(getContentResolver(), textMediaItem);
+
+				// we've been deleted - propagate changes to our parent frame and any following frames
+				inheritMediaAndDeleteItemLinks(textMediaItem.getParentId(), textMediaItem, null);
+			}
+
+			// save the id of the frame we're part of so that the frame editor gets notified
 			saveLastEditedFrame(textMediaItem.getParentId());
 		}
 
@@ -179,24 +202,29 @@ public class TextActivity extends MediaPhoneActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		setupMenuNavigationButtonsFromMedia(inflater, menu, getContentResolver(), mMediaItemInternalId, mHasEditedMedia);
+		createMediaMenuNavigationButtons(inflater, menu, mHasEditedMedia);
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		final int itemId = item.getItemId();
-		switch (itemId) {
-			case R.id.menu_previous_frame:
-			case R.id.menu_next_frame:
-				performSwitchFrames(itemId, true);
-				return true;
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		prepareMediaMenuNavigationButtons(menu, mMediaItemInternalId);
+		return super.onPrepareOptionsMenu(menu);
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
 			case R.id.menu_add_frame:
 				final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
 						mMediaItemInternalId);
-				if (textMediaItem != null && saveCurrentText(textMediaItem)) {
-					runQueuedBackgroundTask(getFrameSplitterRunnable(mMediaItemInternalId));
+				if (textMediaItem != null && !TextUtils.isEmpty(mEditText.getText())) {
+					final String newFrameId = insertFrameAfterMedia(textMediaItem);
+					final Intent addTextIntent = new Intent(TextActivity.this, TextActivity.class);
+					addTextIntent.putExtra(getString(R.string.extra_parent_id), newFrameId);
+					startActivity(addTextIntent);
+
+					onBackPressed();
 				} else {
 					UIUtilities.showToast(TextActivity.this, R.string.split_text_add_content);
 				}
@@ -240,8 +268,6 @@ public class TextActivity extends MediaPhoneActivity {
 			final Intent intent = getIntent();
 			if (intent != null) {
 				parentInternalId = intent.getStringExtra(getString(R.string.extra_parent_id));
-				mShowOptionsMenu = intent.getBooleanExtra(getString(R.string.extra_show_options_menu), false);
-				mSwitchedFrames = intent.getBooleanExtra(getString(R.string.extra_switched_frames), false);
 			}
 			if (parentInternalId == null) {
 				UIUtilities.showToast(TextActivity.this, R.string.error_loading_text_editor);
@@ -250,7 +276,7 @@ public class TextActivity extends MediaPhoneActivity {
 				return;
 			}
 
-			// get existing content if it exists
+			// get existing content if it exists (ignores links)
 			mMediaItemInternalId = FrameItem.getTextContentId(contentResolver, parentInternalId);
 
 			// add a new media item if it doesn't already exist
@@ -265,11 +291,14 @@ public class TextActivity extends MediaPhoneActivity {
 		// load any existing text
 		final MediaItem textMediaItem = MediaManager.findMediaByInternalId(contentResolver, mMediaItemInternalId);
 		if (textMediaItem != null) {
-			if (TextUtils.isEmpty(mEditText.getText().toString())) { // don't delete existing (i.e. changed) content
+			updateSpanFramesButtonIcon(R.id.button_toggle_mode_text, textMediaItem.getSpanFrames(), false);
+
+			if (TextUtils.isEmpty(mEditText.getText())) { // don't delete existing (i.e. changed) content
 				mEditText.setText(IOUtilities.getFileContents(textMediaItem.getFile().getAbsolutePath()).toString());
 			}
 			// show the keyboard as a further hint (below Honeycomb it is automatic)
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { // TODO: improve these keyboard manipulations
+			// TODO: improve/remove these keyboard manipulations
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				try {
 					InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 					manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
@@ -285,6 +314,7 @@ public class TextActivity extends MediaPhoneActivity {
 		}
 	}
 
+<<<<<<< HEAD
 	private boolean saveCurrentText(MediaItem textMediaItem) {
 		String mediaText = mEditText.getText().toString();
 		if (!TextUtils.isEmpty(mediaText)) {
@@ -346,6 +376,8 @@ public class TextActivity extends MediaPhoneActivity {
 		return performSwitchFrames(R.id.menu_previous_frame, false);
 	}
 
+=======
+>>>>>>> long-running-media
 	public void handleButtonClicks(View currentButton) {
 		if (!verifyButtonClick(currentButton)) {
 			return;
@@ -356,12 +388,30 @@ public class TextActivity extends MediaPhoneActivity {
 				onBackPressed();
 				break;
 
+			case R.id.button_toggle_mode_text:
+				// TODO: only relevant for text, but if they update text, set spanning, then update text again we end up
+				// updating all following frame icons twice, which is unnecessary. Could track whether they've entered
+				// text after toggling frame spanning, but this may be overkill for a situation that rarely happens?
+				final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+						mMediaItemInternalId);
+				if (textMediaItem != null && !TextUtils.isEmpty(mEditText.getText())) {
+					mHasEditedMedia = true; // so we update/inherit on exit and show the media edited icon
+					setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
+					boolean frameSpanning = toggleFrameSpanningMedia(textMediaItem);
+					updateSpanFramesButtonIcon(R.id.button_toggle_mode_text, frameSpanning, true);
+					UIUtilities.showToast(TextActivity.this, frameSpanning ? R.string.span_text_multiple_frames
+							: R.string.span_text_single_frame);
+				} else {
+					UIUtilities.showToast(TextActivity.this, R.string.span_text_add_content);
+				}
+				break;
+
 			case R.id.button_delete_text:
 				final AlertDialog.Builder builder = new AlertDialog.Builder(TextActivity.this);
 				builder.setTitle(R.string.delete_text_confirmation);
 				builder.setMessage(R.string.delete_text_hint);
 				builder.setIcon(android.R.drawable.ic_dialog_alert);
-				builder.setNegativeButton(android.R.string.cancel, null);
+				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
@@ -370,8 +420,7 @@ public class TextActivity extends MediaPhoneActivity {
 						onBackPressed();
 					}
 				});
-				final AlertDialog alert = builder.create();
-				alert.show();
+				builder.show();
 				break;
 		}
 	}

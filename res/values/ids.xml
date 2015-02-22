@@ -16,9 +16,8 @@
     <item name="export_save_sd_succeeded" type="id"/>
     <item name="export_save_sd_failed" type="id"/>
     <item name="export_save_sd_file_exists" type="id"/>
-    <item name="split_frame_task_complete" type="id"/>
     <item name="audio_switch_to_playback_task_complete" type="id"/>
-    <item name="audio_switch_frame_task_complete" type="id"/>
+    <item name="audio_add_frame_after_task_complete" type="id"/>
     <item name="make_load_template_task_complete" type="id"/>
     <item name="import_external_media_succeeded" type="id"/>
     <item name="import_external_media_failed" type="id"/>
@@ -45,14 +44,13 @@
 
 
     <!-- results -->
-    <item name="result_audio_ok_exit" type="id"/>
-    <item name="result_audio_cancelled_exit" type="id"/>
     <item name="result_narrative_deleted_exit" type="id"/>
 
     <!-- uris -->
     <item name="uri_narratives" type="id"/>
     <item name="uri_frames" type="id"/>
     <item name="uri_media" type="id"/>
+    <item name="uri_media_links" type="id"/>
     <item name="uri_templates" type="id"/>
 
     <!-- loader results -->

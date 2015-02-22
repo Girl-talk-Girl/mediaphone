@@ -36,6 +36,9 @@ public class MediaPhone {
 	public static final String EXTENSION_PHOTO_FILE = "jpg"; // TODO: check Camera.Parameters for proper file format?
 	public static final String EXTENSION_AUDIO_FILE = (DebugUtilities.supportsAMRAudioRecordingOnly() ? "3gp" : "m4a");
 	public static final String EXTENSION_TEXT_FILE = "txt";
+	
+	//the number of audio items to allow per frame - note that if this is changed, layouts need updating too
+	public static final int MAX_AUDIO_ITEMS = 3;
 
 	// we can pause/resume recording in either AAC (M4A) or AMR (3GP) formats - get extensions from MediaUtilities
 	public static String[] EDITABLE_AUDIO_EXTENSIONS = {};
