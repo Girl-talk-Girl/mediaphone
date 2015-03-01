@@ -43,6 +43,8 @@
 	<color name="export_text_background">@color/frame_icon_text_background</color>
 
 	<!-- coloured buttons -->
+	<color name="button_default">@color/button_yellow_default</color>
+	<color name="button_touched">@color/button_yellow_touched</color>
 	<color name="button_red_default">#fff44336</color>
 	<color name="button_red_touched">#fff44336</color>
 	<color name="button_yellow_default">#fff06292</color>

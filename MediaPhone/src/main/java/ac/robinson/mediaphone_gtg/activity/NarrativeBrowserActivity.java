@@ -192,6 +192,9 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			case R.id.menu_add_narrative:
 				addNarrative();
 				return true;
+			case R.id.menu_resources:
+				startActivity(new Intent(NarrativeBrowserActivity.this, ResourcesChooserActivity.class));
+				return true;
 			case R.id.menu_scan_imports:
 				importNarratives();
 				return true;

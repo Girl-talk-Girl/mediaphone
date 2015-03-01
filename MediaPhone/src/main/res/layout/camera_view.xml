@@ -58,14 +58,18 @@
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
-			android:drawableTop="@drawable/ic_menu_back"/>
+			android:drawableTop="@drawable/ic_menu_back"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_toggle_mode_picture"
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
-			android:drawableTop="@drawable/ic_menu_span_frames_off"/>
+			android:drawableTop="@drawable/ic_menu_span_frames_off"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_delete_picture"
@@ -115,21 +119,27 @@
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
-			android:drawableTop="@drawable/ic_menu_back"/>
+			android:drawableTop="@drawable/ic_menu_back"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_import_image"
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
-			android:drawableTop="@drawable/ic_menu_import_picture"/>
+			android:drawableTop="@drawable/ic_menu_import_picture"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_take_picture"
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
-			android:drawableTop="@drawable/ic_menu_take_picture"/>
+			android:drawableTop="@drawable/ic_menu_take_picture"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 	</LinearLayout>
 
 </RelativeLayout>

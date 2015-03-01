@@ -171,6 +171,7 @@
 	<string name="title_playback">Narrative player</string>
 	<string name="title_save_locally">Save to SD card</string>
 	<string name="title_preferences">Settings</string>
+	<string name="title_resources">Resources</string>
 	<string name="title_select_import_directory">Select the import directory</string>
 
 	<!-- preferences -->
@@ -237,6 +238,7 @@
 	<!-- menu items -->
 	<string name="menu_new_narrative">New narrative</string>
 	<string name="menu_scan_imports">Scan and import</string>
+	<string name="menu_resources">Resources</string>
 	<string name="menu_make_template">Make template</string>
 	<string name="menu_delete_narrative">Delete narrative</string>
 	<string name="menu_previous_frame">Previous frame</string>
@@ -248,5 +250,14 @@
 	<string name="menu_play_narrative">Play / export</string>
 	<string name="menu_export">Export</string>
 	<string name="menu_preferences" translatable="false">@string/title_preferences</string>
+
+	<!-- gtg-resources -->
+	<string name="resources_title_1">Girl-talk-Girl Project</string>
+	<string name="resources_title_2">GBV Links</string>
+	<string name="resources_title_3">GBV Facts Worldwide</string>
+	<string name="resources_title_4">GBV Glossaries</string>
+	<string name="resources_title_5">GBV Story Ideas</string>
+	<string name="resources_title_6">Story Making Links</string>
+	<string name="resources_title_7">Safe Routes</string>
 
 </resources>

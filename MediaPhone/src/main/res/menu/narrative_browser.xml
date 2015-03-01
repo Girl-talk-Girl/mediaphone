@@ -10,6 +10,15 @@
 		android:title="@string/menu_new_narrative"
 		app:showAsAction="always|withText"
 		tools:ignore="AlwaysShowAction,AppCompatResource,UnusedAttribute"/>
+
+	<!-- using always is ok as we use never below -->
+	<item
+		android:id="@+id/menu_resources"
+		android:showAsAction="never"
+		android:title="@string/menu_resources"
+		app:showAsAction="never"
+		tools:ignore="AppCompatResource,UnusedAttribute"/>
+
 	<!-- using always is ok as we use never below -->
 	<item
 		android:id="@+id/menu_scan_imports"

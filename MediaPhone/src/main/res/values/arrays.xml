@@ -4,7 +4,7 @@
 	<!-- TODO: remember to update values-v11 at the same time -->
 
 	<!-- screen orientation preference -->
-	<string-array name="preferences_orientation_entries">
+	<string-array name="preferences_orientation_entries" translatable="false">
 		<item>System default</item>
 		<item>Portrait</item>
 		<item>Landscape</item>
@@ -12,7 +12,7 @@
 	</string-array>
 
 	<!-- screen orientation preference -->
-	<string-array name="preferences_orientation_values">
+	<string-array name="preferences_orientation_values" translatable="false">
 		<item>-1</item>
 		<item>1</item>
 		<item>0</item>
@@ -20,14 +20,14 @@
 	</string-array>
 
 	<!-- audio recording bitrate preference -->
-	<string-array name="preferences_audio_bitrate_entries">
+	<string-array name="preferences_audio_bitrate_entries" translatable="false">
 		<item>Low</item>
 		<item>Medium</item>
 		<item>High</item>
 	</string-array>
 
 	<!-- audio recording bitrate preference -->
-	<string-array name="preferences_audio_bitrate_values">
+	<string-array name="preferences_audio_bitrate_values" translatable="false">
 		<item>8000</item>
 		<item>22050</item>
 		<item>44100</item>

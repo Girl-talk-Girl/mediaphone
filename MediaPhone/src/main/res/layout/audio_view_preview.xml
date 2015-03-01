@@ -16,14 +16,18 @@
 			android:layout_width="0dp"
 			android:layout_weight="1"
 			android:drawableTop="@drawable/ic_menu_back"
-			android:visibility="gone"/>
+			android:visibility="gone"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_toggle_mode_audio"
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
-			android:drawableTop="@drawable/ic_menu_span_frames_off"/>
+			android:drawableTop="@drawable/ic_menu_span_frames_off"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_delete_audio"
