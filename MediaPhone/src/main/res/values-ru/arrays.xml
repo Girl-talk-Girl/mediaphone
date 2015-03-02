@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- screen orientation preference -->
+	<string-array name="preferences_orientation_entries">
+		<item>Системные настройки по умолчанию</item>
+		<item>Вертикальный</item>
+		<item>Горизонтальный</item>
+		<item>Поворот экрана</item>
+	</string-array>
+
+</resources>

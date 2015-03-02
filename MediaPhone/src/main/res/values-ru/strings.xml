@@ -168,7 +168,7 @@
 	<string name="title_playback">Проигрыватель истории</string>
 	<string name="title_save_locally">Сохранить на SD-карту</string>
 	<string name="title_preferences">Параметры настройки</string>
-	<string name="title_resources">Resources</string>
+	<string name="title_resources">Ресурсы</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->
@@ -230,7 +230,7 @@
 	<!--menu items-->
 	<string name="menu_new_narrative">Новая история</string>
 	<string name="menu_scan_imports">Сканирование и импорт</string>
-	<string name="menu_resources">Resources</string>
+	<string name="menu_resources">Ресурсы</string>
 	<string name="menu_make_template">Создать шаблон</string>
 	<string name="menu_delete_narrative">Удалить историю</string>
 	<string name="menu_previous_frame">Предыдущая рамка</string>
