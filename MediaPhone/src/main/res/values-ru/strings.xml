@@ -245,6 +245,7 @@
 	<string name="menu_export">Экспортировать</string>
 
 	<!-- gtg-resources -->
+	<string name="error_loading_resource">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
 	<string name="resources_title_1">Проект Girl-talk-Girl</string>
 	<string name="resources_title_2">Ресурсы по ГН</string>
 	<string name="resources_title_3">GBV Facts Worldwide</string>
@@ -252,5 +253,5 @@
 	<string name="resources_title_5">Идеи для историй о ГН</string>
 	<string name="resources_title_6">Линки для создания истории</string>
 	<string name="resources_title_7">Безопасные маршруты</string>
-	<string name="error_loading_resource">Error</string>
+
 </resources>
