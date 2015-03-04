@@ -18,7 +18,7 @@
 	</string-array>
 
 	<!-- audio recording bitrate preference -->
-	<string-array name="preferences_audio_bitrate_entries" translatable="false">
+	<string-array name="preferences_audio_bitrate_entries">
 		<item>Low</item>
 		<item>Medium</item>
 		<item>High</item>

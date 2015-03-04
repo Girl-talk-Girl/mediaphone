@@ -17,6 +17,8 @@
 	<string name="current_value_as_sentence">Текущий: %1$s.</string>
 	<string name="frame_image_description">Изображение для данной рамки</string>
 	<string name="frame_image_action_description">Визуальная репрезентация текущего действия данной рамкой</string>
+	<string name="seconds">секунды</string>
+	<string name="version">версия</string>
 
 	<!--background tasks-->
 	<string name="background_task_progress">Пожалуйста подождите…</string>
@@ -250,4 +252,5 @@
 	<string name="resources_title_5">Идеи для историй о ГН</string>
 	<string name="resources_title_6">Линки для создания истории</string>
 	<string name="resources_title_7">Безопасные маршруты</string>
+	<string name="error_loading_resource">Error</string>
 </resources>

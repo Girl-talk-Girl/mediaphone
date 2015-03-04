@@ -9,4 +9,11 @@
 		<item>Поворот экрана</item>
 	</string-array>
 
+	<!-- audio recording bitrate preference -->
+	<string-array name="preferences_audio_bitrate_entries">
+		<item>Низкое</item>
+		<item>Среднее</item>
+		<item>Высокое</item>
+	</string-array>
+
 </resources>
