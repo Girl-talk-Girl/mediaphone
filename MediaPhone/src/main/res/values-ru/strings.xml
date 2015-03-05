@@ -40,9 +40,9 @@
 
 	<!--export-->
 	<string name="export_narrative_title">Экспортировать данную историю</string>
-	<string name="export_mov">↑    Видео (поделиться, закачать, YouTube)</string>
-	<string name="export_html">↑    HTML (создать веб-страницу)</string>
-	<string name="export_smil">↑↓  SMIL (отправить в %1$ss)</string>
+	<string name="export_mov">&#x2191;&#160;&#160;&#160;&#160;Видео (поделиться, закачать, YouTube)</string>
+	<string name="export_html">&#x2191;&#160;&#160;&#160;&#160;HTML (создать веб-страницу)</string>
+	<string name="export_smil">&#x2191;&#x2193;&#160;&#160;SMIL (отправить в %1$ss)</string>
 	<string name="export_narrative_failed">Ошибка: сбой в процессе экспортирования — пожалуйста, повторите попытку</string>
 	<string name="export_missing_directory">Ошибка: временное хранилище не найдено – пожалуйста, убедитесь, что на вашем устройстве или SD-карте достаточно места</string>
 	<string name="export_potential_problem">Ошибка: SD-карта не найдена – на некоторых устройствах это может привести к проблемам экспортировки, и Вы можете столкнуться с проблемами при проигрывании истории</string>
@@ -133,12 +133,15 @@
 	<string name="span_media_edit_text">Этот текст из другой рамки – хотите добавить новый текст или редактировать оригинал?</string>
 	<string name="span_media_edit_original">Редактировать оригинал</string>
 	<string name="span_media_add_new">Добавить новый</string>
+	<string name="copy_frame_copied">The frame has been copied – add a new frame to paste</string>
+
 	<plurals name="delete_narrative_second_hint">
 		<item quantity="one">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
 		<item quantity="few">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
 		<item quantity="many">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
 		<item quantity="other">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
 	</plurals>
+
 	<string name="delete_narrative_succeeded">История была удалена</string>
 
 	<!--file errors-->
@@ -151,7 +154,10 @@
 	<string name="title_add">Добавить новую историю</string>
 	<string name="add_blank">Создайте новую историю</string>
 	<string name="add_template">Выберите шаблон истории</string>
-	<string name="narrative_list_empty">Нажмите кнопку + чтобы начать работу   ⇧</string>
+	<string name="title_add_frame">Add a new frame</string>
+	<string name="add_blank_frame">Create a new blank frame</string>
+	<string name="add_paste_frame">Paste the copied frame</string>
+	<string name="narrative_list_empty">Нажмите кнопку + чтобы начать работу&#160;&#160;&#160;&#x21E7;</string>
 	<string name="narrative_folder_not_found">Ошибка: не найдена исходная папка – пожалуйста, укажите директорию  импортирования в настройках</string>
 	<string name="narrative_import_not_found">История для импортирования не найдена – все файлы из SMIL экспорта должны быть помещены в директорию импортирования, выбранную в параметрах настроек  (в настоящее время %1$s)</string>
 
@@ -170,7 +176,8 @@
 	<string name="title_playback">Проигрыватель истории</string>
 	<string name="title_save_locally">Сохранить на SD-карту</string>
 	<string name="title_preferences">Параметры настройки</string>
-	<string name="title_resources">Ресурсы</string>
+	<string name="title_resources_english">Resources</string>
+	<string name="title_resources_russian">Ресурсы</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->
@@ -232,9 +239,11 @@
 	<!--menu items-->
 	<string name="menu_new_narrative">Новая история</string>
 	<string name="menu_scan_imports">Сканирование и импорт</string>
-	<string name="menu_resources">Ресурсы</string>
+	<string name="menu_resources_english">Ресурсы (English)</string>
+	<string name="menu_resources_russian">Ресурсы (Pусский)</string>
 	<string name="menu_make_template">Создать шаблон</string>
 	<string name="menu_delete_narrative">Удалить историю</string>
+	<string name="menu_copy_frame">Copy frame</string>
 	<string name="menu_previous_frame">Предыдущая рамка</string>
 	<string name="menu_next_frame">Следующая рамка</string>
 	<string name="menu_edit_frame">Редактирование рамки</string>
@@ -245,13 +254,20 @@
 	<string name="menu_export">Экспортировать</string>
 
 	<!-- gtg-resources -->
-	<string name="error_loading_resource">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
-	<string name="resources_title_1">Проект Girl-talk-Girl</string>
-	<string name="resources_title_2">Ресурсы по ГН</string>
-	<string name="resources_title_3">GBV Facts Worldwide</string>
-	<string name="resources_title_4">Глоссарий</string>
-	<string name="resources_title_5">Идеи для историй о ГН</string>
-	<string name="resources_title_6">Линки для создания истории</string>
-	<string name="resources_title_7">Безопасные маршруты</string>
+	<string name="error_loading_resource_english">Error: couldn\'t load the resource — please try again</string>
+	<string name="error_loading_resource_russian">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
+	<string name="resources_title_1_english">Girl-talk-Girl Project</string>
+	<string name="resources_title_2_english">GBV Links</string>
+	<string name="resources_title_3_english">GBV Facts Worldwide</string>
+	<string name="resources_title_4_english">GBV Glossaries</string>
+	<string name="resources_title_5_english">GBV Story Ideas</string>
+	<string name="resources_title_6_english">Story Making Links</string>
+	<string name="resources_title_7_english">Safe Routes</string>
+	<string name="resources_title_1_russian">Проект Girl-talk-Girl</string>
+	<string name="resources_title_2_russian">Ресурсы по ГН</string>
+	<string name="resources_title_3_russian">Глоссарий</string>
+	<string name="resources_title_4_russian">Идеи для историй о ГН</string>
+	<string name="resources_title_5_russian">Линки для создания истории</string>
+	<string name="resources_title_6_russian">Безопасные маршруты</string>
 
 </resources>

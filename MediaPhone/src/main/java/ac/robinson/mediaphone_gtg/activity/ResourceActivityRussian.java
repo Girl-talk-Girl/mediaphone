@@ -11,14 +11,12 @@ import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.UIUtilities;
 
-public class ResourceActivity extends MediaPhoneActivity {
-
-	private static final String INJECTION_TOKEN = "**injection**";
+public class ResourceActivityRussian extends MediaPhoneActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_resources, R.string.title_resources);
+		UIUtilities.configureActionBar(this, true, true, R.string.title_resources_russian, R.string.title_resources_russian);
 		setContentView(R.layout.resource_viewer);
 
 		final Intent intent = getIntent();
@@ -29,16 +27,15 @@ public class ResourceActivity extends MediaPhoneActivity {
 			try {
 				Resources res = getResources();
 				resourceString = IOUtilities.getFileContents(res.openRawResource(res.getIdentifier(String.format
-						("resource_%d", resourceId), "raw", getPackageName())));
+						("resource_%d_ru", resourceId), "raw", getPackageName())));
 			} catch (Exception e) {
 			}
 
 			WebView webView = (WebView) findViewById(R.id.resource_viewer_webview);
 			if (resourceString != null) {
 				webView.loadDataWithBaseURL(null, resourceString, "text/html", "utf-8", null);
-				//webView.loadUrl(String.format("file:///android_asset/resource_%d.html", resourceId));
 			} else {
-				webView.loadData(getString(R.string.error_loading_resource), "text/html", "utf-8");
+				webView.loadData(getString(R.string.error_loading_resource_russian), "text/html", "utf-8");
 			}
 		}
 	}

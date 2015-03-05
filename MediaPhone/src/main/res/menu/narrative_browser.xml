@@ -13,13 +13,19 @@
 
 	<!-- using always is ok as we use never below -->
 	<item
-		android:id="@+id/menu_resources"
+		android:id="@+id/menu_resources_english"
 		android:showAsAction="never"
-		android:title="@string/menu_resources"
+		android:title="@string/menu_resources_english"
 		app:showAsAction="never"
 		tools:ignore="AppCompatResource,UnusedAttribute"/>
 
-	<!-- using always is ok as we use never below -->
+	<item
+		android:id="@+id/menu_resources_russian"
+		android:showAsAction="never"
+		android:title="@string/menu_resources_russian"
+		app:showAsAction="never"
+		tools:ignore="AppCompatResource,UnusedAttribute"/>
+
 	<item
 		android:id="@+id/menu_scan_imports"
 		android:icon="@drawable/ic_menu_search"

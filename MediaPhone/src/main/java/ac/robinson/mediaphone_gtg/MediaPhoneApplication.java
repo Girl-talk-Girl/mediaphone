@@ -182,6 +182,12 @@ public class MediaPhoneApplication extends Application {
 		TypedValue resourceValue = new TypedValue();
 		res.getValue(R.attr.fling_to_end_minimum_ratio, resourceValue, true);
 		MediaPhone.FLING_TO_END_MINIMUM_RATIO = resourceValue.getFloat();
+
+		// reset the copied frame
+		SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor prefsEditor = copyFrameSettings.edit();
+		prefsEditor.remove(getString(R.string.key_copied_frame));
+		prefsEditor.commit();
 	}
 
 	public void registerActivityHandle(MediaPhoneActivity activity) {

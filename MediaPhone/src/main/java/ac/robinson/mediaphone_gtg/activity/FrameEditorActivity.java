@@ -23,6 +23,7 @@ package ac.robinson.mediaphone_gtg.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -204,6 +205,7 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 		// TODO: if we couldn't open a temporary directory then exporting won't work
 		MenuInflater inflater = getMenuInflater();
 		setupFrameMenuNavigationButtons(inflater, menu, mFrameInternalId, mHasEditedMedia, false);
+		inflater.inflate(R.menu.copy_frame, menu);
 		inflater.inflate(R.menu.play_narrative, menu);
 		inflater.inflate(R.menu.make_template, menu);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -254,6 +256,14 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				} else {
 					UIUtilities.showToast(FrameEditorActivity.this, R.string.split_frame_add_content);
 				}
+				return true;
+
+			case R.id.menu_copy_frame:
+				SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
+				SharedPreferences.Editor prefsEditor = copyFrameSettings.edit();
+				prefsEditor.putString(getString(R.string.key_copied_frame), mFrameInternalId);
+				prefsEditor.commit();
+				UIUtilities.showToast(FrameEditorActivity.this, R.string.copy_frame_copied);
 				return true;
 
 			case R.id.menu_make_template:

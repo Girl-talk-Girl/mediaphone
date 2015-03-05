@@ -153,6 +153,7 @@
 	<string name="key_template_list_position" translatable="false">template_list_position</string>
 	<string name="key_last_edited_frame" translatable="false">last_edited_frame</string>
 	<string name="key_camera_flash_mode" translatable="false">camera_flash_mode</string>
+	<string name="key_copied_frame" translatable="false">copied_frame</string>
 
 	<!-- file/folder names - *do not change* -->
 	<string name="name_storage_directory" translatable="false">_storage</string>

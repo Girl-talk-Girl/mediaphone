@@ -9,12 +9,12 @@ import ac.robinson.mediaphone_gtg.MediaPhoneActivity;
 import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.util.UIUtilities;
 
-public class ResourcesChooserActivity extends MediaPhoneActivity {
+public class ResourceChooserActivityRussian extends MediaPhoneActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_resources, R.string.title_resources);
-		setContentView(R.layout.resources_chooser);
+		UIUtilities.configureActionBar(this, true, true, R.string.title_resources_russian, R.string.title_resources_russian);
+		setContentView(R.layout.resources_chooser_russian);
 	}
 
 	@Override
@@ -48,16 +48,13 @@ public class ResourcesChooserActivity extends MediaPhoneActivity {
 			case R.id.resource_button_6:
 				resourceId = 6;
 				break;
-			case R.id.resource_button_7:
-				resourceId = 7;
-				break;
 
 			default:
 				resourceId = 1;
 				break;
 		}
 
-		Intent resourceIntent = new Intent(ResourcesChooserActivity.this, ResourceActivity.class);
+		Intent resourceIntent = new Intent(ResourceChooserActivityRussian.this, ResourceActivityRussian.class);
 		resourceIntent.putExtra(getString(R.string.extra_resource_id), resourceId);
 		startActivity(resourceIntent);
 	}

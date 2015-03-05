@@ -34,6 +34,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
+import android.util.Log;
 import android.util.TypedValue;
 
 import com.larvalabs.svgandroid.SVG;
@@ -251,7 +252,7 @@ public class FrameItem implements BaseColumns {
 				audioLoaded = true;
 
 			} else if (!textLoaded && currentType == MediaPhoneProvider.TYPE_TEXT) {
-				textString = IOUtilities.getFileContents(currentItem.getFile().getAbsolutePath()).toString();
+				textString = IOUtilities.getFileContents(currentItem.getFile().getAbsolutePath());
 				textLoaded = true;
 			}
 		}
@@ -276,6 +277,7 @@ public class FrameItem implements BaseColumns {
 		boolean isFirstFrame = false;
 		if (mNarrativeSequenceId == 0) {
 			isFirstFrame = true;
+			Log.d("blah", "isfirst: " + isFirstFrame);
 		} else if (frameIsInDatabase) {
 			FrameItem firstFrame = FramesManager.findFirstFrameByParentId(contentResolver, mParentId);
 			if (firstFrame != null && mInternalId.equals(firstFrame.getInternalId())) {

@@ -56,6 +56,7 @@ import ac.robinson.mediaphone_gtg.MediaPhoneApplication;
 import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.mediaphone_gtg.provider.FrameAdapter;
 import ac.robinson.mediaphone_gtg.provider.FrameItem;
+import ac.robinson.mediaphone_gtg.provider.FramesManager;
 import ac.robinson.mediaphone_gtg.provider.NarrativeAdapter;
 import ac.robinson.mediaphone_gtg.provider.NarrativeItem;
 import ac.robinson.mediaphone_gtg.provider.NarrativesManager;
@@ -192,8 +193,11 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			case R.id.menu_add_narrative:
 				addNarrative();
 				return true;
-			case R.id.menu_resources:
-				startActivity(new Intent(NarrativeBrowserActivity.this, ResourcesChooserActivity.class));
+			case R.id.menu_resources_english:
+				startActivity(new Intent(NarrativeBrowserActivity.this, ResourceChooserActivityEnglish.class));
+				return true;
+			case R.id.menu_resources_russian:
+				startActivity(new Intent(NarrativeBrowserActivity.this, ResourceChooserActivityRussian.class));
 				return true;
 			case R.id.menu_scan_imports:
 				importNarratives();
@@ -604,7 +608,42 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 		}
 	}
 
-	private void insertFrameAfter(String parentId, String insertAfterId) {
+	private void insertFrameAfter(final String parentId, final String insertAfterId) {
+		SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
+		final String copiedFrameId = copyFrameSettings.getString(getString(R.string.key_copied_frame), null);
+		if (copiedFrameId != null) {
+			FrameItem copiedFrame = FramesManager.findFrameByInternalId(getContentResolver(), copiedFrameId);
+			//getDeleted not necessarily required, but could be confusing if not used (e.g., copying invisible items)
+			if (copiedFrame != null && !copiedFrame.getDeleted()) {
+				final CharSequence[] items = {getString(R.string.add_blank_frame), getString(R.string.add_paste_frame)};
+				AlertDialog.Builder builder = new AlertDialog.Builder(NarrativeBrowserActivity.this);
+				builder.setTitle(R.string.title_add_frame);
+				builder.setIcon(android.R.drawable.ic_dialog_info);
+				builder.setNegativeButton(R.string.button_cancel, null);
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int item) {
+						switch (item) {
+							case 0:
+								insertBlankFrameAfter(parentId, insertAfterId);
+								break;
+							case 1:
+								runQueuedBackgroundTask(getFrameCopyRunnable(copiedFrameId, insertAfterId));
+								// TODO: scroll to the new frame's position
+								break;
+						}
+						dialog.dismiss();
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+		} else {
+			insertBlankFrameAfter(parentId, insertAfterId);
+		}
+	}
+
+	private void insertBlankFrameAfter(String parentId, final String insertAfterId) {
 		final Intent frameEditorIntent = new Intent(NarrativeBrowserActivity.this, FrameEditorActivity.class);
 		frameEditorIntent.putExtra(getString(R.string.extra_parent_id), parentId);
 		frameEditorIntent.putExtra(getString(R.string.extra_insert_after_id), insertAfterId);

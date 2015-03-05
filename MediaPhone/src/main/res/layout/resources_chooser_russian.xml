@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<Button
+			android:id="@+id/resource_button_1"
+			android:layout_width="260dp"
+			android:layout_height="76dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:onClick="handleResourceClick"
+			android:text="@string/resources_title_1_russian"
+			android:textAllCaps="false"
+			android:textColor="@android:color/background_dark"
+			android:textSize="18sp"/>
+
+		<Button
+			android:id="@+id/resource_button_2"
+			android:layout_width="260dp"
+			android:layout_height="76dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:onClick="handleResourceClick"
+			android:text="@string/resources_title_2_russian"
+			android:textAllCaps="false"
+			android:textColor="@android:color/background_dark"
+			android:textSize="18sp"/>
+
+		<Button
+			android:id="@+id/resource_button_3"
+			android:layout_width="260dp"
+			android:layout_height="76dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:onClick="handleResourceClick"
+			android:text="@string/resources_title_3_russian"
+			android:textAllCaps="false"
+			android:textColor="@android:color/background_dark"
+			android:textSize="18sp"/>
+
+		<Button
+			android:id="@+id/resource_button_4"
+			android:layout_width="260dp"
+			android:layout_height="76dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:onClick="handleResourceClick"
+			android:text="@string/resources_title_4_russian"
+			android:textAllCaps="false"
+			android:textColor="@android:color/background_dark"
+			android:textSize="18sp"/>
+
+		<Button
+			android:id="@+id/resource_button_5"
+			android:layout_width="260dp"
+			android:layout_height="76dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:onClick="handleResourceClick"
+			android:text="@string/resources_title_5_russian"
+			android:textAllCaps="false"
+			android:textColor="@android:color/background_dark"
+			android:textSize="18sp"/>
+
+		<Button
+			android:id="@+id/resource_button_6"
+			android:layout_width="260dp"
+			android:layout_height="76dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:onClick="handleResourceClick"
+			android:text="@string/resources_title_6_russian"
+			android:textAllCaps="false"
+			android:textColor="@android:color/background_dark"
+			android:textSize="18sp"/>
+
+	</LinearLayout>
+</ScrollView>

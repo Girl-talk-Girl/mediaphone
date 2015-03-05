@@ -58,6 +58,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -137,7 +139,14 @@ public abstract class MediaPhoneActivity extends ActionBarActivity {
 		if (MediaPhone.DEBUG) {
 			ViewServer.get(this).addWindow(this);
 		}
-		UIUtilities.setPixelDithering(getWindow());
+		Window window = getWindow();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+			window.setStatusBarColor(getResources().getColor(R.color.primary_dark));
+		}
+
+		UIUtilities.setPixelDithering(window);
 		checkDirectoriesExist();
 
 		Object retained = getLastCustomNonConfigurationInstance();
@@ -858,7 +867,7 @@ public abstract class MediaPhoneActivity extends ActionBarActivity {
 		for (FrameItem frame : narrativeFrames) {
 			if (!frameFound && insertAtStart) {
 				frameFound = true;
-				narrativeSequenceId = frame.getNarrativeSequenceId();
+				narrativeSequenceId = 1;
 			}
 			if (frameFound) {
 				int currentNarrativeSequenceId = frame.getNarrativeSequenceId();
@@ -2375,6 +2384,73 @@ public abstract class MediaPhoneActivity extends ActionBarActivity {
 				} else {
 					// TODO: error
 				}
+			}
+		};
+	}
+
+	protected BackgroundRunnable getFrameCopyRunnable(final String fromFrameId, final String insertAfterFrame) {
+		return new BackgroundRunnable() {
+			@Override
+			public int getTaskId() {
+				return R.id.copy_frame_task_complete;
+			}
+
+			@Override
+			public boolean getShowDialog() {
+				return true;
+			}
+
+			@Override
+			public void run() {
+				FrameItem copiedFrame = FramesManager.findFrameByInternalId(getContentResolver(), fromFrameId);
+				if (copiedFrame == null) {
+					return;
+				}
+
+				//not necessarily required, but could be confusing if not used (e.g., copying invisible items)
+				if (copiedFrame.getDeleted()) {
+					return;
+				}
+
+				ContentResolver contentResolver = getContentResolver();
+				Resources resources = getResources();
+
+				// get the internal id if null (meaning insert at the end of the narrative)
+				final String insertAfterId = insertAfterFrame == null ? FramesManager.findLastFrameByParentId(contentResolver,
+						copiedFrame.getParentId()) : insertAfterFrame;
+				final long newCreationDate = copiedFrame.getCreationDate();
+
+				final FrameItem newFrame = FrameItem.fromExisting(copiedFrame, MediaPhoneProvider.getNewInternalId(),
+						copiedFrame.getParentId(), newCreationDate);
+				newFrame.setNarrativeSequenceId(-1); // place at the start temporarily
+				final String newFrameId = newFrame.getInternalId();
+
+				for (MediaItem media : MediaManager.findMediaByParentId(contentResolver, copiedFrame.getInternalId())) {
+					// this is a linked item - don't copy spanned media
+					boolean spanningMedia = media.getSpanFrames();
+					if (spanningMedia) {
+						if (!media.getParentId().equals(copiedFrame.getInternalId())){
+							// TODO: inherit spanned media from previous frames? (currently we ignore spanning media...)
+						} else {
+							// TODO: span media to following frames - see addNewFrame() in FrameEditorActivity
+						}
+					} else {
+						final MediaItem newMedia = MediaItem.fromExisting(media,
+								MediaPhoneProvider.getNewInternalId(), newFrameId, newCreationDate);
+						MediaManager.addMedia(contentResolver, newMedia);
+
+						try {
+							IOUtilities.copyFile(media.getFile(), newMedia.getFile());
+						} catch (IOException e) {
+							// TODO: error
+						}
+					}
+				}
+
+				FramesManager.addFrame(resources, contentResolver, newFrame, false);
+				int narrativeSequenceId = adjustNarrativeSequenceIds(copiedFrame.getParentId(), insertAfterId);
+				newFrame.setNarrativeSequenceId(narrativeSequenceId);
+				FramesManager.updateFrame(resources, contentResolver, newFrame, true);
 			}
 		};
 	}

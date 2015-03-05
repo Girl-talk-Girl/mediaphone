@@ -92,11 +92,17 @@
 			android:label="@string/title_save_locally"
 			android:theme="@style/Theme.GirlTalkGirl.Dialog"/>
 		<activity
-			android:name=".activity.ResourcesChooserActivity"
-			android:label="@string/title_resources"/>
+			android:name=".activity.ResourceChooserActivityEnglish"
+			android:label="@string/title_resources_english"/>
 		<activity
-			android:name=".activity.ResourceActivity"
-			android:label="@string/title_resources"/>
+			android:name=".activity.ResourceChooserActivityRussian"
+			android:label="@string/title_resources_russian"/>
+		<activity
+			android:name=".activity.ResourceActivityEnglish"
+			android:label="@string/title_resources_english"/>
+		<activity
+			android:name=".activity.ResourceActivityRussian"
+			android:label="@string/title_resources_russian"/>
 		<activity
 			android:name="ac.robinson.mediaphone_gtg.activity.PreferencesActivity"
 			android:label="@string/title_preferences"/>

@@ -18,6 +18,7 @@
 	<item name="audio_switch_to_playback_task_complete" type="id"/>
 	<item name="audio_add_frame_after_task_complete" type="id"/>
 	<item name="make_load_template_task_complete" type="id"/>
+	<item name="copy_frame_task_complete" type="id"/>
 	<item name="import_external_media_succeeded" type="id"/>
 	<item name="import_external_media_failed" type="id"/>
 	<item name="import_external_media_cancelled" type="id"/>
