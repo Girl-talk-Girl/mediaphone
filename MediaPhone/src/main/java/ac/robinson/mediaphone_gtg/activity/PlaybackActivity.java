@@ -670,11 +670,15 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		// memory allocated to the existing drawable - do we need to get the drawables and recycle the bitmaps?
 		// (if so, need to beware of recycling the audio image bitmap, or just check for isRecycled() on load)
 		PlaybackMediaHolder textItem = null;
+		FrameItem parentFrame = null; // only used for foreground/background colour loading
 		boolean hasImage = false;
 		boolean hasAudio = false;
 		for (PlaybackMediaHolder holder : mCurrentPlaybackItems) {
 			// no need to check end time - we've removed invalid items already
 			boolean itemAppliesNow = holder.getStartTime(true) <= mPlaybackPositionMilliseconds;
+			if (itemAppliesNow && parentFrame == null) {
+				parentFrame = FramesManager.findFrameByInternalId(getContentResolver(), holder.mParentFrameId);
+			}
 
 			switch (holder.mMediaType) {
 				case MediaPhoneProvider.TYPE_IMAGE_FRONT:
@@ -807,19 +811,30 @@ public class PlaybackActivity extends MediaPhoneActivity {
 			mCurrentPlaybackImagePath = null; // the current image is highly likely to be wrong - reload
 		}
 
+		// set background colours on both image and text
+		int backgroundColour = parentFrame.getBackgroundColour();
+		backgroundColour = backgroundColour < 0 ? backgroundColour : getResources().getColor(R.color.frame_icon_background);
+		mCurrentPlaybackImage.setBackgroundColor(backgroundColour);
+		mPlaybackText.setBackgroundColor(backgroundColour);
+
 		// load text last so we know whether we've loaded image/audio or not
 		if (textItem != null) {
 			// TODO: currently we load text every time - could check, but this would require loading the file anyway...
 			String textContents = IOUtilities.getFileContents(textItem.mMediaPath).trim();
 			if (!TextUtils.isEmpty(textContents)) {
+				int textColour = parentFrame.getForegroundColour();
 				if (hasImage) {
 					mPlaybackText.setVisibility(View.GONE);
 					mPlaybackTextWithImage.setText(textContents);
 					mPlaybackTextWithImage.setVisibility(View.VISIBLE);
+					mPlaybackTextWithImage.setTextColor(textColour < 0 ? textColour : getResources().getColor(
+							R.color.frame_icon_text_with_image));
 				} else {
 					mPlaybackTextWithImage.setVisibility(View.GONE);
 					mPlaybackText.setText(textContents);
 					mPlaybackText.setVisibility(View.VISIBLE);
+					mPlaybackText.setTextColor(textColour < 0 ? textColour : getResources().getColor(
+							R.color.frame_icon_text_no_image));
 				}
 			} else {
 				mPlaybackText.setVisibility(View.GONE);
@@ -834,11 +849,11 @@ public class PlaybackActivity extends MediaPhoneActivity {
 				if (mAudioPictureBitmap == null) {
 					try {
 						mAudioPictureBitmap = SVGParser.getSVGFromResource(getResources(),
-								R.raw.ic_audio_playback).getBitmap(mScreenSize.x, mScreenSize.y);
+								R.raw.overlay_audio).getBitmap(mScreenSize.x, mScreenSize.y);
 					} catch (Throwable t) { // out of memory, or parse error...
 					}
 				}
-				mCurrentPlaybackImagePath = String.valueOf(R.raw.ic_audio_playback); // now the current image
+				mCurrentPlaybackImagePath = String.valueOf(R.raw.overlay_audio); // now the current image
 				mCurrentPlaybackImage.setImageBitmap(mAudioPictureBitmap);
 			}
 		}

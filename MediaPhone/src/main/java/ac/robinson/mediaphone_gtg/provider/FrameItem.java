@@ -34,7 +34,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.util.TypedValue;
 
 import com.larvalabs.svgandroid.SVG;
@@ -55,15 +54,14 @@ public class FrameItem implements BaseColumns {
 			MediaPhoneProvider.URI_SEPARATOR + MediaPhoneProvider.FRAMES_LOCATION);
 
 	public static final String[] PROJECTION_ALL = new String[]{FrameItem._ID, FrameItem.INTERNAL_ID,
-			FrameItem.PARENT_ID, FrameItem.SEQUENCE_ID, FrameItem.DATE_CREATED, FrameItem.DELETED};
+			FrameItem.PARENT_ID, FrameItem.SEQUENCE_ID, FrameItem.FOREGROUND_COLOUR, FrameItem.BACKGROUND_COLOUR,
+			FrameItem.DATE_CREATED, FrameItem.DELETED};
 
 	public static final String[] PROJECTION_INTERNAL_ID = new String[]{FrameItem.INTERNAL_ID};
 
 	public static enum NavigationMode {
 		NONE, PREVIOUS, NEXT, BOTH
 	}
-
-	;
 
 	// hacky way to add a button in the horizontal list view - use a frame, showing a different display for this id.
 	public static final String KEY_FRAME_ID_START = "67c2f330-78ec-11e1-b0c4-0800200c9a66"; // *DO NOT CHANGE*
@@ -73,6 +71,8 @@ public class FrameItem implements BaseColumns {
 	public static final String INTERNAL_ID = "internal_id";
 	public static final String PARENT_ID = "parent_id";
 	public static final String SEQUENCE_ID = "sequence_id";
+	public static final String FOREGROUND_COLOUR = "foreground_colour";
+	public static final String BACKGROUND_COLOUR = "background_colour";
 	public static final String DATE_CREATED = "date_created";
 	public static final String DELETED = "deleted";
 
@@ -82,6 +82,8 @@ public class FrameItem implements BaseColumns {
 	private String mInternalId;
 	private String mParentId;
 	private int mNarrativeSequenceId;
+	private int mForegroundColour;
+	private int mBackgroundColour;
 	private long mCreationDate;
 	private int mDeleted;
 
@@ -116,6 +118,22 @@ public class FrameItem implements BaseColumns {
 
 	public void setNarrativeSequenceId(int narrativeSequenceId) {
 		mNarrativeSequenceId = narrativeSequenceId;
+	}
+
+	public int getForegroundColour() {
+		return mForegroundColour;
+	}
+
+	public void setForegroundColour(int colour) {
+		mForegroundColour = colour;
+	}
+
+	public int getBackgroundColour() {
+		return mBackgroundColour;
+	}
+
+	public void setBackgroundColour(int colour) {
+		mBackgroundColour = colour;
 	}
 
 	public long getCreationDate() {
@@ -238,7 +256,7 @@ public class FrameItem implements BaseColumns {
 					// must remove transparency so the background doesn't show through the icon
 					Bitmap backgroundBitmap = Bitmap.createBitmap(iconWidth, iconHeight,
 							ImageCacheUtilities.mBitmapFactoryOptions.inPreferredConfig);
-					backgroundBitmap.eraseColor(res.getColor(R.color.frame_icon_background));
+					backgroundBitmap.eraseColor(mBackgroundColour < 0 ? mBackgroundColour : res.getColor(R.color.frame_icon_background));
 					Canvas backgroundCanvas = new Canvas(backgroundBitmap);
 					backgroundCanvas.drawBitmap(frameBitmap, 0, 0, new Paint());
 					backgroundCanvas = null;
@@ -261,12 +279,12 @@ public class FrameItem implements BaseColumns {
 		if (frameBitmap == null) {
 			frameBitmap = Bitmap.createBitmap(iconWidth, iconHeight, ImageCacheUtilities.mBitmapFactoryOptions
 					.inPreferredConfig);
-			frameBitmap.eraseColor(res.getColor(R.color.frame_icon_background));
+			frameBitmap.eraseColor(mBackgroundColour < 0 ? mBackgroundColour : res.getColor(R.color.frame_icon_background));
 		}
 		TypedValue resourceValue = new TypedValue();
 		Canvas frameBitmapCanvas = new Canvas(frameBitmap);
-		int textColour = (imageLoaded ? res.getColor(R.color.frame_icon_text_with_image) : res.getColor(R.color
-				.frame_icon_text_no_image));
+		int textColour = mForegroundColour < 0 ? mForegroundColour : (imageLoaded ? res.getColor(
+				R.color.frame_icon_text_with_image) : res.getColor(R.color.frame_icon_text_no_image));
 		Paint frameBitmapPaint = BitmapUtilities.getPaint(textColour, 1);
 		final int bitmapWidth = frameBitmap.getWidth();
 		final int bitmapHeight = frameBitmap.getHeight();
@@ -277,7 +295,6 @@ public class FrameItem implements BaseColumns {
 		boolean isFirstFrame = false;
 		if (mNarrativeSequenceId == 0) {
 			isFirstFrame = true;
-			Log.d("blah", "isfirst: " + isFirstFrame);
 		} else if (frameIsInDatabase) {
 			FrameItem firstFrame = FramesManager.findFirstFrameByParentId(contentResolver, mParentId);
 			if (firstFrame != null && mInternalId.equals(firstFrame.getInternalId())) {
@@ -449,6 +466,8 @@ public class FrameItem implements BaseColumns {
 		values.put(INTERNAL_ID, mInternalId);
 		values.put(PARENT_ID, mParentId);
 		values.put(SEQUENCE_ID, mNarrativeSequenceId);
+		values.put(FOREGROUND_COLOUR, mForegroundColour);
+		values.put(BACKGROUND_COLOUR, mBackgroundColour);
 		values.put(DATE_CREATED, mCreationDate);
 		values.put(DELETED, mDeleted);
 		return values;
@@ -460,6 +479,8 @@ public class FrameItem implements BaseColumns {
 		frame.mInternalId = newInternalId;
 		frame.mParentId = newParentId;
 		frame.mNarrativeSequenceId = existing.mNarrativeSequenceId;
+		frame.mForegroundColour = existing.mForegroundColour;
+		frame.mBackgroundColour = existing.mBackgroundColour;
 		frame.mCreationDate = newCreationDate;
 		frame.mDeleted = existing.mDeleted;
 		frame.getStorageDirectory().mkdirs();
@@ -471,6 +492,8 @@ public class FrameItem implements BaseColumns {
 		frame.mInternalId = c.getString(c.getColumnIndexOrThrow(INTERNAL_ID));
 		frame.mParentId = c.getString(c.getColumnIndexOrThrow(PARENT_ID));
 		frame.mNarrativeSequenceId = c.getInt(c.getColumnIndexOrThrow(SEQUENCE_ID));
+		frame.mForegroundColour = c.getInt(c.getColumnIndexOrThrow(FOREGROUND_COLOUR));
+		frame.mBackgroundColour = c.getInt(c.getColumnIndexOrThrow(BACKGROUND_COLOUR));
 		frame.mCreationDate = c.getLong(c.getColumnIndexOrThrow(DATE_CREATED));
 		frame.mDeleted = c.getInt(c.getColumnIndexOrThrow(DELETED));
 		return frame;
@@ -479,6 +502,6 @@ public class FrameItem implements BaseColumns {
 	@Override
 	public String toString() {
 		return this.getClass().getName() + "[" + mInternalId + "," + mParentId + "," + mNarrativeSequenceId + "," +
-				"" + mCreationDate + "," + mDeleted + "]";
+				mForegroundColour + "," + mBackgroundColour + "," + mCreationDate + "," + mDeleted + "]";
 	}
 }

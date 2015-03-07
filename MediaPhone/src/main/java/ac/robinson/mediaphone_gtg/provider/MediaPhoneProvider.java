@@ -45,7 +45,7 @@ public class MediaPhoneProvider extends ContentProvider {
 
 	public static final String URI_AUTHORITY = MediaPhone.APPLICATION_NAME;
 	private static final String DATABASE_NAME = URI_AUTHORITY + ".db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	public static final String URI_PREFIX = "content://";
 	public static final String URI_SEPARATOR = File.separator;
@@ -278,6 +278,8 @@ public class MediaPhoneProvider extends ContentProvider {
 					+ FrameItem.INTERNAL_ID + " TEXT, " // the GUID of this frame item
 					+ FrameItem.PARENT_ID + " TEXT, " // the GUID of the parent of this frame item
 					+ FrameItem.SEQUENCE_ID + " INTEGER, " // the position of this frame in the narrative
+					+ FrameItem.FOREGROUND_COLOUR + " INTEGER, " // the foreground (e.g., text) colour of this frame
+					+ FrameItem.BACKGROUND_COLOUR + " INTEGER, " // the background colour of this frame
 					+ FrameItem.DATE_CREATED + " INTEGER, " // the timestamp when this frame was created
 					+ FrameItem.DELETED + " INTEGER);"); // whether this frame has been deleted
 			db.execSQL("CREATE INDEX " + FRAMES_LOCATION + "Index" + FrameItem.INTERNAL_ID + " ON " + FRAMES_LOCATION
@@ -342,9 +344,9 @@ public class MediaPhoneProvider extends ContentProvider {
 			// TODO: backup database if necessary (also: check for read only database?)
 
 			// must always check whether the items we're upgrading already exist, just in case a downgrade has occurred
+			Cursor c = null;
 			switch (newVersion) {
 				case 2:
-					Cursor c = null;
 					try {
 						c = db.rawQuery("SELECT * FROM " + MEDIA_LOCATION + " LIMIT 0,1", null);
 						if (c.getColumnIndex(MediaItem.SPAN_FRAMES) < 0) {
@@ -357,6 +359,21 @@ public class MediaPhoneProvider extends ContentProvider {
 						}
 					}
 					createMediaLinksTable(db);
+					break;
+				case 3:
+					try {
+						c = db.rawQuery("SELECT * FROM " + FRAMES_LOCATION + " LIMIT 0,1", null);
+						if (c.getColumnIndex(FrameItem.FOREGROUND_COLOUR) < 0) {
+							db.execSQL("ALTER TABLE " + FRAMES_LOCATION + " ADD COLUMN " + FrameItem.FOREGROUND_COLOUR + " " +
+									"INTEGER;");
+							db.execSQL("ALTER TABLE " + FRAMES_LOCATION + " ADD COLUMN " + FrameItem.BACKGROUND_COLOUR + " " +
+									"INTEGER;");
+						}
+					} finally {
+						if (c != null) {
+							c.close();
+						}
+					}
 					break;
 			}
 		}

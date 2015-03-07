@@ -54,6 +54,7 @@ import ac.robinson.mediaphone_gtg.provider.MediaManager;
 import ac.robinson.mediaphone_gtg.provider.MediaPhoneProvider;
 import ac.robinson.mediaphone_gtg.provider.NarrativeItem;
 import ac.robinson.mediaphone_gtg.provider.NarrativesManager;
+import ac.robinson.mediaphone_gtg.view.ColorPickerDialog;
 import ac.robinson.util.BitmapUtilities;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.StringUtilities;
@@ -206,6 +207,7 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 		MenuInflater inflater = getMenuInflater();
 		setupFrameMenuNavigationButtons(inflater, menu, mFrameInternalId, mHasEditedMedia, false);
 		inflater.inflate(R.menu.copy_frame, menu);
+		inflater.inflate(R.menu.change_background_colour, menu);
 		inflater.inflate(R.menu.play_narrative, menu);
 		inflater.inflate(R.menu.make_template, menu);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -266,20 +268,26 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				UIUtilities.showToast(FrameEditorActivity.this, R.string.copy_frame_copied);
 				return true;
 
+			case R.id.menu_change_background_colour:
+				FrameItem colourChangeFrame = FramesManager.findFrameByInternalId(getContentResolver(), mFrameInternalId);
+				int currentColour = colourChangeFrame.getBackgroundColour();
+				new ColorPickerDialog(FrameEditorActivity.this, mColourChangedListener, currentColour).show();
+				return true;
+
 			case R.id.menu_make_template:
 				ContentResolver resolver = getContentResolver();
 				if (MediaManager.countMediaByParentId(resolver, mFrameInternalId) > 0) {
-					FrameItem currentFrame = FramesManager.findFrameByInternalId(resolver, mFrameInternalId);
-					runQueuedBackgroundTask(getNarrativeTemplateRunnable(currentFrame.getParentId(), true));
+					FrameItem templateFrame = FramesManager.findFrameByInternalId(resolver, mFrameInternalId);
+					runQueuedBackgroundTask(getNarrativeTemplateRunnable(templateFrame.getParentId(), true));
 				} else {
 					UIUtilities.showToast(FrameEditorActivity.this, R.string.make_template_add_content);
 				}
 				return true;
 
 			case R.id.menu_delete_narrative:
-				FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(), mFrameInternalId);
-				if (currentFrame != null) {
-					deleteNarrativeDialog(currentFrame.getParentId());
+				FrameItem deleteNarrativeFrame = FramesManager.findFrameByInternalId(getContentResolver(), mFrameInternalId);
+				if (deleteNarrativeFrame != null) {
+					deleteNarrativeDialog(deleteNarrativeFrame.getParentId());
 				}
 				return true;
 
@@ -593,6 +601,17 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 		addTextIntent.putExtra(getString(R.string.extra_parent_id), parentId);
 		startActivityForResult(addTextIntent, MediaPhone.R_id_intent_text_editor);
 	}
+
+	private ColorPickerDialog.OnColorChangedListener mColourChangedListener = new ColorPickerDialog.OnColorChangedListener() {
+		@Override
+		public void colorChanged(int colour) {
+			FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(), mFrameInternalId);
+			currentFrame.setBackgroundColour(colour);
+			FramesManager.updateFrame(getResources(), getContentResolver(), currentFrame, true); // need to update icon
+			mHasEditedMedia = true;
+			setBackButtonIcons(FrameEditorActivity.this, R.id.button_finished_editing, 0, true);
+		}
+	};
 
 	public void handleButtonClicks(View currentButton) {
 		if (!verifyButtonClick(currentButton)) {

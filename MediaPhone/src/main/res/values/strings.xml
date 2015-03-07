@@ -180,6 +180,7 @@
 	<string name="title_resources_english">Resources</string>
 	<string name="title_resources_russian">Ресурсы</string>
 	<string name="title_audio_library">Audio library</string>
+	<string name="title_choose_colour">Choose a colour</string>
 	<string name="title_select_import_directory">Select the import directory</string>
 
 	<!-- preferences -->
@@ -251,6 +252,8 @@
 	<string name="menu_make_template">Make template</string>
 	<string name="menu_delete_narrative">Delete narrative</string>
 	<string name="menu_copy_frame">Copy frame</string>
+	<string name="menu_change_background_colour">Change background colour</string>
+	<string name="menu_change_text_colour">Change text colour</string>
 	<string name="menu_previous_frame">Previous frame</string>
 	<string name="menu_next_frame">Next frame</string>
 	<string name="menu_edit_frame">Edit frame</string>

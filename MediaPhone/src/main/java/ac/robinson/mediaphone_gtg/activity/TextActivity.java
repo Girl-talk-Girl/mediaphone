@@ -46,9 +46,11 @@ import ac.robinson.mediaphone_gtg.MediaPhone;
 import ac.robinson.mediaphone_gtg.MediaPhoneActivity;
 import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.mediaphone_gtg.provider.FrameItem;
+import ac.robinson.mediaphone_gtg.provider.FramesManager;
 import ac.robinson.mediaphone_gtg.provider.MediaItem;
 import ac.robinson.mediaphone_gtg.provider.MediaManager;
 import ac.robinson.mediaphone_gtg.provider.MediaPhoneProvider;
+import ac.robinson.mediaphone_gtg.view.ColorPickerDialog;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.UIUtilities;
 
@@ -202,6 +204,7 @@ public class TextActivity extends MediaPhoneActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		createMediaMenuNavigationButtons(inflater, menu, mHasEditedMedia);
+		inflater.inflate(R.menu.change_text_colour, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -232,6 +235,16 @@ public class TextActivity extends MediaPhoneActivity {
 			case R.id.menu_back_without_editing:
 			case R.id.menu_finished_editing:
 				onBackPressed();
+				return true;
+
+			case R.id.menu_change_text_colour:
+				final MediaItem colourMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+						mMediaItemInternalId);
+				if (colourMediaItem != null) {
+					FrameItem colourChangeFrame = FramesManager.findFrameByInternalId(getContentResolver(), colourMediaItem.getParentId());
+					int currentColour = colourChangeFrame.getForegroundColour();
+					new ColorPickerDialog(TextActivity.this, mColourChangedListener, currentColour).show();
+				}
 				return true;
 
 			default:
@@ -311,6 +324,21 @@ public class TextActivity extends MediaPhoneActivity {
 			return;
 		}
 	}
+
+	private ColorPickerDialog.OnColorChangedListener mColourChangedListener = new ColorPickerDialog.OnColorChangedListener() {
+		@Override
+		public void colorChanged(int colour) {
+			final MediaItem colourMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+					mMediaItemInternalId);
+			if (colourMediaItem != null) {
+				FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(), colourMediaItem.getParentId());
+				currentFrame.setForegroundColour(colour);
+				FramesManager.updateFrame(getContentResolver(), currentFrame);
+				mHasEditedMedia = true;
+				setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
+			}
+		}
+	};
 
 	public void handleButtonClicks(View currentButton) {
 		if (!verifyButtonClick(currentButton)) {
