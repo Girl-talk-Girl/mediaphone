@@ -178,6 +178,7 @@
 	<string name="title_preferences">Параметры настройки</string>
 	<string name="title_resources_english">Resources</string>
 	<string name="title_resources_russian">Ресурсы</string>
+	<string name="title_audio_library">Audio library</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->
@@ -269,5 +270,17 @@
 	<string name="resources_title_4_russian">Идеи для историй о ГН</string>
 	<string name="resources_title_5_russian">Линки для создания истории</string>
 	<string name="resources_title_6_russian">Безопасные маршруты</string>
+
+	<string name="audio_library_subway">Subway</string>
+	<string name="audio_library_ambulance">Ambulance</string>
+	<string name="audio_library_footsteps">Footsteps</string>
+	<string name="audio_library_sunny_day">Sunny day</string>
+	<string name="audio_library_door_knock">Door knock</string>
+	<string name="audio_library_door_close">Door close</string>
+	<string name="audio_library_crowd_talking">Crowd talking</string>
+	<string name="audio_library_car_honk">Car honk</string>
+	<string name="audio_library_glass_breaking">Glass breaking</string>
+	<string name="audio_library_woman_laughing_1">Woman laughing (1)</string>
+	<string name="audio_library_woman_laughing_2">Woman laughing (2)</string>
 
 </resources>

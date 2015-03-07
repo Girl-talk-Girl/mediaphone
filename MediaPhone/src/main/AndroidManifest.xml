@@ -92,6 +92,9 @@
 			android:label="@string/title_save_locally"
 			android:theme="@style/Theme.GirlTalkGirl.Dialog"/>
 		<activity
+			android:name=".activity.AudioLibraryPicker"
+			android:label="@string/title_audio_library"/>
+		<activity
 			android:name=".activity.ResourceChooserActivityEnglish"
 			android:label="@string/title_resources_english"/>
 		<activity

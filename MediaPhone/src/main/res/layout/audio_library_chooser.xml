@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_subway"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_subway"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_subway_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_ambulance"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_ambulance"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_ambulance_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_footsteps"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_footsteps"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_footsteps_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_sunny_day"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_sunny_day"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_sunny_day_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_door_knock"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_door_knock"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_door_knock_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_door_close"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_door_close"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_door_close_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_crowd_talking"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_crowd_talking"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_crowd_talking_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_car_honk"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_car_honk"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_car_honk_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_glass_breaking"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_glass_breaking"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_glass_breaking_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_woman_laughing_1"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_woman_laughing_1"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_woman_laughing_1_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/audio_library_woman_laughing_2"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="7"
+				android:onClick="handleAudioLibraryClick"
+				android:text="@string/audio_library_woman_laughing_2"
+				android:textAllCaps="false"
+				android:textColor="@android:color/background_dark"
+				android:textSize="18sp"/>
+
+			<ImageButton
+				android:id="@+id/audio_library_woman_laughing_2_play"
+				android:layout_width="0dp"
+				android:layout_height="76dp"
+				android:layout_gravity="center_horizontal"
+				android:layout_weight="2"
+				android:contentDescription="@null"
+				android:onClick="handleAudioLibraryClick"
+				android:src="@drawable/ic_menu_play"/>
+
+		</LinearLayout>
+
+	</LinearLayout>
+</ScrollView>

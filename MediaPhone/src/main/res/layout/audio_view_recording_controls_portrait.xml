@@ -28,6 +28,15 @@
 			android:drawableTop="@drawable/ic_menu_import_music"
 			util:filterColorDefault="@color/button_default"
 			util:filterColorTouched="@color/button_touched"/>
+
+		<ac.robinson.view.CenteredImageTextButton
+			android:id="@+id/button_import_library_audio"
+			style="@style/default_coloured_button"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:drawableTop="@drawable/ic_menu_sound_library"
+			util:filterColorDefault="@color/button_default"
+			util:filterColorTouched="@color/button_touched"/>
 	</LinearLayout>
 
 </merge>

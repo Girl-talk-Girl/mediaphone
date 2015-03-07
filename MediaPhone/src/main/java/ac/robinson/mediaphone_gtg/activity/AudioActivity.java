@@ -61,6 +61,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -464,7 +465,7 @@ public class AudioActivity extends MediaPhoneActivity {
 			if (!mAudioPickerShown) {
 				// if the screen rotates while the audio picker is being displayed, we end up showing it again
 				// - this is probably a rare issue, but very frustrating when it does happen
-				importAudio();
+				importAudio(); // TODO: should this be importAudio() or importLibraryAudio() for GTG?
 			}
 			return false;
 		}
@@ -819,6 +820,12 @@ public class AudioActivity extends MediaPhoneActivity {
 		}
 	}
 
+	private void importLibraryAudio() {
+		releaseAll(); // so we're not locking the file we want to copy to
+		startActivityForResult(new Intent(AudioActivity.this, AudioLibraryPicker.class),
+				MediaPhone.R_id_intent_audio_library_import);
+	}
+
 	@Override
 	protected void onBackgroundTaskCompleted(int taskId) {
 		switch (taskId) {
@@ -1106,6 +1113,10 @@ public class AudioActivity extends MediaPhoneActivity {
 			case R.id.button_import_audio:
 				importAudio();
 				break;
+
+			case R.id.button_import_library_audio:
+				importLibraryAudio();
+				break;
 		}
 	}
 
@@ -1332,6 +1343,65 @@ public class AudioActivity extends MediaPhoneActivity {
 							} finally {
 								IOUtilities.closeStream(inputStream);
 								client.release();
+							}
+						}
+					}
+				});
+				break;
+
+			case MediaPhone.R_id_intent_audio_library_import:
+				if (resultCode != RESULT_OK) {
+					onBackgroundTaskCompleted(R.id.import_external_media_cancelled);
+					break;
+				}
+
+				final int selectedLibraryAudio = resultIntent.getIntExtra(getString(R.string.extra_resource_id), -1);
+				if (selectedLibraryAudio < 0) {
+					onBackgroundTaskCompleted(R.id.import_external_media_cancelled);
+					break;
+				}
+
+				runQueuedBackgroundTask(new BackgroundRunnable() {
+					boolean mImportSucceeded = false;
+
+					@Override
+					public int getTaskId() {
+						return mImportSucceeded ? R.id.import_external_media_succeeded : R.id
+								.import_external_media_failed;
+					}
+
+					@Override
+					public boolean getShowDialog() {
+						return true;
+					}
+
+					@Override
+					public void run() {
+						ContentResolver contentResolver = getContentResolver();
+						MediaItem audioMediaItem = MediaManager.findMediaByInternalId(contentResolver,
+								mMediaItemInternalId);
+						if (audioMediaItem != null) {
+							InputStream inputStream = getResources().openRawResource(selectedLibraryAudio);
+							try {
+								// copy to a temporary file so we can detect failure (i.e. connection)
+								String fileExtension = "m4a";
+								File tempFile = new File(audioMediaItem.getFile().getParent(),
+										MediaPhoneProvider.getNewInternalId() + "." + fileExtension);
+								IOUtilities.copyFile(inputStream, tempFile);
+								int audioDuration = IOUtilities.getAudioFileLength(tempFile);
+
+								if (tempFile.length() > 0 && audioDuration > 0) {
+									audioMediaItem.setFileExtension(fileExtension);
+									audioMediaItem.setType(MediaPhoneProvider.TYPE_AUDIO);
+									audioMediaItem.setDurationMilliseconds(audioDuration);
+									// TODO: will leave old item behind if the extension has changed - fix
+									tempFile.renameTo(audioMediaItem.getFile());
+									MediaManager.updateMedia(contentResolver, audioMediaItem);
+									mImportSucceeded = true;
+								}
+							} catch (Throwable t) {
+							} finally {
+								IOUtilities.closeStream(inputStream);
 							}
 						}
 					}

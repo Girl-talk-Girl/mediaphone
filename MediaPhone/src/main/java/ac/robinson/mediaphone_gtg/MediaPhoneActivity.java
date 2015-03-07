@@ -867,7 +867,7 @@ public abstract class MediaPhoneActivity extends ActionBarActivity {
 		for (FrameItem frame : narrativeFrames) {
 			if (!frameFound && insertAtStart) {
 				frameFound = true;
-				narrativeSequenceId = 1;
+				narrativeSequenceId = frame.getNarrativeSequenceId();
 			}
 			if (frameFound) {
 				int currentNarrativeSequenceId = frame.getNarrativeSequenceId();

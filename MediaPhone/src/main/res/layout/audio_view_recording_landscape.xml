@@ -47,13 +47,30 @@
 			util:filterColorDefault="@color/button_blue_default"
 			util:filterColorTouched="@color/button_blue_touched"/>
 
-		<ac.robinson.view.CenteredImageTextButton
-			android:id="@+id/button_import_audio"
-			style="@style/default_coloured_button"
-			android:layout_height="@dimen/navigation_button_height"
-			android:drawableTop="@drawable/ic_menu_import_music"
-			util:filterColorDefault="@color/button_default"
-			util:filterColorTouched="@color/button_touched"/>
+		<LinearLayout
+			style="@style/default_horizontal_linear_layout"
+			android:layout_height="wrap_content">
+
+			<ac.robinson.view.CenteredImageTextButton
+				android:id="@+id/button_import_audio"
+				style="@style/default_coloured_button"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/navigation_button_height"
+				android:layout_weight="1"
+				android:drawableTop="@drawable/ic_menu_import_music"
+				util:filterColorDefault="@color/button_default"
+				util:filterColorTouched="@color/button_touched"/>
+
+			<ac.robinson.view.CenteredImageTextButton
+				android:id="@+id/button_import_library_audio"
+				style="@style/default_coloured_button"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/navigation_button_height"
+				android:layout_weight="1"
+				android:drawableTop="@drawable/ic_menu_sound_library"
+				util:filterColorDefault="@color/button_default"
+				util:filterColorTouched="@color/button_touched"/>
+		</LinearLayout>
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_cancel_recording"
