@@ -133,7 +133,7 @@
 	<string name="span_media_edit_text">Этот текст из другой рамки – хотите добавить новый текст или редактировать оригинал?</string>
 	<string name="span_media_edit_original">Редактировать оригинал</string>
 	<string name="span_media_add_new">Добавить новый</string>
-	<string name="copy_frame_copied">The frame has been copied – add a new frame to paste</string>
+	<string name="copy_frame_copied">Рамка скопирована – добавьте новую рамку, чтобы ее вставить</string>
 
 	<plurals name="delete_narrative_second_hint">
 		<item quantity="one">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
@@ -154,9 +154,9 @@
 	<string name="title_add">Добавить новую историю</string>
 	<string name="add_blank">Создайте новую историю</string>
 	<string name="add_template">Выберите шаблон истории</string>
-	<string name="title_add_frame">Add a new frame</string>
-	<string name="add_blank_frame">Create a new blank frame</string>
-	<string name="add_paste_frame">Paste the copied frame</string>
+	<string name="title_add_frame">Добавьте новую рамку</string>
+	<string name="add_blank_frame">Создайте новую пустую рамку</string>
+	<string name="add_paste_frame">Вставьте скопированную рамку</string>
 	<string name="narrative_list_empty">Нажмите кнопку + чтобы начать работу&#160;&#160;&#160;&#x21E7;</string>
 	<string name="narrative_folder_not_found">Ошибка: не найдена исходная папка – пожалуйста, укажите директорию  импортирования в настройках</string>
 	<string name="narrative_import_not_found">История для импортирования не найдена – все файлы из SMIL экспорта должны быть помещены в директорию импортирования, выбранную в параметрах настроек  (в настоящее время %1$s)</string>
@@ -180,6 +180,7 @@
 	<string name="title_resources_russian">Ресурсы</string>
 	<string name="title_audio_library">Библиотека звукозаписи</string>
 	<string name="title_choose_colour">Выберите цвет</string>
+	<string name="title_set_duration">Установить длительность</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->
@@ -245,9 +246,11 @@
 	<string name="menu_resources_russian">Ресурсы (Pусский)</string>
 	<string name="menu_make_template">Создать шаблон</string>
 	<string name="menu_delete_narrative">Удалить историю</string>
-	<string name="menu_copy_frame">Copy frame</string>
+	<string name="menu_copy_frame">Скопируйте данную рамку</string>
 	<string name="menu_change_background_colour">Изменить цвет фона</string>
 	<string name="menu_change_text_colour">Изменить цвет шрифта</string>
+	<string name="menu_set_image_duration">Установить длительность изображения</string>
+	<string name="menu_set_text_duration">Установить длительность текста</string>
 	<string name="menu_previous_frame">Предыдущая рамка</string>
 	<string name="menu_next_frame">Следующая рамка</string>
 	<string name="menu_edit_frame">Редактирование рамки</string>
