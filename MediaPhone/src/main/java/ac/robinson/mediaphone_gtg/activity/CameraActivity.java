@@ -50,8 +50,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseInputStream;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -78,6 +80,7 @@ import ac.robinson.mediaphone_gtg.provider.MediaItem;
 import ac.robinson.mediaphone_gtg.provider.MediaManager;
 import ac.robinson.mediaphone_gtg.provider.MediaPhoneProvider;
 import ac.robinson.mediaphone_gtg.view.CameraView;
+import ac.robinson.mediaphone_gtg.view.MediaDurationDialog;
 import ac.robinson.util.BitmapUtilities;
 import ac.robinson.util.CameraUtilities;
 import ac.robinson.util.DebugUtilities;
@@ -263,6 +266,9 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		createMediaMenuNavigationButtons(inflater, menu, mHasEditedMedia);
+		if (mDisplayMode == DisplayMode.DISPLAY_PICTURE) {
+			inflater.inflate(R.menu.set_image_duration, menu);
+		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -293,6 +299,35 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 			case R.id.menu_back_without_editing:
 			case R.id.menu_finished_editing:
 				onBackPressed();
+				return true;
+
+			case R.id.menu_set_image_duration:
+				final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+						mMediaItemInternalId);
+				if (durationMediaItem != null) {
+					int currentDuration = durationMediaItem.getDurationMilliseconds();
+					if (currentDuration == -1) {
+						TypedValue resourceValue = new TypedValue();
+						getResources().getValue(R.attr.default_minimum_frame_duration, resourceValue, true);
+						float minimumFrameDuration;
+						try {
+							SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences
+									(CameraActivity.this);
+							minimumFrameDuration = mediaPhoneSettings.getFloat(getString(R.string
+									.key_minimum_frame_duration), resourceValue.getFloat());
+							if (minimumFrameDuration <= 0) {
+								throw new NumberFormatException();
+							}
+						} catch (Exception e) {
+							minimumFrameDuration = resourceValue.getFloat();
+						}
+						// min duration is in seconds; we need milliseconds
+						currentDuration = Math.round(minimumFrameDuration * 1000);
+					} else {
+						currentDuration = Math.abs(currentDuration); // calculated durations are negative
+					}
+					new MediaDurationDialog(CameraActivity.this, mDurationSelectedListener, currentDuration).show();
+				}
 				return true;
 
 			default:
@@ -860,6 +895,8 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 			UIUtilities.showToast(CameraActivity.this, mDoesNotHaveCamera ? R.string.retake_picture_hint_no_camera : R
 					.string.retake_picture_hint);
 		}
+
+		invalidateOptionsMenu(); // so we show the set duration option
 	}
 
 	private void retakePicture() {
@@ -1209,6 +1246,24 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		// need the current rotation for comparison next time we rotate
 		mIconRotation = correctedRotation;
 	}
+
+	private MediaDurationDialog.OnValueSelectedListener mDurationSelectedListener = new MediaDurationDialog.OnValueSelectedListener() {
+		@Override
+		public void valueSelected(int value) {
+			final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+					mMediaItemInternalId);
+			if (durationMediaItem != null) {
+				if (value > 0) {
+					durationMediaItem.setDurationMilliseconds(value);
+				} else {
+					durationMediaItem.setDurationMilliseconds(-1);
+				}
+				MediaManager.updateMedia(getContentResolver(), durationMediaItem);
+				mHasEditedMedia = true;
+				setBackButtonIcons(CameraActivity.this, R.id.button_finished_picture, 0, true);
+			}
+		}
+	};
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {

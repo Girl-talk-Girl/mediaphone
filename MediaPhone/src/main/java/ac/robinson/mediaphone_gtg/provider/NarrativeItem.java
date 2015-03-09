@@ -129,6 +129,8 @@ public class NarrativeItem implements BaseColumns {
 					frame.getNarrativeSequenceId());
 
 			currentContainer.mParentId = frame.getParentId();
+			currentContainer.mBackgroundColour = frame.getBackgroundColour();
+			currentContainer.mForegroundColour = frame.getForegroundColour();
 
 			for (MediaItem media : frameComponents) {
 				final String mediaPath = media.getFile().getAbsolutePath();

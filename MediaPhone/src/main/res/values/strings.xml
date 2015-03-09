@@ -15,6 +15,7 @@
 	<string name="button_cancel">Cancel</string>
 	<string name="button_delete">Delete</string>
 	<string name="button_continue">Continue</string>
+	<string name="button_reset">Reset</string>
 	<string name="current_value_as_sentence">Current: %1$s.</string>
 	<string name="frame_image_description">The image for this frame</string>
 	<string name="frame_image_action_description">A visual representation of the current action with this frame</string>
@@ -182,6 +183,7 @@
 	<string name="title_audio_library">Audio library</string>
 	<string name="title_choose_colour">Choose a colour</string>
 	<string name="title_set_duration">Set duration</string>
+	<string name="title_set_duration_value">Set duration (%1$ss)</string>
 	<string name="title_select_import_directory">Select the import directory</string>
 
 	<!-- preferences -->

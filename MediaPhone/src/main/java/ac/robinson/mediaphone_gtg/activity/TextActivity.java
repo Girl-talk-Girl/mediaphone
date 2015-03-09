@@ -29,9 +29,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,6 +53,7 @@ import ac.robinson.mediaphone_gtg.provider.MediaItem;
 import ac.robinson.mediaphone_gtg.provider.MediaManager;
 import ac.robinson.mediaphone_gtg.provider.MediaPhoneProvider;
 import ac.robinson.mediaphone_gtg.view.ColorPickerDialog;
+import ac.robinson.mediaphone_gtg.view.MediaDurationDialog;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.UIUtilities;
 
@@ -205,6 +208,7 @@ public class TextActivity extends MediaPhoneActivity {
 		MenuInflater inflater = getMenuInflater();
 		createMediaMenuNavigationButtons(inflater, menu, mHasEditedMedia);
 		inflater.inflate(R.menu.change_text_colour, menu);
+		inflater.inflate(R.menu.set_text_duration, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -244,6 +248,40 @@ public class TextActivity extends MediaPhoneActivity {
 					FrameItem colourChangeFrame = FramesManager.findFrameByInternalId(getContentResolver(), colourMediaItem.getParentId());
 					int currentColour = colourChangeFrame.getForegroundColour();
 					new ColorPickerDialog(TextActivity.this, mColourChangedListener, currentColour).show();
+				}
+				return true;
+
+			case R.id.menu_set_text_duration:
+				final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+						mMediaItemInternalId);
+				if (durationMediaItem != null) {
+					int currentDuration = durationMediaItem.getDurationMilliseconds();
+					if (currentDuration == -1) {
+						final Editable mediaText = mEditText.getText();
+						if (!TextUtils.isEmpty(mediaText)) {
+							currentDuration = MediaItem.getTextDurationMilliseconds(mediaText.toString());
+						} else {
+							TypedValue resourceValue = new TypedValue();
+							getResources().getValue(R.attr.default_minimum_frame_duration, resourceValue, true);
+							float minimumFrameDuration;
+							try {
+								SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences
+										(TextActivity.this);
+								minimumFrameDuration = mediaPhoneSettings.getFloat(getString(R.string.key_minimum_frame_duration),
+										resourceValue.getFloat());
+								if (minimumFrameDuration <= 0) {
+									throw new NumberFormatException();
+								}
+							} catch (Exception e) {
+								minimumFrameDuration = resourceValue.getFloat();
+							}
+							// min duration is in seconds; we need milliseconds
+							currentDuration = Math.round(minimumFrameDuration * 1000);
+						}
+					} else {
+						currentDuration = Math.abs(currentDuration); // calculated durations are negative
+					}
+					new MediaDurationDialog(TextActivity.this, mDurationSelectedListener, currentDuration).show();
 				}
 				return true;
 
@@ -334,6 +372,30 @@ public class TextActivity extends MediaPhoneActivity {
 				FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(), colourMediaItem.getParentId());
 				currentFrame.setForegroundColour(colour);
 				FramesManager.updateFrame(getContentResolver(), currentFrame);
+				mHasEditedMedia = true;
+				setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
+			}
+		}
+	};
+
+	private MediaDurationDialog.OnValueSelectedListener mDurationSelectedListener = new MediaDurationDialog.OnValueSelectedListener() {
+		@Override
+		public void valueSelected(int value) {
+			final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
+					mMediaItemInternalId);
+			if (durationMediaItem != null) {
+				if (value > 0) {
+					durationMediaItem.setDurationMilliseconds(value);
+				} else {
+					final Editable mediaText = mEditText.getText();
+					if (!TextUtils.isEmpty(mediaText)) {
+						durationMediaItem.setDurationMilliseconds(-MediaItem.getTextDurationMilliseconds(
+								mediaText.toString())); // use the default calculated value when we reset
+					} else {
+						durationMediaItem.setDurationMilliseconds(-1);
+					}
+				}
+				MediaManager.updateMedia(getContentResolver(), durationMediaItem);
 				mHasEditedMedia = true;
 				setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
 			}

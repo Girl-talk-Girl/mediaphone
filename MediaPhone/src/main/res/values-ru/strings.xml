@@ -14,6 +14,7 @@
 	<string name="button_cancel">Отменить</string>
 	<string name="button_delete">Удалить</string>
 	<string name="button_continue">Продолжить</string>
+	<string name="button_reset">Умолчанию</string>
 	<string name="current_value_as_sentence">Текущий: %1$s.</string>
 	<string name="frame_image_description">Изображение для данной рамки</string>
 	<string name="frame_image_action_description">Визуальная репрезентация текущего действия данной рамкой</string>
@@ -181,6 +182,7 @@
 	<string name="title_audio_library">Библиотека звукозаписи</string>
 	<string name="title_choose_colour">Выберите цвет</string>
 	<string name="title_set_duration">Установить длительность</string>
+	<string name="title_set_duration_value">Установить длительность (%1$ss)</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->

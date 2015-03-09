@@ -670,7 +670,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		// memory allocated to the existing drawable - do we need to get the drawables and recycle the bitmaps?
 		// (if so, need to beware of recycling the audio image bitmap, or just check for isRecycled() on load)
 		PlaybackMediaHolder textItem = null;
-		FrameItem parentFrame = null; // only used for foreground/background colour loading
+		FrameItem parentFrame = null; // only for foreground/background colours TODO: do similar to FrameMediaContainer?
 		boolean hasImage = false;
 		boolean hasAudio = false;
 		for (PlaybackMediaHolder holder : mCurrentPlaybackItems) {
