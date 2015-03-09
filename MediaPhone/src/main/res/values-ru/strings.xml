@@ -178,8 +178,8 @@
 	<string name="title_preferences">Параметры настройки</string>
 	<string name="title_resources_english">Resources</string>
 	<string name="title_resources_russian">Ресурсы</string>
-	<string name="title_audio_library">Audio library</string>
-	<string name="title_choose_colour">Choose a colour</string>
+	<string name="title_audio_library">Библиотека звукозаписи</string>
+	<string name="title_choose_colour">Выберите цвет</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->
@@ -246,8 +246,8 @@
 	<string name="menu_make_template">Создать шаблон</string>
 	<string name="menu_delete_narrative">Удалить историю</string>
 	<string name="menu_copy_frame">Copy frame</string>
-	<string name="menu_change_background_colour">Change background colour</string>
-	<string name="menu_change_text_colour">Change text colour</string>
+	<string name="menu_change_background_colour">Изменить цвет фона</string>
+	<string name="menu_change_text_colour">Изменить цвет шрифта</string>
 	<string name="menu_previous_frame">Предыдущая рамка</string>
 	<string name="menu_next_frame">Следующая рамка</string>
 	<string name="menu_edit_frame">Редактирование рамки</string>
@@ -274,16 +274,16 @@
 	<string name="resources_title_5_russian">Линки для создания истории</string>
 	<string name="resources_title_6_russian">Безопасные маршруты</string>
 
-	<string name="audio_library_subway">Subway</string>
-	<string name="audio_library_ambulance">Ambulance</string>
-	<string name="audio_library_footsteps">Footsteps</string>
-	<string name="audio_library_sunny_day">Sunny day</string>
-	<string name="audio_library_door_knock">Door knock</string>
-	<string name="audio_library_door_close">Door close</string>
-	<string name="audio_library_crowd_talking">Crowd talking</string>
-	<string name="audio_library_car_honk">Car honk</string>
-	<string name="audio_library_glass_breaking">Glass breaking</string>
-	<string name="audio_library_woman_laughing_1">Woman laughing (1)</string>
-	<string name="audio_library_woman_laughing_2">Woman laughing (2)</string>
+	<string name="audio_library_subway">Метро</string>
+	<string name="audio_library_ambulance">Скорая помощь</string>
+	<string name="audio_library_footsteps">Шаги</string>
+	<string name="audio_library_sunny_day">Солнечный день</string>
+	<string name="audio_library_door_knock">Стук в дверь</string>
+	<string name="audio_library_door_close">Звук закрывающейся двери</string>
+	<string name="audio_library_crowd_talking">Шум толпы</string>
+	<string name="audio_library_car_honk">Сигнал машины</string>
+	<string name="audio_library_glass_breaking">Звук разбитого стекла</string>
+	<string name="audio_library_woman_laughing_1">Смех женщины (1)</string>
+	<string name="audio_library_woman_laughing_2">Смех женщины (2)</string>
 
 </resources>

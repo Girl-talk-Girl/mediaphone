@@ -1388,6 +1388,8 @@ public class AudioActivity extends MediaPhoneActivity {
 								File tempFile = new File(audioMediaItem.getFile().getParent(),
 										MediaPhoneProvider.getNewInternalId() + "." + fileExtension);
 								IOUtilities.copyFile(inputStream, tempFile);
+
+								// TODO: could just save these durations in an attr (as the files don't change)
 								int audioDuration = IOUtilities.getAudioFileLength(tempFile);
 
 								if (tempFile.length() > 0 && audioDuration > 0) {

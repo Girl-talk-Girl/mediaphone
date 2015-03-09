@@ -286,7 +286,7 @@
 	<string name="audio_library_footsteps">Footsteps</string>
 	<string name="audio_library_sunny_day">Sunny day</string>
 	<string name="audio_library_door_knock">Door knock</string>
-	<string name="audio_library_door_close">Door close</string>
+	<string name="audio_library_door_close">Door closing</string>
 	<string name="audio_library_crowd_talking">Crowd talking</string>
 	<string name="audio_library_car_honk">Car honk</string>
 	<string name="audio_library_glass_breaking">Glass breaking</string>
