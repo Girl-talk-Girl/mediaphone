@@ -182,7 +182,7 @@
 	<string name="title_audio_library">Библиотека звукозаписи</string>
 	<string name="title_choose_colour">Выберите цвет</string>
 	<string name="title_set_duration">Установить длительность</string>
-	<string name="title_set_duration_value">Установить длительность (%1$sсек)</string>
+	<string name="title_set_duration_value">Длительность (%1$sсек)</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
 	<!--preferences-->
