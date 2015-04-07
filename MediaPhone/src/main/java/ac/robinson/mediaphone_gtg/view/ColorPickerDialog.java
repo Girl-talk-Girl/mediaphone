@@ -56,7 +56,7 @@ public class ColorPickerDialog extends Dialog {
 		ColorPickerView(Context c, OnColorChangedListener l, int color) {
 			super(c);
 			mListener = l;
-			mColors = new int[] { 0xFFFFFFFF, 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00,
+			mColors = new int[] { 0xFFFFFFFF, 0xFF000000, 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00,
 					0xFFFFFFFF };
 			Shader s = new SweepGradient(0, 0, mColors, null);
 
