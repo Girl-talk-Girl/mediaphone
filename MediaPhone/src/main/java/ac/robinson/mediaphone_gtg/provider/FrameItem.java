@@ -337,21 +337,25 @@ public class FrameItem implements BaseColumns {
 				int iconLeft = Math.round((bitmapWidth - (bitmapWidth * scaleFactor)) / 2);
 				int iconTop = Math.round((bitmapHeight - (bitmapHeight * scaleFactor)) / 2);
 				drawRect = new Rect(iconLeft, iconTop, bitmapWidth - iconLeft, bitmapHeight - iconTop);
+
+				// using SVG so that we don't need resolution-specific icons
+				SVG audioSVG = SVGParser.getSVGFromResource(res, R.raw.overlay_audio);
+				frameBitmapCanvas.drawPicture(audioSVG.getPicture(), drawRect);
 			} else {
-				res.getValue(R.attr.frame_icon_overlay_scale_factor, resourceValue, true);
-				float scaleFactor = resourceValue.getFloat();
-				res.getValue(R.attr.frame_icon_overlay_spacing_factor, resourceValue, true);
-				float spacingFactor = resourceValue.getFloat();
-				int iconSpacingRight = Math.round(bitmapWidth * spacingFactor);
-				int iconSpacingTop = Math.round(bitmapHeight * spacingFactor);
-				drawRect = new Rect(bitmapWidth - Math.round(bitmapWidth * scaleFactor) - iconSpacingRight,
-						iconSpacingTop, bitmapWidth - iconSpacingRight, iconSpacingTop + Math.round(bitmapHeight *
-						scaleFactor));
+				// res.getValue(R.attr.frame_icon_overlay_scale_factor, resourceValue, true);
+				// float scaleFactor = resourceValue.getFloat();
+				// res.getValue(R.attr.frame_icon_overlay_spacing_factor, resourceValue, true);
+				// float spacingFactor = resourceValue.getFloat();
+				// int iconSpacingRight = Math.round(bitmapWidth * spacingFactor);
+				// int iconSpacingTop = Math.round(bitmapHeight * spacingFactor);
+				// drawRect = new Rect(bitmapWidth - Math.round(bitmapWidth * scaleFactor) - iconSpacingRight,
+				// 		iconSpacingTop, bitmapWidth - iconSpacingRight, iconSpacingTop + Math.round(bitmapHeight *
+				// 		scaleFactor));
 			}
 
 			// using SVG so that we don't need resolution-specific icons
-			SVG audioSVG = SVGParser.getSVGFromResource(res, R.raw.overlay_audio);
-			frameBitmapCanvas.drawPicture(audioSVG.getPicture(), drawRect);
+			// SVG audioSVG = SVGParser.getSVGFromResource(res, R.raw.overlay_audio);
+			// frameBitmapCanvas.drawPicture(audioSVG.getPicture(), drawRect);
 		}
 
 		// so we can add an indicator to the frame at position 0

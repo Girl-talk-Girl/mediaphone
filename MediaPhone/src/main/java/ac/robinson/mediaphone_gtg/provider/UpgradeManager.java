@@ -142,6 +142,15 @@ public class UpgradeManager {
 			prefsEditor.commit(); // apply() is better, but only in SDK >= 9
 		} // never else - we want to check every previous step every time we do this
 
+		// v22 changed thumbnail presentation method - remove old thumbnails
+		if (currentVersion < 22) {
+			if (MediaPhone.DIRECTORY_THUMBS != null) {
+				IOUtilities.getNewCachePath(context, MediaPhone.APPLICATION_NAME +
+						context.getString(R.string.name_thumbs_directory),
+						!IOUtilities.isInternalPath(MediaPhone.DIRECTORY_THUMBS.getAbsolutePath()), true);
+			}
+		} // never else - we want to check every previous step every time we do this
+
 		// TODO: remember that pre-v15 versions will not get here if no narratives exist (i.e., don't do major changes)
 	}
 

@@ -8,7 +8,7 @@ android {
         applicationId 'ac.robinson.mediaphone_gtg'
         minSdkVersion 8
         targetSdkVersion 22
-        versionCode 21
+        versionCode 22
         versionName '1.4'
     }
 
