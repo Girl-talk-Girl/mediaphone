@@ -85,8 +85,8 @@ public class VUMeter extends View {
 		mCurrentAngle = 0;
 	}
 
-	public void setRecorder(PathAndStateSavingMediaRecorder recorder,
-	                        RecordingStartedListener recordingStartedCallback) {
+	public void setRecorder(PathAndStateSavingMediaRecorder recorder, RecordingStartedListener
+			recordingStartedCallback) {
 		mRecorder = recorder;
 		mRecordingStartedCallback = recordingStartedCallback;
 		mRecordingStarted = false;
@@ -103,7 +103,7 @@ public class VUMeter extends View {
 
 		float angle = mMinAngle;
 		if (mRecorder != null) {
-			angle += (float) (mMaxAngle - mMinAngle) * mRecorder.getMaxAmplitude() / 16384f;
+			angle += (mMaxAngle - mMinAngle) * mRecorder.getMaxAmplitude() / 16384f;
 		}
 
 		if (angle > mCurrentAngle || mRecorder == null) {

@@ -531,7 +531,7 @@ public class AudioActivity extends MediaPhoneActivity {
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mMediaRecorder.setAudioChannels(1); // 2 channels breaks recording TODO: only for amr?
 
-		// prefer mpeg4
+		// prefer MPEG4
 		if (!amrOnly && !isAMR) {
 			mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
 		} else {

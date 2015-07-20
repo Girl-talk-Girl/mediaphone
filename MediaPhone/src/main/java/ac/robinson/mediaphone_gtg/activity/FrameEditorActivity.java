@@ -261,11 +261,20 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 				return true;
 
 			case R.id.menu_copy_frame:
-				SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
-				SharedPreferences.Editor prefsEditor = copyFrameSettings.edit();
-				prefsEditor.putString(getString(R.string.key_copied_frame), mFrameInternalId);
-				prefsEditor.commit();
-				UIUtilities.showToast(FrameEditorActivity.this, R.string.copy_frame_copied);
+				ContentResolver res = getContentResolver();
+				if (MediaManager.countMediaByParentId(res, mFrameInternalId) > 0) {
+					SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
+					SharedPreferences.Editor prefsEditor = copyFrameSettings.edit();
+					prefsEditor.putString(getString(R.string.key_copied_frame), mFrameInternalId);
+					prefsEditor.commit();
+					UIUtilities.showToast(FrameEditorActivity.this, R.string.copy_frame_copied);
+				} else {
+					// reset the copied frame
+					SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
+					SharedPreferences.Editor prefsEditor = copyFrameSettings.edit();
+					prefsEditor.remove(getString(R.string.key_copied_frame));
+					prefsEditor.commit();
+				}
 				return true;
 
 			case R.id.menu_change_background_colour:

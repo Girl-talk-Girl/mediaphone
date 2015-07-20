@@ -574,6 +574,8 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 				final FrameViewHolder holder = (FrameViewHolder) view.getTag();
 				if (FrameItem.LOADING_FRAME_ID.equals(holder.frameInternalId)) {
 					return; // don't allow clicking on the loading frame
+				} else if (NarrativeItem.HELPER_NARRATIVE_ID.equals(mCurrentSelectedNarrativeId)) {
+					return; // don't allow editing the helper narrative
 				} else if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId) || FrameItem.KEY_FRAME_ID_END
 						.equals(holder.frameInternalId)) {
 					if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId)) {
@@ -596,12 +598,17 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long insertNewFrameAfter) {
 			if (view != null && parent != null) {
 				getAndSaveNarrativeId(parent);
-				final FrameViewHolder holder = (FrameViewHolder) view.getTag();
-				if (insertNewFrameAfter != 0) {
-					// used to be just on single press, but that made it confusing when a long double press did nothing
-					insertFrameAfter(mCurrentSelectedNarrativeId, holder.frameInternalId);
+				if (NarrativeItem.HELPER_NARRATIVE_ID.equals(mCurrentSelectedNarrativeId)) {
+					return true; // don't allow editing the helper narrative
 				} else {
-					playNarrative(holder.frameInternalId);
+					final FrameViewHolder holder = (FrameViewHolder) view.getTag();
+					if (insertNewFrameAfter != 0) {
+						// used to be just on single press, but that made it confusing when a long double press did nothing
+
+						insertFrameAfter(mCurrentSelectedNarrativeId, holder.frameInternalId);
+					} else {
+						playNarrative(holder.frameInternalId);
+					}
 				}
 			}
 			return true;
@@ -628,7 +635,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 								insertBlankFrameAfter(parentId, insertAfterId);
 								break;
 							case 1:
-								runQueuedBackgroundTask(getFrameCopyRunnable(copiedFrameId, insertAfterId));
+								runQueuedBackgroundTask(getFrameCopyRunnable(copiedFrameId, parentId, insertAfterId));
 								// TODO: scroll to the new frame's position
 								break;
 						}

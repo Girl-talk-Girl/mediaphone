@@ -257,8 +257,8 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 	 * @param jpegQuality
 	 * @param autoFocusInterval Set to 0 to disable automatic refocusing
 	 */
-	public void setCamera(Camera camera, int displayRotation, int cameraRotation, int jpegQuality,
-	                      int autoFocusInterval, String flashMode, ErrorCallback errorCallback) {
+	public void setCamera(Camera camera, int displayRotation, int cameraRotation, int jpegQuality, int
+			autoFocusInterval, String flashMode, ErrorCallback errorCallback) {
 		mErrorCallback = errorCallback;
 		mCamera = camera;
 		mDisplayRotation = displayRotation;
@@ -509,8 +509,8 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 		return pictureConfiguration;
 	}
 
-	public void takePicture(Camera.ShutterCallback shutterCallback, Camera.PictureCallback pictureCallback,
-	                        Camera.PictureCallback pictureJpegCallback) {
+	public void takePicture(Camera.ShutterCallback shutterCallback, Camera.PictureCallback pictureCallback, Camera
+			.PictureCallback pictureJpegCallback) {
 		mTakePicture = true;
 		mCamera.takePicture(shutterCallback, pictureCallback, pictureJpegCallback);
 
@@ -554,7 +554,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 	private void requestAutoFocus(Handler handler) {
 		if (mCamera != null && !mTakePicture && mCanAutoFocus && !mIsAutoFocusing) {
 			Camera.Parameters parameters = mCamera.getParameters();
-			if (parameters.getFocusMode() != Camera.Parameters.FOCUS_MODE_AUTO) {
+			if (!Camera.Parameters.FOCUS_MODE_AUTO.equals(parameters.getFocusMode())) {
 				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 				mCamera.setParameters(parameters);
 			}

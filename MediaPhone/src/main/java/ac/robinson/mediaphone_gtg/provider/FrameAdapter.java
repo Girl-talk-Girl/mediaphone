@@ -30,7 +30,6 @@ import android.widget.AbsListView;
 import android.widget.CursorAdapter;
 import android.widget.Filter;
 import android.widget.FilterQueryProvider;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -75,12 +74,12 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 	private boolean mSelectAllFramesAsOne = false;
 
 	public FrameAdapter(BrowserActivity activity, String parentId) {
-		super(activity, activity.managedQuery(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, "1=?",
-				new String[]{"0"}, null), true); // hack to show no data initially
+		super(activity, activity.managedQuery(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, "1=?", new
+				String[]{"0"}, null), true); // hack to show no data initially
 
 		mActivity = activity;
 		mInflater = LayoutInflater.from(activity);
-		mFilter = ((Filterable) this).getFilter();
+		mFilter = getFilter();
 
 		final Cursor c = getCursor();
 		mInternalIdIndex = c.getColumnIndexOrThrow(FrameItem.INTERNAL_ID);
@@ -224,8 +223,8 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 					holder.queryIcon = true;
 					return; // this icon hasn't yet been updated
 				} else if (ImageCacheUtilities.NULL_DRAWABLE.equals(cachedIcon)) {
-					FramesManager.reloadFrameIcon(mActivity.getResources(), mActivity.getContentResolver(),
-							holder.frameInternalId);
+					FramesManager.reloadFrameIcon(mActivity.getResources(), mActivity.getContentResolver(), holder
+							.frameInternalId);
 					cachedIcon = ImageCacheUtilities.getCachedIcon(MediaPhone.DIRECTORY_THUMBS, mediaCacheId,
 							mDefaultIcon);
 				}

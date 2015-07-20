@@ -44,8 +44,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.larvalabs.svgandroid.SVGParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -843,19 +841,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		} else {
 			mPlaybackText.setVisibility(View.GONE);
 			mPlaybackTextWithImage.setVisibility(View.GONE);
-
-			// an audio-only frame - show the audio icon
-			if (!hasImage && hasAudio) {
-				if (mAudioPictureBitmap == null) {
-					try {
-						mAudioPictureBitmap = SVGParser.getSVGFromResource(getResources(),
-								R.raw.overlay_audio).getBitmap(mScreenSize.x, mScreenSize.y);
-					} catch (Throwable t) { // out of memory, or parse error...
-					}
-				}
-				mCurrentPlaybackImagePath = String.valueOf(R.raw.overlay_audio); // now the current image
-				mCurrentPlaybackImage.setImageBitmap(mAudioPictureBitmap);
-			}
+			// note - used to show an icon when audio only here; now we just display a blank frame
 		}
 
 		// start/seek any pre-cached audio players that might now be ready

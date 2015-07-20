@@ -10,6 +10,7 @@ android {
         targetSdkVersion 22
         versionCode 22
         versionName '1.4'
+        resConfigs "en", "ru"
     }
 
     compileOptions {
@@ -20,6 +21,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-mediaphone.txt', 'proguard-mediautilities.txt'
         }
     }
@@ -28,5 +30,5 @@ android {
 dependencies {
     compile project(':..:mediautilities-gtg:MediaUtilities')
 
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.2.1'
 }

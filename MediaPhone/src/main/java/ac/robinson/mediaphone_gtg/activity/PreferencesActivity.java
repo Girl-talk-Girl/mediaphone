@@ -91,7 +91,7 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 		}
 
 		// set up the select bluetooth directory option with the current chosen directory; register its click listener
-		Preference bluetoothButton = (Preference) findPreference(getString(R.string.key_bluetooth_directory));
+		Preference bluetoothButton = findPreference(getString(R.string.key_bluetooth_directory));
 		bluetoothButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
@@ -126,7 +126,7 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			PreferenceCategory appearanceCategory = (PreferenceCategory) preferenceScreen.findPreference(getString(R
 					.string.key_appearance_category));
-			Preference backButtonPreference = (Preference) appearanceCategory.findPreference(getString(R.string
+			Preference backButtonPreference = appearanceCategory.findPreference(getString(R.string
 					.key_show_back_button));
 			appearanceCategory.removePreference(backButtonPreference);
 		}
@@ -141,8 +141,8 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 				public boolean onPreferenceClick(Preference preference) {
 					preference.setOnPreferenceClickListener(null); // so they can't click twice
 					UpgradeManager.installHelperNarrative(PreferencesActivity.this);
-					UIUtilities.showToast(PreferencesActivity.this,
-							R.string.preferences_install_helper_narrative_success);
+					UIUtilities.showToast(PreferencesActivity.this, R.string
+							.preferences_install_helper_narrative_success);
 					PreferenceCategory aboutCategory = (PreferenceCategory) getPreferenceScreen().findPreference
 							(getString(R.string.key_about_category));
 					aboutCategory.removePreference(preference);
@@ -165,18 +165,18 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 				emailIntent.setType("plain/text");
 				emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{getString(R.string
 						.preferences_contact_us_email_address)});
-				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-						getString(R.string.preferences_contact_us_email_subject, getString(R.string.app_name),
-								SimpleDateFormat.getDateTimeInstance().format(new java.util.Date())));
+				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string
+						.preferences_contact_us_email_subject, getString(R.string.app_name), SimpleDateFormat
+						.getDateTimeInstance().format(new java.util.Date())));
 				Preference aboutPreference = findPreference(getString(R.string.key_about_application));
-				emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-						getString(R.string.preferences_contact_us_email_body, aboutPreference.getSummary()));
+				emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string
+						.preferences_contact_us_email_body, aboutPreference.getSummary()));
 				try {
 					startActivity(Intent.createChooser(emailIntent, getString(R.string.preferences_contact_us_title)));
 				} catch (ActivityNotFoundException e) {
-					UIUtilities.showFormattedToast(PreferencesActivity.this,
-							R.string.preferences_contact_us_email_error,
-							getString(R.string.preferences_contact_us_email_address));
+					UIUtilities.showFormattedToast(PreferencesActivity.this, R.string
+							.preferences_contact_us_email_error, getString(R.string
+							.preferences_contact_us_email_address));
 				}
 				return true;
 			}
@@ -190,8 +190,8 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 			aboutPreference.setTitle(getString(R.string.preferences_about_app_title, getString(R.string.app_name),
 					getString(R.string.version), info.versionName));
 			aboutPreference.setSummary(getString(R.string.preferences_about_app_summary, info.versionCode,
-					DebugUtilities.getApplicationBuildTime(getPackageManager(), getPackageName()),
-					DebugUtilities.getDeviceDebugSummary(getWindowManager(), getResources())));
+					DebugUtilities.getApplicationBuildTime(getPackageManager(), getPackageName()), DebugUtilities
+							.getDeviceDebugSummary(getWindowManager(), getResources())));
 		} catch (Exception e) {
 			PreferenceCategory aboutCategory = (PreferenceCategory) preferenceScreen.findPreference(getString(R.string
 					.key_about_category));
@@ -248,9 +248,9 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 
 			// set the summary of list preferences to their current value; audio bit rate is a special case
 			if (getString(R.string.key_audio_bitrate).equals(listPreference.getKey())) {
-				preference.setSummary((index >= 0 ? getString(R.string.current_value_as_sentence,
-						listPreference.getEntries()[index]) : "") + " " + getString(R.string
-						.preferences_audio_bitrate_summary)); // getString trims spaces
+				preference.setSummary((index >= 0 ? getString(R.string.current_value_as_sentence, listPreference
+						.getEntries()[index]) : "") + " " + getString(R.string.preferences_audio_bitrate_summary)); //
+						// getString trims spaces
 			} else {
 				preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
 			}
@@ -276,8 +276,8 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 							prefsEditor.putString(getString(R.string.key_bluetooth_directory), resultPath);
 							prefsEditor.commit(); // apply() is better, but only in SDK >= 9
 						} else {
-							UIUtilities.showToast(PreferencesActivity.this,
-									R.string.preferences_bluetooth_directory_error);
+							UIUtilities.showToast(PreferencesActivity.this, R.string
+									.preferences_bluetooth_directory_error);
 						}
 					}
 				}
