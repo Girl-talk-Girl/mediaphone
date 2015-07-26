@@ -839,7 +839,11 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		} else {
 			mPlaybackText.setVisibility(View.GONE);
 			mPlaybackTextWithImage.setVisibility(View.GONE);
+
 			// note - used to show an icon when audio only here; now we just display a blank frame
+			if (!hasImage && hasAudio) {
+				mCurrentPlaybackImage.setImageDrawable(null);
+			}
 		}
 
 		// start/seek any pre-cached audio players that might now be ready
