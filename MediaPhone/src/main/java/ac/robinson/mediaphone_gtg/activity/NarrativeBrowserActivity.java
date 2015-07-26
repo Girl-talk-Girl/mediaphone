@@ -781,7 +781,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			if (importedFiles == null) {
 				UIUtilities.showToast(NarrativeBrowserActivity.this, R.string.narrative_folder_not_found, true);
 			} else {
-				ArrayList<String> processedFiles = new ArrayList<String>();
+				ArrayList<String> processedFiles = new ArrayList<>();
 				searchRecursivelyForNarratives(importedFiles, processedFiles);
 				if (processedFiles.size() <= 0) {
 					UIUtilities.showFormattedToast(NarrativeBrowserActivity.this, R.string.narrative_import_not_found,

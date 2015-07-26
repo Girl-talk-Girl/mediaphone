@@ -50,7 +50,7 @@ public class NarrativeAdapter extends CursorAdapter {
 	private FrameAdapter mEmptyAdapter;
 
 	// must *not* be static - will leak on destroy otherwise...
-	private final HashMap<String, FrameAdapter> mFrameAdapters = new HashMap<String, FrameAdapter>();
+	private final HashMap<String, FrameAdapter> mFrameAdapters = new HashMap<>();
 
 	public NarrativeAdapter(BrowserActivity activity, boolean showKeyFrames, boolean isTemplateView) {
 		super(activity, null, 0); // null cursor and no auto querying - we use a loader to manage cursors
@@ -158,7 +158,7 @@ public class NarrativeAdapter extends CursorAdapter {
 				int horizontalPosition = adapter.getHorizontalPosition();
 				if (horizontalPosition > 0 && horizontalPosition > frameWidth) {
 					if (scrollPositions == null) {
-						scrollPositions = new HashMap<String, Integer>();
+						scrollPositions = new HashMap<>();
 					}
 					scrollPositions.put(adapter.getParentFilter(), adapter.getHorizontalPosition());
 					if (scrollPositions.size() > 20) {

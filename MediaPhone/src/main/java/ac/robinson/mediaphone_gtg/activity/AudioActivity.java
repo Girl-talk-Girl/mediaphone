@@ -116,13 +116,9 @@ public class AudioActivity extends MediaPhoneActivity {
 		PLAY_AUDIO, RECORD_AUDIO
 	}
 
-	;
-
 	private enum AfterRecordingMode {
 		DO_NOTHING, SWITCH_TO_PLAYBACK, ADD_FRAME_AFTER
 	}
-
-	;
 
 	private DisplayMode mDisplayMode;
 

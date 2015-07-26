@@ -70,7 +70,7 @@ public class FrameEditorActivity extends MediaPhoneActivity {
 	private String mReloadImagePath = null;
 	private boolean mDeleteFrameOnExit = false;
 
-	private LinkedHashMap<String, Integer> mFrameAudioItems = new LinkedHashMap<String, Integer>();
+	private LinkedHashMap<String, Integer> mFrameAudioItems = new LinkedHashMap<>();
 
 	// the ids of inherited (spanned) media items from previous frames
 	private String mImageInherited;

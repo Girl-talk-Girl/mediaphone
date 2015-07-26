@@ -120,9 +120,8 @@ public class MediaManager {
 		arguments1[0] = mediaId;
 		final ContentValues contentValues = new ContentValues();
 		contentValues.put(MediaItem.DELETED, 1);
-		int count = contentResolver.update(MediaItem.CONTENT_URI_LINK, contentValues,
+		return contentResolver.update(MediaItem.CONTENT_URI_LINK, contentValues,
 				mMediaInternalIdNotDeletedSelection, arguments1);
-		return count;
 	}
 
 	/**
@@ -190,8 +189,7 @@ public class MediaManager {
 			c = contentResolver.query(MediaItem.CONTENT_URI, MediaItem.PROJECTION_ALL, clause, arguments,
 					MediaItem.DEFAULT_SORT_ORDER);
 			if (c.moveToFirst()) {
-				final MediaItem media = MediaItem.fromCursor(c);
-				return media;
+				return MediaItem.fromCursor(c);
 			}
 		} finally {
 			if (c != null) {
@@ -231,7 +229,7 @@ public class MediaManager {
 	 * @return
 	 */
 	public static ArrayList<String> findLinkedParentIdsByMediaId(ContentResolver contentResolver, String mediaId) {
-		final ArrayList<String> parentIds = new ArrayList<String>();
+		final ArrayList<String> parentIds = new ArrayList<>();
 		final String[] arguments1 = mArguments1;
 		arguments1[0] = mediaId;
 		Cursor c = null;
@@ -284,7 +282,7 @@ public class MediaManager {
 	 * @return
 	 */
 	public static ArrayList<String> findLinkedMediaIdsByParentId(ContentResolver contentResolver, String parentId) {
-		final ArrayList<String> subIds = new ArrayList<String>();
+		final ArrayList<String> subIds = new ArrayList<>();
 		final String[] arguments1 = mArguments1;
 		arguments1[0] = parentId;
 		Cursor c = null;
@@ -346,7 +344,7 @@ public class MediaManager {
 
 	public static ArrayList<MediaItem> findMediaByParentId(ContentResolver contentResolver, String parentId,
 	                                                       boolean includeLinks) {
-		final ArrayList<MediaItem> medias = new ArrayList<MediaItem>();
+		final ArrayList<MediaItem> medias = new ArrayList<>();
 		Cursor c = null;
 		try {
 			if (includeLinks) {
@@ -378,7 +376,7 @@ public class MediaManager {
 
 	public static ArrayList<String> findMediaIdsByParentId(ContentResolver contentResolver, String parentId,
 	                                                       boolean includeLinks) {
-		final ArrayList<String> mediaIds = new ArrayList<String>();
+		final ArrayList<String> mediaIds = new ArrayList<>();
 		Cursor c = null;
 		try {
 			if (includeLinks) {
@@ -437,7 +435,7 @@ public class MediaManager {
 	}
 
 	private static ArrayList<String> findDeletedMedia(ContentResolver contentResolver, Uri contentUri) {
-		final ArrayList<String> mediaIds = new ArrayList<String>();
+		final ArrayList<String> mediaIds = new ArrayList<>();
 		Cursor c = null;
 		try {
 			c = contentResolver.query(contentUri, MediaItem.PROJECTION_INTERNAL_ID, mDeletedSelection, null, null);

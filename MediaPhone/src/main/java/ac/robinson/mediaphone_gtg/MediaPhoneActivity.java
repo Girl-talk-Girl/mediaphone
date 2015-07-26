@@ -1076,7 +1076,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 				}
 
 				// hold a list of icons to update, so we only can do database manipulation first
-				ArrayList<String> iconsToUpdate = new ArrayList<String>();
+				ArrayList<String> iconsToUpdate = new ArrayList<>();
 
 				// now remove the media link from all of these frames - we do this way rather than just selecting links
 				// because links are not ordered TODO: could join select with frames table, ordering by sequence id?
@@ -1146,7 +1146,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 
 		// and a list of icons that we will need to update
 		// this also fixes an issue where database conflicts were occurring (random quits) in the task thread
-		final ArrayList<String> iconsToUpdate = new ArrayList<String>();
+		final ArrayList<String> iconsToUpdate = new ArrayList<>();
 		if (deletedMediaItem != null) {
 			iconsToUpdate.addAll(MediaManager.findLinkedParentIdsByMediaId(contentResolver, deletedMediaItem
 					.getInternalId()));
@@ -1157,7 +1157,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 			}
 		}
 		// remove duplicates by adding to a hash set then retrieving (LinkedHashSet also preserves order)
-		LinkedHashSet<String> setItems = new LinkedHashSet<String>(iconsToUpdate);
+		LinkedHashSet<String> setItems = new LinkedHashSet<>(iconsToUpdate);
 		iconsToUpdate.clear();
 		iconsToUpdate.addAll(setItems);
 
@@ -1178,7 +1178,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		}
 
 		// get inherited media (items from the previous frame that span multiple frames)
-		final ArrayList<MediaItem> inheritedMedia = new ArrayList<MediaItem>();
+		final ArrayList<MediaItem> inheritedMedia = new ArrayList<>();
 		if (previousFrameId != null) {
 			ArrayList<MediaItem> prevMedia = MediaManager.findMediaByParentId(contentResolver, previousFrameId);
 			// filter - we only need items that span frames
@@ -1278,7 +1278,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 						// check this frame's media for collisions with spanning items
 						ArrayList<MediaItem> frameMedia = MediaManager.findMediaByParentId(contentResolver, frameId,
 								false); // no inherited items needed (now allow only one spanning audio item per frame)
-						ArrayList<MediaItem> mediaToRemove = new ArrayList<MediaItem>();
+						ArrayList<MediaItem> mediaToRemove = new ArrayList<>();
 						int audioCount = 0;
 						boolean hasSpanningAudio = false;
 						for (MediaItem existingMedia : frameMedia) {
@@ -1375,7 +1375,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 
 					// get the known links to this media item and check the frames contain other media; remove if not
 					iconsToUpdate = MediaManager.findLinkedParentIdsByMediaId(contentResolver, mediaId);
-					ArrayList<String> removedIcons = new ArrayList<String>();
+					ArrayList<String> removedIcons = new ArrayList<>();
 					for (final String frameId : iconsToUpdate) {
 						if (MediaManager.countMediaByParentId(contentResolver, frameId, false) <= 0) {
 							// don't allow frames that don't have any normal (i.e., non-linked media) - set deleted
@@ -1392,7 +1392,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 
 				} else {
 
-					iconsToUpdate = new ArrayList<String>();
+					iconsToUpdate = new ArrayList<>();
 					ArrayList<String> narrativeFrameIds = FramesManager.getFollowingFrameIds(contentResolver,
 							parentId, false);
 					if (narrativeFrameIds == null) {
@@ -1580,7 +1580,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 						.replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase(Locale.ENGLISH), exportId);
 
 				Resources res = getResources();
-				final Map<Integer, Object> settings = new Hashtable<Integer, Object>();
+				final Map<Integer, Object> settings = new Hashtable<>();
 				settings.put(MediaUtilities.KEY_AUDIO_RESOURCE_ID, R.raw.ic_audio_playback);
 
 				// some output settings (TODO: make sure HTML version respects these)
@@ -1747,7 +1747,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 
 				// must use media store parameters properly, or YouTube export fails
 				// see: http://stackoverflow.com/questions/5884092/
-				ArrayList<Uri> filesToSend = new ArrayList<Uri>();
+				ArrayList<Uri> filesToSend = new ArrayList<>();
 				for (Uri fileUri : movFiles) {
 					File outputFile = new File(fileUri.getPath());
 					ContentValues content = new ContentValues(5);
@@ -2192,12 +2192,12 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		 * before and after execution; the value <b>after</b> the task is complete will be returned via
 		 * onBackgroundTaskCompleted. Return 0 if no result is needed.
 		 */
-		public abstract int getTaskId();
+		int getTaskId();
 
 		/**
 		 * @return Whether the task should show a generic, un-cancellable progress dialog
 		 */
-		public abstract boolean getShowDialog();
+		boolean getShowDialog();
 	}
 
 	protected BackgroundRunnable getMediaCleanupRunnable() {
@@ -2322,9 +2322,9 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 				final long newCreationDate = newItem.getCreationDate();
 
 				boolean updateFirstFrame = true;
-				ArrayList<String> fromFiles = new ArrayList<String>();
-				ArrayList<String> toFiles = new ArrayList<String>();
-				HashMap<String, String> linkedMedia = new HashMap<String, String>();
+				ArrayList<String> fromFiles = new ArrayList<>();
+				ArrayList<String> toFiles = new ArrayList<>();
+				HashMap<String, String> linkedMedia = new HashMap<>();
 				for (FrameItem frame : narrativeFrames) {
 					final FrameItem newFrame = FrameItem.fromExisting(frame, MediaPhoneProvider.getNewInternalId(),
 							toId, newCreationDate);
@@ -2529,7 +2529,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		};
 	}
 
-	public static enum FadeType {
+	public enum FadeType {
 		NONE, FADEIN // CROSSFADE - disabled because of memory issues (holding previous and next bitmaps in memory)
 	}
 
@@ -2585,7 +2585,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		public String mImagePath;
 
 		public BitmapLoaderTask(ImageView imageView, FadeType fadeType) {
-			mImageView = new WeakReference<ImageView>(imageView);
+			mImageView = new WeakReference<>(imageView);
 			mFadeType = fadeType;
 		}
 
@@ -2650,7 +2650,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		private final WeakReference<BitmapLoaderTask> bitmapWorkerTaskReference;
 
 		public BitmapLoaderHolder(BitmapLoaderTask bitmapWorkerTask) {
-			bitmapWorkerTaskReference = new WeakReference<BitmapLoaderTask>(bitmapWorkerTask);
+			bitmapWorkerTaskReference = new WeakReference<>(bitmapWorkerTask);
 		}
 
 		public BitmapLoaderTask getBitmapWorkerTask() {

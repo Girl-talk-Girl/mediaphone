@@ -174,8 +174,7 @@ public class FramesManager {
 			// could add sort order here, but we assume no duplicates...
 			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, clause, arguments, null);
 			if (c.moveToFirst()) {
-				final FrameItem frame = FrameItem.fromCursor(c);
-				return frame;
+				return FrameItem.fromCursor(c);
 			}
 		} finally {
 			if (c != null) {
@@ -188,7 +187,7 @@ public class FramesManager {
 	public static ArrayList<FrameItem> findFramesByParentId(ContentResolver contentResolver, String parentId) {
 		final String[] arguments1 = mArguments1;
 		arguments1[0] = parentId;
-		final ArrayList<FrameItem> frames = new ArrayList<FrameItem>();
+		final ArrayList<FrameItem> frames = new ArrayList<>();
 		Cursor c = null;
 		try {
 			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, mFrameParentIdSelection,
@@ -212,7 +211,7 @@ public class FramesManager {
 		final String[] arguments;
 		arguments = mArguments1;
 		arguments[0] = parentId;
-		final ArrayList<String> frameIds = new ArrayList<String>();
+		final ArrayList<String> frameIds = new ArrayList<>();
 		Cursor c = null;
 		try {
 			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_INTERNAL_ID,
@@ -241,8 +240,7 @@ public class FramesManager {
 			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, mFrameParentIdSelection,
 					arguments1, FrameItem.DEFAULT_SORT_ORDER);
 			if (c.moveToFirst()) {
-				final FrameItem frame = FrameItem.fromCursor(c);
-				return frame;
+				return FrameItem.fromCursor(c);
 			}
 		} finally {
 			if (c != null) {
@@ -261,8 +259,7 @@ public class FramesManager {
 					mFrameParentIdSelection, arguments1, FrameItem.DEFAULT_SORT_ORDER);
 			if (c.moveToLast()) {
 				// for speed, don't get the whole FrameItem
-				final String lastId = c.getString(c.getColumnIndexOrThrow(FrameItem.INTERNAL_ID));
-				return lastId;
+				return c.getString(c.getColumnIndexOrThrow(FrameItem.INTERNAL_ID));
 			}
 		} finally {
 			if (c != null) {
@@ -283,7 +280,7 @@ public class FramesManager {
 	}
 
 	public static ArrayList<String> findDeletedFrames(ContentResolver contentResolver) {
-		final ArrayList<String> frameIds = new ArrayList<String>();
+		final ArrayList<String> frameIds = new ArrayList<>();
 		Cursor c = null;
 		try {
 			c = contentResolver.query(FrameItem.CONTENT_URI, FrameItem.PROJECTION_INTERNAL_ID, mDeletedSelection,
@@ -329,7 +326,7 @@ public class FramesManager {
 
 		final String parentFrameId = parentFrame.getInternalId();
 		ArrayList<String> narrativeFrameIds = findFrameIdsByParentId(contentResolver, parentFrame.getParentId());
-		ArrayList<String> idsToRemove = new ArrayList<String>();
+		ArrayList<String> idsToRemove = new ArrayList<>();
 
 		// used to use an iterator here, but it turns out that remove() can fail silently (!)
 		String previousFrameId = null;

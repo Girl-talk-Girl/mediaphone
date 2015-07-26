@@ -24,7 +24,7 @@ public class PlaybackNarrativeDescriptor {
 	public final int mNarrativeImageAdjustment;
 	public int mNarrativeStartTime = 0;
 	public int mNarrativeDuration = 0;
-	public final LinkedHashMap<Integer, String> mTimeToFrameMap = new LinkedHashMap<Integer, String>();
+	public final LinkedHashMap<Integer, String> mTimeToFrameMap = new LinkedHashMap<>();
 
 	/**
 	 * @param imageAdjustment an adjustment, in milliseconds to subtract from the start time of images in order to make

@@ -117,8 +117,8 @@ public class NarrativeItem implements BaseColumns {
 	 */
 	public ArrayList<FrameMediaContainer> getContentList(ContentResolver contentResolver) {
 
-		ArrayList<FrameMediaContainer> exportedContent = new ArrayList<FrameMediaContainer>();
-		HashMap<String, Integer> longRunningAudio = new HashMap<String, Integer>(); // so we can adjust durations
+		ArrayList<FrameMediaContainer> exportedContent = new ArrayList<>();
+		HashMap<String, Integer> longRunningAudio = new HashMap<>(); // so we can adjust durations
 
 		ArrayList<FrameItem> narrativeFrames = FramesManager.findFramesByParentId(contentResolver, mInternalId);
 		for (FrameItem frame : narrativeFrames) {
@@ -229,8 +229,8 @@ public class NarrativeItem implements BaseColumns {
 	public ArrayList<PlaybackMediaHolder> getPlaybackContent(ContentResolver contentResolver, String startingFrame,
 	                                                         PlaybackNarrativeDescriptor narrativeDescriptor) {
 
-		final ArrayList<PlaybackMediaHolder> narrativeContent = new ArrayList<PlaybackMediaHolder>();
-		final HashMap<String, Integer> longRunningAudioCounts = new HashMap<String, Integer>(); // to adjust durations
+		final ArrayList<PlaybackMediaHolder> narrativeContent = new ArrayList<>();
+		final HashMap<String, Integer> longRunningAudioCounts = new HashMap<>(); // to adjust durations
 		final LinkedHashMap<Integer, String> mTimeToFrameMap = narrativeDescriptor.mTimeToFrameMap; // to track frames
 
 		int narrativeTime = 0;

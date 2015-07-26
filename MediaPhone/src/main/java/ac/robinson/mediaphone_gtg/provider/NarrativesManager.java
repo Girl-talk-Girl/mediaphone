@@ -137,8 +137,7 @@ public class NarrativesManager {
 			// could add sort order here, but we assume no duplicates...
 			c = contentResolver.query(contentType, NarrativeItem.PROJECTION_ALL, clause, arguments, null);
 			if (c.moveToFirst()) {
-				final NarrativeItem narrative = NarrativeItem.fromCursor(c);
-				return narrative;
+				return NarrativeItem.fromCursor(c);
 			}
 		} finally {
 			if (c != null) {
@@ -178,8 +177,7 @@ public class NarrativesManager {
 			c = contentResolver.query(contentType, NarrativeItem.PROJECTION_NEXT_EXTERNAL_ID, mNotDeletedSelection,
 					null, null);
 			if (c.moveToFirst()) {
-				final int newId = c.getInt(c.getColumnIndexOrThrow(NarrativeItem.MAX_ID)) + 1;
-				return newId;
+				return c.getInt(c.getColumnIndexOrThrow(NarrativeItem.MAX_ID)) + 1;
 			}
 		} finally {
 			if (c != null) {
@@ -198,7 +196,7 @@ public class NarrativesManager {
 	}
 
 	private static ArrayList<String> findDeletedItems(Uri contentType, ContentResolver contentResolver) {
-		final ArrayList<String> narrativeIds = new ArrayList<String>();
+		final ArrayList<String> narrativeIds = new ArrayList<>();
 		Cursor c = null;
 		try {
 			c = contentResolver.query(contentType, NarrativeItem.PROJECTION_INTERNAL_ID, mDeletedSelection, null,

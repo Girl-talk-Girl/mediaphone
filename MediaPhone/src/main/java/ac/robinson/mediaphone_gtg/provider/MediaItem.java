@@ -131,9 +131,8 @@ public class MediaItem implements BaseColumns {
 	}
 
 	public static File getFile(String mediaParentId, String mediaInternalId, String mediaFileExtension) {
-		final File filePath = new File(FrameItem.getStorageDirectory(mediaParentId),
+		return new File(FrameItem.getStorageDirectory(mediaParentId),
 				mediaInternalId + "." + mediaFileExtension);
-		return filePath;
 	}
 
 	/**

@@ -36,7 +36,6 @@ public class PressableRelativeLayout extends RelativeLayout {
 	public static final int EDIT_ICON_LEFT = R.drawable.ic_narratives_insert_left;
 	public static final int EDIT_ICON_RIGHT = R.drawable.ic_narratives_insert_right;
 
-	private ImageView mOverlayView;
 	private Integer mOverlayResource;
 	private boolean mHighlightOnPress = true;
 
@@ -70,21 +69,21 @@ public class PressableRelativeLayout extends RelativeLayout {
 	@Override
 	public void setPressed(boolean pressed) {
 		super.setPressed(pressed);
-		mOverlayView = (ImageView) findViewById(R.id.frame_item_action_overlay);
+		ImageView overlayView = (ImageView) findViewById(R.id.frame_item_action_overlay);
 		if (pressed && mHighlightOnPress) {
-			mOverlayView.setBackgroundResource(R.drawable.frame_item_highlight);
+			overlayView.setBackgroundResource(R.drawable.frame_item_highlight);
 			if (mOverlayResource != null) {
 				if (mOverlayResource == PLAY_ICON || mOverlayResource == EDIT_ICON) {
-					mOverlayView.setScaleType(ScaleType.CENTER_INSIDE);
+					overlayView.setScaleType(ScaleType.CENTER_INSIDE);
 				} else {
-					mOverlayView.setScaleType(ScaleType.CENTER_CROP);
+					overlayView.setScaleType(ScaleType.CENTER_CROP);
 				}
-				mOverlayView.setImageResource(mOverlayResource);
+				overlayView.setImageResource(mOverlayResource);
 			}
 		} else {
 			mOverlayResource = null;
-			mOverlayView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-			mOverlayView.setImageDrawable(null);
+			overlayView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+			overlayView.setImageDrawable(null);
 		}
 	}
 }

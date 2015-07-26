@@ -52,7 +52,6 @@ import ac.robinson.util.UIUtilities;
 //see: http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/graphics/CameraPreview.html
 public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
-	private SurfaceView mSurfaceView;
 	private SurfaceHolder mHolder;
 	private Size mPreviewSize;
 	private List<Size> mSupportedPreviewSizes;
@@ -88,7 +87,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 	}
 
 	public interface ErrorCallback {
-		static final int PREVIEW_FAILED = -1;
+		int PREVIEW_FAILED = -1;
 
 		void onError(int error);
 	}
@@ -99,11 +98,11 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
 		setBackgroundColor(Color.BLACK);
 
-		mSurfaceView = new SurfaceView(context);
-		addView(mSurfaceView);
+		SurfaceView surfaceView = new SurfaceView(context);
+		addView(surfaceView);
 
 		// install callback so we're notified when surface is created/destroyed
-		mHolder = mSurfaceView.getHolder();
+		mHolder = surfaceView.getHolder();
 		mHolder.addCallback(this);
 		UIUtilities.setPushBuffers(mHolder);
 

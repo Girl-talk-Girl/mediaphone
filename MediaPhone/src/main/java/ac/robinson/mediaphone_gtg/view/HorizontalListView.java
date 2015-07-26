@@ -73,7 +73,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	protected Scroller mScroller;
 	private GestureDetector mGestureDetector;
 	private HorizontalGestureListener mGestureListener = new HorizontalGestureListener();
-	private Queue<View> mRemovedViewQueue = new LinkedList<View>();
+	private Queue<View> mRemovedViewQueue = new LinkedList<>();
 	private OnItemSelectedListener mOnItemSelected;
 	private OnItemClickListener mOnItemClicked;
 	private OnItemLongClickListener mOnItemLongClicked;
@@ -218,8 +218,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 		}
 
 		if (mScroller.computeScrollOffset()) {
-			int scrollx = mScroller.getCurrX();
-			mNextX = scrollx;
+			mNextX = mScroller.getCurrX();
 		}
 
 		if (mNextX <= 0) {
@@ -914,8 +913,6 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 			return true;
 		}
 	}
-
-	;
 
 	public int getScrollState() {
 		return mScrollState; // for FrameAdapter purposes

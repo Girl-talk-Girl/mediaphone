@@ -120,8 +120,6 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 		DISPLAY_PICTURE, TAKE_PICTURE
 	}
 
-	;
-
 	private DisplayMode mDisplayMode;
 
 	@Override

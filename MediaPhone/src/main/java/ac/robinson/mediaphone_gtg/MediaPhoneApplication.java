@@ -29,6 +29,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -75,7 +76,7 @@ public class MediaPhoneApplication extends Application {
 
 	@Override
 	public void onCreate() {
-		if (MediaPhone.DEBUG) {
+		if (MediaPhone.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build());
 		}
@@ -195,7 +196,7 @@ public class MediaPhoneApplication extends Application {
 			mCurrentActivity.clear();
 			mCurrentActivity = null;
 		}
-		mCurrentActivity = new WeakReference<MediaPhoneActivity>(activity);
+		mCurrentActivity = new WeakReference<>(activity);
 		for (MessageContainer msg : mSavedMessages) {
 			// must duplicate the data here, or we crash
 			Message clientMessage = Message.obtain(null, msg.what, 0, 0);
