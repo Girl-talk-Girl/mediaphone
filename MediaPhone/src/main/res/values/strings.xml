@@ -162,6 +162,7 @@
 	<string name="narrative_list_empty">Press the + button above to get started&#160;&#160;&#160;&#x21E7;</string>
 	<string name="narrative_folder_not_found">Error: couldn\'t find the folder to import narratives from – please set the import directory in settings</string>
 	<string name="narrative_import_not_found">No narratives found to import – all files from a SMIL export should be placed in the import directory selected in settings (currently %1$s)</string>
+	<string name="narrative_sample_not_editable">Create your own story to edit – touch + to get started</string>
 
 	<!-- helper narrative -->
 	<string name="helper_narrative_frame_1">Welcome to\n%1$s!\n\nTouch to edit,\nlong press to play</string>

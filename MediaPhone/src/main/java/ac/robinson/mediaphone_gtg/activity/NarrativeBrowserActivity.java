@@ -21,6 +21,7 @@
 package ac.robinson.mediaphone_gtg.activity;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -57,6 +58,7 @@ import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.mediaphone_gtg.provider.FrameAdapter;
 import ac.robinson.mediaphone_gtg.provider.FrameItem;
 import ac.robinson.mediaphone_gtg.provider.FramesManager;
+import ac.robinson.mediaphone_gtg.provider.MediaPhoneProvider;
 import ac.robinson.mediaphone_gtg.provider.NarrativeAdapter;
 import ac.robinson.mediaphone_gtg.provider.NarrativeItem;
 import ac.robinson.mediaphone_gtg.provider.NarrativesManager;
@@ -281,9 +283,8 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new CursorLoader(NarrativeBrowserActivity.this, NarrativeItem.NARRATIVE_CONTENT_URI,
-				NarrativeItem.PROJECTION_ALL, NarrativeItem.SELECTION_NOT_DELETED, null,
-				NarrativeItem.DEFAULT_SORT_ORDER);
+		return new CursorLoader(NarrativeBrowserActivity.this, NarrativeItem.NARRATIVE_CONTENT_URI, NarrativeItem
+				.PROJECTION_ALL, NarrativeItem.SELECTION_NOT_DELETED, null, NarrativeItem.DEFAULT_SORT_ORDER);
 	}
 
 	@Override
@@ -508,8 +509,8 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 
 	private void postScrollToSelectedFrame(String narrativeId, String frameId) {
 		mScrollHandler.removeMessages(R.id.msg_scroll_to_selected_frame);
-		Message message = mScrollHandler.obtainMessage(R.id.msg_scroll_to_selected_frame,
-				NarrativeBrowserActivity.this);
+		Message message = mScrollHandler.obtainMessage(R.id.msg_scroll_to_selected_frame, NarrativeBrowserActivity
+				.this);
 		Bundle messageData = message.getData();
 		messageData.putString(getString(R.string.extra_parent_id), narrativeId);
 		messageData.putString(getString(R.string.extra_internal_id), frameId);
@@ -519,8 +520,8 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 	private void postDelayedScrollToSelectedFrame(String narrativeId, String frameId) {
 		// intentionally not removing, so non-delayed call from onActivityResult is handled first (onResume = rotation)
 		// mScrollHandler.removeMessages(R.id.msg_scroll_to_selected_frame);
-		Message message = mScrollHandler.obtainMessage(R.id.msg_scroll_to_selected_frame,
-				NarrativeBrowserActivity.this);
+		Message message = mScrollHandler.obtainMessage(R.id.msg_scroll_to_selected_frame, NarrativeBrowserActivity
+				.this);
 		Bundle messageData = message.getData();
 		messageData.putString(getString(R.string.extra_parent_id), narrativeId);
 		messageData.putString(getString(R.string.extra_internal_id), frameId);
@@ -575,6 +576,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 				if (FrameItem.LOADING_FRAME_ID.equals(holder.frameInternalId)) {
 					return; // don't allow clicking on the loading frame
 				} else if (NarrativeItem.HELPER_NARRATIVE_ID.equals(mCurrentSelectedNarrativeId)) {
+					UIUtilities.showToast(NarrativeBrowserActivity.this, R.string.narrative_sample_not_editable);
 					return; // don't allow editing the helper narrative
 				} else if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId) || FrameItem.KEY_FRAME_ID_END
 						.equals(holder.frameInternalId)) {
@@ -599,12 +601,13 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			if (view != null && parent != null) {
 				getAndSaveNarrativeId(parent);
 				if (NarrativeItem.HELPER_NARRATIVE_ID.equals(mCurrentSelectedNarrativeId)) {
+					UIUtilities.showToast(NarrativeBrowserActivity.this, R.string.narrative_sample_not_editable);
 					return true; // don't allow editing the helper narrative
 				} else {
 					final FrameViewHolder holder = (FrameViewHolder) view.getTag();
 					if (insertNewFrameAfter != 0) {
-						// used to be just on single press, but that made it confusing when a long double press did nothing
-
+						// used to be just on single press, but that made it confusing when a long double press did
+						// nothing
 						insertFrameAfter(mCurrentSelectedNarrativeId, holder.frameInternalId);
 					} else {
 						playNarrative(holder.frameInternalId);
@@ -622,7 +625,8 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			FrameItem copiedFrame = FramesManager.findFrameByInternalId(getContentResolver(), copiedFrameId);
 			//getDeleted not necessarily required, but could be confusing if not used (e.g., copying invisible items)
 			if (copiedFrame != null && !copiedFrame.getDeleted()) {
-				final CharSequence[] items = {getString(R.string.add_blank_frame), getString(R.string.add_paste_frame)};
+				final CharSequence[] items = {getString(R.string.add_blank_frame), getString(R.string
+						.add_paste_frame)};
 				AlertDialog.Builder builder = new AlertDialog.Builder(NarrativeBrowserActivity.this);
 				builder.setTitle(R.string.title_add_frame);
 				builder.setIcon(android.R.drawable.ic_dialog_info);
@@ -683,9 +687,7 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 					mNarratives.setSelectionFromTop(0, 0); // so that the new narrative is visible
 					switch (item) {
 						case 0:
-							final Intent frameEditorIntent = new Intent(NarrativeBrowserActivity.this,
-									FrameEditorActivity.class);
-							startActivityForResult(frameEditorIntent, MediaPhone.R_id_intent_frame_editor);
+							addNarrativeOrPasteFrame();
 							break;
 						case 1:
 							final Intent templateBrowserIntent = new Intent(NarrativeBrowserActivity.this,
@@ -698,6 +700,48 @@ public class NarrativeBrowserActivity extends BrowserActivity {
 			});
 			AlertDialog alert = builder.create();
 			alert.show();
+		} else {
+			addNarrativeOrPasteFrame();
+		}
+	}
+
+	private void addNarrativeOrPasteFrame() {
+		SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
+		final String copiedFrameId = copyFrameSettings.getString(getString(R.string.key_copied_frame), null);
+		if (copiedFrameId != null) {
+			FrameItem copiedFrame = FramesManager.findFrameByInternalId(getContentResolver(), copiedFrameId);
+			//getDeleted not necessarily required, but could be confusing if not used (e.g., copying invisible items)
+			if (copiedFrame != null && !copiedFrame.getDeleted()) {
+				final CharSequence[] items = {getString(R.string.add_blank_frame), getString(R.string.add_paste_frame)};
+				AlertDialog.Builder builder = new AlertDialog.Builder(NarrativeBrowserActivity.this);
+				builder.setTitle(R.string.title_add_frame);
+				builder.setIcon(android.R.drawable.ic_dialog_info);
+				builder.setNegativeButton(R.string.button_cancel, null);
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int item) {
+						switch (item) {
+							case 0:
+								final Intent frameEditorIntent = new Intent(NarrativeBrowserActivity.this, FrameEditorActivity.class);
+								startActivityForResult(frameEditorIntent, MediaPhone.R_id_intent_frame_editor);
+								break;
+							case 1:
+								// new narrative required
+								String narrativeId = MediaPhoneProvider.getNewInternalId();
+								ContentResolver contentResolver = getContentResolver();
+								NarrativeItem newNarrative = new NarrativeItem(narrativeId, NarrativesManager.getNextNarrativeExternalId
+										(contentResolver));
+								NarrativesManager.addNarrative(contentResolver, newNarrative);
+								runQueuedBackgroundTask(getFrameCopyRunnable(copiedFrameId, narrativeId, null));
+								// TODO: scroll to the new frame's position
+								break;
+						}
+						dialog.dismiss();
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
 		} else {
 			final Intent frameEditorIntent = new Intent(NarrativeBrowserActivity.this, FrameEditorActivity.class);
 			startActivityForResult(frameEditorIntent, MediaPhone.R_id_intent_frame_editor);

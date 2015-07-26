@@ -2450,8 +2450,10 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 				}
 
 				FramesManager.addFrame(resources, contentResolver, newFrame, false);
-				int narrativeSequenceId = adjustNarrativeSequenceIds(parentId, insertAfterId);
-				newFrame.setNarrativeSequenceId(narrativeSequenceId);
+				if (insertAfterId != null) { // could be null if we paste directly into a new narrative
+					int narrativeSequenceId = adjustNarrativeSequenceIds(parentId, insertAfterId);
+					newFrame.setNarrativeSequenceId(narrativeSequenceId);
+				}
 				FramesManager.updateFrame(resources, contentResolver, newFrame, true);
 			}
 		};

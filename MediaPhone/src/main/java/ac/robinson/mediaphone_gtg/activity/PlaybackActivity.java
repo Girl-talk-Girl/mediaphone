@@ -810,7 +810,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		}
 
 		// set background colours on both image and text
-		int backgroundColour = parentFrame.getBackgroundColour();
+		int backgroundColour = parentFrame == null ? 0 : parentFrame.getBackgroundColour();
 		backgroundColour = backgroundColour < 0 ? backgroundColour : getResources().getColor(R.color.frame_icon_background);
 		mCurrentPlaybackImage.setBackgroundColor(backgroundColour);
 		mPlaybackText.setBackgroundColor(backgroundColour);

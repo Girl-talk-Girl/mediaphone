@@ -161,6 +161,7 @@
 	<string name="narrative_list_empty">Нажмите кнопку + чтобы начать работу&#160;&#160;&#160;&#x21E7;</string>
 	<string name="narrative_folder_not_found">Ошибка: не найдена исходная папка – пожалуйста, укажите директорию  импортирования в настройках</string>
 	<string name="narrative_import_not_found">История для импортирования не найдена – все файлы из SMIL экспорта должны быть помещены в директорию импортирования, выбранную в параметрах настроек  (в настоящее время %1$s)</string>
+	<string name="narrative_sample_not_editable">Чтобы создать свою историю, нажмите +</string>
 
 	<!--helper narrative-->
 	<string name="helper_narrative_frame_1">Добро пожаловать в\n%1$s!\n\nКоснитесь для редактирования,\nдлинное нажатие для воспроизведения</string>

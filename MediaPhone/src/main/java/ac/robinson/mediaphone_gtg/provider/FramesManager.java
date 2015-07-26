@@ -269,7 +269,7 @@ public class FramesManager {
 				c.close();
 			}
 		}
-		return null; // no existing frames (but should not happen)
+		return null; // no existing frames (should only happen when we paste directly into a new narrative)
 	}
 
 	public static int countFramesByParentId(ContentResolver contentResolver, String parentId) {
