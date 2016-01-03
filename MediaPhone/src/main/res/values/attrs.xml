@@ -159,6 +159,7 @@
 	<string name="name_storage_directory" translatable="false">_storage</string>
 	<string name="name_temp_directory" translatable="false">_temp</string>
 	<string name="name_thumbs_directory" translatable="false">_thumbs</string>
+	<string name="name_resources_directory" translatable="false">_resources</string>
 
 	<!-- intent extras -->
 	<string name="extra_internal_id" translatable="false">internal_id</string>

@@ -264,22 +264,6 @@
 	<string name="menu_export">Экспортировать</string>
 
 	<!-- gtg-resources -->
-	<string name="error_loading_resource_english">Error: couldn\'t load the resource — please try again</string>
-	<string name="error_loading_resource_russian">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
-	<string name="resources_title_1_english">Girl-talk-Girl Project</string>
-	<string name="resources_title_2_english">GBV Links</string>
-	<string name="resources_title_3_english">GBV Facts Worldwide</string>
-	<string name="resources_title_4_english">GBV Glossaries</string>
-	<string name="resources_title_5_english">GBV Story Ideas</string>
-	<string name="resources_title_6_english">Story Making Links</string>
-	<string name="resources_title_7_english">Safe Routes</string>
-	<string name="resources_title_1_russian">Проект Girl-talk-Girl</string>
-	<string name="resources_title_2_russian">Ресурсы по ГН</string>
-	<string name="resources_title_3_russian">Глоссарий</string>
-	<string name="resources_title_4_russian">Идеи для историй о ГН</string>
-	<string name="resources_title_5_russian">Линки для создания истории</string>
-	<string name="resources_title_6_russian">Безопасные маршруты</string>
-
 	<string name="audio_library_subway">Метро</string>
 	<string name="audio_library_ambulance">Скорая помощь</string>
 	<string name="audio_library_footsteps">Шаги</string>

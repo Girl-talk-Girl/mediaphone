@@ -121,8 +121,11 @@ public class MediaPhoneApplication extends Application {
 		MediaPhone.DIRECTORY_THUMBS = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R
 				.string.name_thumbs_directory), useSDCard, false);
 
-		// temp directory must be world readable to be able to send files, so always prefer external (checked on
-		// export)
+		// store cached resources separately
+		MediaPhone.DIRECTORY_RESOURCES = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R
+				.string.name_resources_directory), useSDCard, false);
+
+		// temp directory must be world readable to be able to send files so always prefer external (checked on export)
 		MediaPhone.DIRECTORY_TEMP = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
 				.name_temp_directory), true, true);
 	}
@@ -278,7 +281,7 @@ public class MediaPhoneApplication extends Application {
 		}
 		if (!mImportingServiceIsBound) {
 			final Intent bindIntent = new Intent(MediaPhoneApplication.this, ImportingService.class);
-			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_CLASS, "ac.robinson.mediaphone.importing" +
+			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_CLASS, "ac.robinson.mediaphone.importing" + "" +
 					".BluetoothObserver");
 			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_PATH, MediaPhone.IMPORT_DIRECTORY);
 			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_REQUIRE_BT, !watchWithoutBluetoothEnabled);

@@ -270,22 +270,24 @@
 	<string name="menu_export">Export</string>
 	<string name="menu_preferences" translatable="false">@string/title_preferences</string>
 
-	<!-- gtg-resources -->
-	<string name="error_loading_resource_english">Error: couldn\'t load the resource — please try again</string>
-	<string name="error_loading_resource_russian">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
-	<string name="resources_title_1_english">Girl-talk-Girl Project</string>
-	<string name="resources_title_2_english">GBV Links</string>
-	<string name="resources_title_3_english">GBV Facts Worldwide</string>
-	<string name="resources_title_4_english">GBV Glossaries</string>
-	<string name="resources_title_5_english">GBV Story Ideas</string>
-	<string name="resources_title_6_english">Story Making Links</string>
-	<string name="resources_title_7_english">Safe Routes</string>
-	<string name="resources_title_1_russian">Проект Girl-talk-Girl</string>
-	<string name="resources_title_2_russian">Ресурсы по ГН</string>
-	<string name="resources_title_3_russian">Глоссарий</string>
-	<string name="resources_title_4_russian">Идеи для историй о ГН</string>
-	<string name="resources_title_5_russian">Линки для создания истории</string>
-	<string name="resources_title_6_russian">Безопасные маршруты</string>
+	<!-- gtg-resources (not translatable as these are in both languages in both versions) -->
+	<string name="error_loading_resource_english" translatable="false">Error: couldn\'t load the resource — please try again</string>
+	<string name="error_loading_resource_russian" translatable="false">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
+	<string name="resource_update_available" translatable="false">Resource updates available</string>
+	<string name="resource_update_accept" translatable="false">Update now</string>
+	<string name="resources_title_1_english" translatable="false">Girl-talk-Girl Project</string>
+	<string name="resources_title_2_english" translatable="false">GBV Links</string>
+	<string name="resources_title_3_english" translatable="false">GBV Facts Worldwide</string>
+	<string name="resources_title_4_english" translatable="false">GBV Glossaries</string>
+	<string name="resources_title_5_english" translatable="false">GBV Story Ideas</string>
+	<string name="resources_title_6_english" translatable="false">Story Making Links</string>
+	<string name="resources_title_7_english" translatable="false">Safe Routes</string>
+	<string name="resources_title_1_russian" translatable="false">Проект Girl-talk-Girl</string>
+	<string name="resources_title_2_russian" translatable="false">Ресурсы по ГН</string>
+	<string name="resources_title_3_russian" translatable="false">Глоссарий</string>
+	<string name="resources_title_4_russian" translatable="false">Идеи для историй о ГН</string>
+	<string name="resources_title_5_russian" translatable="false">Линки для создания истории</string>
+	<string name="resources_title_6_russian" translatable="false">Безопасные маршруты</string>
 
 	<string name="audio_library_subway">Subway</string>
 	<string name="audio_library_ambulance">Ambulance</string>

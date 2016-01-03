@@ -81,6 +81,7 @@ public class MediaPhone {
 	// storage, cache and temp directories
 	public static File DIRECTORY_STORAGE; // to store user content
 	public static File DIRECTORY_THUMBS; // for the frame thumbnails
+	public static File DIRECTORY_RESOURCES; // for cached resources
 	public static File DIRECTORY_TEMP; // currently used for outgoing files - must be world readable
 
 	// the directory to watch for bluetooth imports - devices vary (see: http://stackoverflow.com/questions/6125993)
