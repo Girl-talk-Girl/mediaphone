@@ -56,8 +56,8 @@ public class ResourceActivityEnglish extends MediaPhoneActivity {
 					final String remoteContent = ResourceManager.loadAndUpdateResource(resourceId,
 							sResourceLanguageCode, preferences, responseString);
 					if (remoteContent != null) { // non-null response means content has been updated
-						Snackbar.make(mWebView, R.string.resource_update_available, Snackbar.LENGTH_LONG).setAction(R
-								.string.resource_update_accept, new View.OnClickListener() {
+						Snackbar.make(mWebView, R.string.resource_update_available_english, Snackbar.LENGTH_LONG)
+								.setAction(R.string.resource_update_accept_english, new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								mWebView.loadDataWithBaseURL(null, remoteContent, "text/html", "utf-8", null);
@@ -94,11 +94,9 @@ public class ResourceActivityEnglish extends MediaPhoneActivity {
 
 	@Override
 	protected void loadPreferences(SharedPreferences mediaPhoneSettings) {
-
 	}
 
 	@Override
 	protected void configureInterfacePreferences(SharedPreferences mediaPhoneSettings) {
-
 	}
 }

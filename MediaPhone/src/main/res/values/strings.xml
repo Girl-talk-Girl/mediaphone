@@ -273,8 +273,10 @@
 	<!-- gtg-resources (not translatable as these are in both languages in both versions) -->
 	<string name="error_loading_resource_english" translatable="false">Error: couldn\'t load the resource — please try again</string>
 	<string name="error_loading_resource_russian" translatable="false">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
-	<string name="resource_update_available" translatable="false">Resource updates available</string>
-	<string name="resource_update_accept" translatable="false">Update now</string>
+	<string name="resource_update_available_english" translatable="false">Resource updates available</string>
+	<string name="resource_update_available_russian" translatable="false">Доступны обновления ресурсов</string>
+	<string name="resource_update_accept_english" translatable="false">Update now</string>
+	<string name="resource_update_accept_russian" translatable="false">Обновить сейчас</string>
 	<string name="resources_title_1_english" translatable="false">Girl-talk-Girl Project</string>
 	<string name="resources_title_2_english" translatable="false">GBV Links</string>
 	<string name="resources_title_3_english" translatable="false">GBV Facts Worldwide</string>
