@@ -524,7 +524,15 @@ public class AudioActivity extends MediaPhoneActivity {
 		}
 
 		mMediaRecorder.reset();
-		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		try {
+			mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		} catch (Exception e) {
+			// TODO: new permissions model means we need to request access before doing this
+			releaseRecorder();
+			UIUtilities.showToast(AudioActivity.this, R.string.error_loading_audio_editor);
+			onBackPressed();
+			return false;
+		}
 		mMediaRecorder.setAudioChannels(1); // 2 channels breaks recording TODO: only for amr?
 
 		// prefer MPEG4
