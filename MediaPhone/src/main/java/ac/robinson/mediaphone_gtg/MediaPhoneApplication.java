@@ -62,8 +62,7 @@ public class MediaPhoneApplication extends Application {
 	private boolean mImportingServiceIsBound;
 
 	private static WeakReference<MediaPhoneActivity> mCurrentActivity = null;
-	private static List<MessageContainer> mSavedMessages = Collections.synchronizedList(new
-			ArrayList<MessageContainer>());
+	private static List<MessageContainer> mSavedMessages = Collections.synchronizedList(new ArrayList<MessageContainer>());
 
 	// because messages are reused we need to save their contents instead
 	private static class MessageContainer {
@@ -118,12 +117,12 @@ public class MediaPhoneApplication extends Application {
 		}
 
 		// use cache directories for thumbnails and temp (outgoing) files; don't clear
-		MediaPhone.DIRECTORY_THUMBS = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R
-				.string.name_thumbs_directory), useSDCard, false);
+		MediaPhone.DIRECTORY_THUMBS = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
+				.name_thumbs_directory), useSDCard, false);
 
 		// store cached resources separately
-		MediaPhone.DIRECTORY_RESOURCES = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R
-				.string.name_resources_directory), useSDCard, false);
+		MediaPhone.DIRECTORY_RESOURCES = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
+				.name_resources_directory), useSDCard, false);
 
 		// temp directory must be world readable to be able to send files so always prefer external (checked on export)
 		MediaPhone.DIRECTORY_TEMP = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
@@ -281,8 +280,8 @@ public class MediaPhoneApplication extends Application {
 		}
 		if (!mImportingServiceIsBound) {
 			final Intent bindIntent = new Intent(MediaPhoneApplication.this, ImportingService.class);
-			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_CLASS, "ac.robinson.mediaphone.importing" + "" +
-					".BluetoothObserver");
+			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_CLASS, MediaPhoneApplication.this.getPackageName() +
+					".importing.BluetoothObserver");
 			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_PATH, MediaPhone.IMPORT_DIRECTORY);
 			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_REQUIRE_BT, !watchWithoutBluetoothEnabled);
 			bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
