@@ -23,12 +23,12 @@
 	<color name="template_list_light">#85ffffff</color>
 
 	<!-- frame icons -->
-	<color name="frame_icon_selector">#fffa9317</color>
+	<color name="frame_icon_selector">@color/primary</color>
 	<color name="frame_icon_highlight">#40a9a9a9</color>
 	<color name="frame_icon_background">#ff000000</color>
 	<color name="frame_icon_text_no_image">#ffffffff</color>
-	<color name="frame_icon_text_with_image">#ff000000</color>
-	<color name="frame_icon_text_background">#85ffffff</color>
+	<color name="frame_icon_text_with_image">#ffffffff</color>
+	<color name="frame_icon_text_background">#99000000</color>
 	<color name="frame_icon_border">#ff000000</color>
 	<color name="frame_icon_indicator">#ff000000</color>
 	<color name="frame_icon_indicator_text">#ffffffff</color>

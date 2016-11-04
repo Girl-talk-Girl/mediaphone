@@ -71,26 +71,26 @@
 			android:label="@string/title_frame_editor"/>
 		<activity
 			android:name="ac.robinson.mediaphone_gtg.activity.CameraActivity"
-			android:label="@string/title_frame_editor"
+			android:label="@string/title_camera"
 			android:theme="@style/Theme.GirlTalkGirl.OverlayActionBar"/>
 		<activity
 			android:name="ac.robinson.mediaphone_gtg.activity.AudioActivity"
-			android:label="@string/title_frame_editor"/>
+			android:label="@string/title_audio"/>
 		<activity
 			android:name="ac.robinson.mediaphone_gtg.activity.TextActivity"
-			android:label="@string/title_frame_editor"
+			android:label="@string/title_text"
 			android:windowSoftInputMode="stateVisible|adjustResize"/>
 		<activity
 			android:name="ac.robinson.mediaphone_gtg.activity.PlaybackActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize"
 			android:label="@string/title_playback"
-			android:theme="@style/Theme.GirlTalkGirl.NoActionBar"/>
+			android:theme="@style/Theme.GirlTalkGirl.OverlayActionBar"/>
 		<activity
 			android:name="ac.robinson.mediaphone_gtg.activity.SaveNarrativeActivity"
 			android:excludeFromRecents="true"
 			android:icon="@drawable/ic_launcher_save"
 			android:label="@string/title_save_locally"
-			android:theme="@style/Theme.GirlTalkGirl.Dialog"/>
+			android:theme="@style/Theme.GirlTalkGirl.AlertDialog"/>
 		<activity
 			android:name=".activity.AudioLibraryPicker"
 			android:label="@string/title_audio_library"/>

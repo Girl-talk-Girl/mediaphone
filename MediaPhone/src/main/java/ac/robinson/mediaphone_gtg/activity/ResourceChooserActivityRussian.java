@@ -3,18 +3,23 @@ package ac.robinson.mediaphone_gtg.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 
 import ac.robinson.mediaphone_gtg.MediaPhoneActivity;
 import ac.robinson.mediaphone_gtg.R;
-import ac.robinson.util.UIUtilities;
 
 public class ResourceChooserActivityRussian extends MediaPhoneActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_resources_russian, R.string.title_resources_russian);
 		setContentView(R.layout.resources_chooser_russian);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 	}
 
 	@Override

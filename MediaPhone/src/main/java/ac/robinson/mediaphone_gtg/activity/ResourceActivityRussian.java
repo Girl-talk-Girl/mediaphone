@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
@@ -20,7 +21,6 @@ import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.mediaphone_gtg.util.ResourceManager;
 import ac.robinson.mediaphone_gtg.util.RestClient;
 import ac.robinson.util.IOUtilities;
-import ac.robinson.util.UIUtilities;
 import cz.msebera.android.httpclient.Header;
 
 public class ResourceActivityRussian extends MediaPhoneActivity {
@@ -32,9 +32,13 @@ public class ResourceActivityRussian extends MediaPhoneActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_resources_russian, R.string
-				.title_resources_russian);
 		setContentView(R.layout.resource_viewer);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		mWebView = (WebView) findViewById(R.id.resource_viewer_webview);
 

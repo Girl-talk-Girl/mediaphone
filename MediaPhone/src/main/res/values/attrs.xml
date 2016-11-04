@@ -30,9 +30,9 @@
 	<dimen name="frame_icon_maximum_text_height_with_image">60dp</dimen>
 	<dimen name="frame_icon_indicator_maximum_text_size">30dp</dimen>
 	<dimen name="frame_icon_border_width">2dp</dimen>
-	<dimen name="frame_icon_selector_corner_radius">4dp</dimen>
+	<dimen name="frame_icon_selector_corner_radius">0dp</dimen>
 	<dimen name="frame_icon_text_padding">6dp</dimen>
-	<dimen name="frame_icon_text_corner_radius">4dp</dimen>
+	<dimen name="frame_icon_text_corner_radius">0dp</dimen>
 
 	<integer name="frame_icon_maximum_text_characters_per_line">26</integer>
 
@@ -91,7 +91,7 @@
 	<bool name="default_audio_to_media">false</bool>
 
 	<item name="default_minimum_frame_duration" format="float" type="attr">2.5</item>
-	<item name="minimum_frame_duration_min" format="float" type="attr">0.5</item>
+	<item name="minimum_frame_duration_min" format="float" type="attr">1</item>
 	<item name="minimum_frame_duration_max" format="float" type="attr">20</item>
 	<item name="minimum_frame_duration_interval" format="float" type="attr">0.5</item>
 	<item name="default_word_duration" format="float" type="attr">0.3</item>
@@ -192,13 +192,14 @@
 	<dimen name="playback_maximum_text_size">32sp</dimen>
 	<dimen name="playback_minimum_text_size">12sp</dimen>
 	<!-- from http://developer.android.com/design/style/typography.html -->
+	<dimen name="save_narrative_dialog_padding">20dp</dimen>
 
 	<!-- percentage of the frame editor image button's height, so the image doesn't overlap the edge of the button -->
 	<item name="image_button_fill_percentage" format="float" type="attr">0.9</item>
 
 	<!-- playback and export settings TODO: combine both versions (mediaphone and mediatablet) -->
 	<dimen name="playback_text_padding">@dimen/frame_icon_text_padding</dimen>
-	<dimen name="playback_text_corner_radius">@dimen/frame_icon_text_corner_radius</dimen>
+	<dimen name="playback_text_corner_radius">4dp</dimen>
 	<dimen name="playback_maximum_text_height_with_image">@dimen/frame_icon_maximum_text_height_with_image</dimen>
 
 	<integer name="export_smil_width">640</integer>

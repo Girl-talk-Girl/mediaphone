@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.2'
+    buildToolsVersion '24.0.3'
 
     defaultConfig {
         applicationId 'ac.robinson.mediaphone_gtg'
@@ -31,7 +31,7 @@ android {
 dependencies {
     compile project(':MediaUtilities')
 
-    //noinspection GradleDependency (as versions after 24.2.0 remove support for SDK version 8)
+    //noinspection GradleDependency (as versions from 24.2.0 remove support for SDK version 8)
     compile 'com.android.support:design:24.1.1'
     compile 'com.loopj.android:android-async-http:1.4.9' // for downloading resources
 }

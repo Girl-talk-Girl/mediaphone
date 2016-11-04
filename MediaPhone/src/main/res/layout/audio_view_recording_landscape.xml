@@ -14,8 +14,7 @@
 		android:id="@+id/audio_recording"
 		style="@style/default_vertical_linear_layout"
 		android:layout_alignParentLeft="true"
-		android:layout_alignRight="@id/audio_landscape_strut"
-		android:background="@android:color/black">
+		android:layout_alignRight="@id/audio_landscape_strut">
 
 		<ac.robinson.mediaphone_gtg.view.VUMeter
 			android:id="@+id/vu_meter"
@@ -26,9 +25,7 @@
 			android:id="@+id/audio_recording_progress"
 			style="@style/default_audio_status_text"
 			android:layout_alignParentBottom="true"
-			android:background="@android:color/black"
 			android:textIsSelectable="false"/>
-		<!-- VUMeter is *always* black, so its overlay must be too -->
 	</RelativeLayout>
 
 	<LinearLayout

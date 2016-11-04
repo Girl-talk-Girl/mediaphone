@@ -21,7 +21,6 @@
 package ac.robinson.mediaphone_gtg.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,8 +32,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -77,8 +77,14 @@ public class TemplateBrowserActivity extends BrowserActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, false, true, R.string.template_list_header, 0);
 		setContentView(R.layout.template_browser);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
+
 		initialiseTemplatesView();
 		UIUtilities.showToast(TemplateBrowserActivity.this, R.string.select_template_hint);
 	}
@@ -124,9 +130,7 @@ public class TemplateBrowserActivity extends BrowserActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getMenuInflater().inflate(R.menu.cancel, menu);
-		}
+		getMenuInflater().inflate(R.menu.cancel_template, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -152,6 +156,7 @@ public class TemplateBrowserActivity extends BrowserActivity {
 	@Override
 	protected void configureInterfacePreferences(SharedPreferences mediaPhoneSettings) {
 		// the soft back button (necessary in some circumstances)
+		// TODO: remove this to fit with new styling (Toolbar etc)
 		int newVisibility = View.VISIBLE;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB || !mediaPhoneSettings.getBoolean(getString(R
 				.string.key_show_back_button), getResources().getBoolean(R.bool.default_show_back_button))) {
@@ -163,26 +168,15 @@ public class TemplateBrowserActivity extends BrowserActivity {
 	private void initialiseTemplatesView() {
 		mTemplates = (NarrativesListView) findViewById(R.id.list_templates);
 
-		// for API 11 and above, buttons are in the action bar
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			LayoutInflater layoutInflater = getLayoutInflater();
-			View headerRow = layoutInflater.inflate(R.layout.templates_header, null, false);
-			mTemplates.addHeaderView(headerRow, null, false); // false = not selectable
-			View emptyView = layoutInflater.inflate(R.layout.templates_empty, null, false);
-			((ViewGroup) mTemplates.getParent()).addView(emptyView);
-			mTemplates.setEmptyView(emptyView); // must add separately as the header isn't shown when empty
-
-		} else {
-			// initial empty list placeholder - add manually as the < v11 version includes the header row
-			TextView emptyView = new TextView(TemplateBrowserActivity.this);
-			emptyView.setGravity(Gravity.CENTER | Gravity.TOP);
-			emptyView.setPadding(10, getResources().getDimensionPixelSize(R.dimen
-					.template_list_empty_hint_top_padding), 10, 10); // temporary
-			emptyView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-			emptyView.setText(getString(R.string.template_list_empty));
-			((ViewGroup) mTemplates.getParent()).addView(emptyView);
-			mTemplates.setEmptyView(emptyView);
-		}
+		// initial empty list placeholder - add manually as the < v11 version includes the header row
+		TextView emptyView = new TextView(TemplateBrowserActivity.this);
+		emptyView.setGravity(Gravity.CENTER | Gravity.TOP);
+		emptyView.setPadding(10, getResources().getDimensionPixelSize(R.dimen
+				.template_list_empty_hint_top_padding), 10, 10);
+		emptyView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		emptyView.setText(getString(R.string.template_list_empty));
+		((ViewGroup) mTemplates.getParent()).addView(emptyView);
+		mTemplates.setEmptyView(emptyView);
 
 		mTemplateAdapter = new NarrativeAdapter(this, false, true);
 		mTemplates.setAdapter(mTemplateAdapter);
@@ -379,7 +373,6 @@ public class TemplateBrowserActivity extends BrowserActivity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(TemplateBrowserActivity.this);
 				builder.setTitle(R.string.template_actions);
 				// builder.setMessage(R.string.edit_template_hint);
-				builder.setIcon(android.R.drawable.ic_dialog_info);
 				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setItems(items, new DialogInterface.OnClickListener() {
 					@Override
@@ -392,7 +385,6 @@ public class TemplateBrowserActivity extends BrowserActivity {
 								AlertDialog.Builder builder = new AlertDialog.Builder(TemplateBrowserActivity.this);
 								builder.setTitle(R.string.delete_template_confirmation);
 								builder.setMessage(R.string.delete_template_hint);
-								builder.setIcon(android.R.drawable.ic_dialog_alert);
 								builder.setNegativeButton(R.string.button_cancel, null);
 								builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener
 										() {

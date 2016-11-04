@@ -1,12 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-	<!--TODO: remember to update values-v11 at the same time-->
-
-	<!--application properties-->
-	<string name="app_name">Girl-Talk-Girl</string>
-
-	<!--temporary features-->
-	<string name="html_feature_coming_soon">Скоро — HTML импорт</string>
 
 	<!--defaults/generic-->
 	<string name="button_ok">OK</string>
@@ -63,7 +56,7 @@
 	<string name="export_template">Экспортировать шаблон</string>
 	<string name="delete_template">Удалить шаблон</string>
 	<string name="export_template_failed">Ошибка: сбой в процессе экспортирования шаблона — пожалуйста, повторите попытку</string>
-	<string name="template_list_empty">Шаблон не найден\n\n\nЧтобы превратить текущую историю в шаблон, выберите \"Превратить в шаблон\" в меню редактора рамки или на экране воспроизведения меню</string>
+	<string name="template_list_empty">Шаблон не найден\n\n\nЧтобы превратить текущую историю в шаблон, выберите \"Превратить в шаблон\" в меню настроек редактора кадра </string>
 
 	<!--text editor-->
 	<string name="error_loading_text_editor">Ошибка загрузки текстового редактора – пожалуйста, повторите попытку</string>
@@ -135,6 +128,10 @@
 	<string name="span_media_edit_original">Редактировать оригинал</string>
 	<string name="span_media_add_new">Добавить новый</string>
 	<string name="copy_frame_copied">Рамка скопирована – добавьте новую рамку, чтобы ее вставить</string>
+	<string name="permission_camera_rationale">%1$s needs camera access in order to be able to take photos. Please grant this permission if you would like to use images in your narrative</string>
+	<string name="permission_camera_error">Error: camera access has not been granted. Please allow %1$s to access the camera and try again</string>
+	<string name="permission_audio_rationale">%1$s needs microphone access in order to be able to record audio. Please grant this permission if you would like to use audio in your narrative</string>
+	<string name="permission_audio_error">Error: microphone access has not been granted. Please allow %1$s to access the microphone and try again</string>
 
 	<plurals name="delete_narrative_second_hint">
 		<item quantity="one">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
@@ -162,6 +159,9 @@
 	<string name="narrative_folder_not_found">Ошибка: не найдена исходная папка – пожалуйста, укажите директорию  импортирования в настройках</string>
 	<string name="narrative_import_not_found">История для импортирования не найдена – все файлы из SMIL экспорта должны быть помещены в директорию импортирования, выбранную в параметрах настроек  (в настоящее время %1$s)</string>
 	<string name="narrative_sample_not_editable">Чтобы создать свою историю, нажмите +</string>
+	<string name="permission_storage_rationale">%1$s needs storage access in order to be able to import narratives, save media to your library and export videos to some services (e.g., YouTube). Please grant this permission if you would like to use these features</string>
+	<string name="permission_storage_error">Error: storage access has not been granted. Please allow %1$s to access your device\'s storage and try again</string>
+	<string name="permission_storage_unavailable_hint">%1$s has been denied access to your device\'s storage – exporting to folders and some external services may fail</string>
 
 	<!--helper narrative-->
 	<string name="helper_narrative_frame_1">Добро пожаловать в\n%1$s!\n\nКоснитесь для редактирования,\nдлинное нажатие для воспроизведения</string>
@@ -178,8 +178,6 @@
 	<string name="title_playback">Проигрыватель истории</string>
 	<string name="title_save_locally">Сохранить на SD-карту</string>
 	<string name="title_preferences">Параметры настройки</string>
-	<string name="title_resources_english">Resources</string>
-	<string name="title_resources_russian">Ресурсы</string>
 	<string name="title_audio_library">Библиотека звукозаписи</string>
 	<string name="title_choose_colour">Выберите цвет</string>
 	<string name="title_set_duration">Установить длительность</string>
@@ -245,8 +243,6 @@
 	<!--menu items-->
 	<string name="menu_new_narrative">Новая история</string>
 	<string name="menu_scan_imports">Сканирование и импорт</string>
-	<string name="menu_resources_english">Ресурсы (English)</string>
-	<string name="menu_resources_russian">Ресурсы (Pусский)</string>
 	<string name="menu_make_template">Создать шаблон</string>
 	<string name="menu_delete_narrative">Удалить историю</string>
 	<string name="menu_copy_frame">Скопируйте данную рамку</string>

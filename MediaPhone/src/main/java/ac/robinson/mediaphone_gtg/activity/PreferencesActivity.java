@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,8 +36,17 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -56,13 +66,104 @@ import ac.robinson.util.UIUtilities;
  */
 public class PreferencesActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
 
+	private AppCompatDelegate mDelegate;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		getDelegate().installViewFactory();
+		getDelegate().onCreate(savedInstanceState);
 		super.onCreate(savedInstanceState);
 		UIUtilities.setPixelDithering(getWindow());
-		UIUtilities.configureActionBar(this, true, true, R.string.title_preferences, 0);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		setupPreferences();
+	}
+
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		getDelegate().onPostCreate(savedInstanceState);
+	}
+
+	public ActionBar getSupportActionBar() {
+		return getDelegate().getSupportActionBar();
+	}
+
+	public void setSupportActionBar(@Nullable Toolbar toolbar) {
+		getDelegate().setSupportActionBar(toolbar);
+	}
+
+	@NonNull
+	@Override
+	public MenuInflater getMenuInflater() {
+		return getDelegate().getMenuInflater();
+	}
+
+	@Override
+	public void setContentView(@LayoutRes int layoutResID) {
+		getDelegate().setContentView(layoutResID);
+	}
+
+	@Override
+	public void setContentView(View view) {
+		getDelegate().setContentView(view);
+	}
+
+	@Override
+	public void setContentView(View view, ViewGroup.LayoutParams params) {
+		getDelegate().setContentView(view, params);
+	}
+
+	@Override
+	public void addContentView(View view, ViewGroup.LayoutParams params) {
+		getDelegate().addContentView(view, params);
+	}
+
+	@Override
+	protected void onPostResume() {
+		super.onPostResume();
+		getDelegate().onPostResume();
+	}
+
+	@Override
+	protected void onTitleChanged(CharSequence title, int color) {
+		super.onTitleChanged(title, color);
+		getDelegate().setTitle(title);
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		getDelegate().onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		getDelegate().onStop();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		getDelegate().onDestroy();
+	}
+
+	public void invalidateOptionsMenu() {
+		getDelegate().invalidateOptionsMenu();
+	}
+
+	private AppCompatDelegate getDelegate() {
+		if (mDelegate == null) {
+			mDelegate = AppCompatDelegate.create(this, null);
+		}
+		return mDelegate;
 	}
 
 	/**
@@ -123,13 +224,13 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 		bindPreferenceSummaryToValue(findPreference(getString(R.string.key_screen_orientation)));
 
 		// hide the back/done button option if we're using the action bar instead
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			PreferenceCategory appearanceCategory = (PreferenceCategory) preferenceScreen.findPreference(getString(R
-					.string.key_appearance_category));
-			Preference backButtonPreference = appearanceCategory.findPreference(getString(R.string
-					.key_show_back_button));
-			appearanceCategory.removePreference(backButtonPreference);
-		}
+		//if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		//	PreferenceCategory appearanceCategory = (PreferenceCategory) preferenceScreen.findPreference(getString(R
+		//			.string.key_appearance_category));
+		//	Preference backButtonPreference = appearanceCategory.findPreference(getString(R.string
+		//			.key_show_back_button));
+		//	appearanceCategory.removePreference(backButtonPreference);
+		//}
 
 		// add the helper narrative button - it has a fixed id so that we can restrict to a single install
 		Preference installHelperPreference = preferenceScreen.findPreference(getString(R.string
@@ -204,6 +305,7 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO: with the new material design layout we don't actually get a Toolbar in this activity...
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			getMenuInflater().inflate(R.menu.finished_editing, menu);
 		}

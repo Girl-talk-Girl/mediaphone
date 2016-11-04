@@ -20,8 +20,8 @@
 
 package ac.robinson.mediaphone_gtg;
 
+import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -47,6 +48,11 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -104,6 +110,8 @@ import ac.robinson.view.CenteredImageTextButton;
 import ac.robinson.view.CrossFadeDrawable;
 
 public abstract class MediaPhoneActivity extends AppCompatActivity {
+
+	private static final int PERMISSION_EXPORT_STORAGE = 100;
 
 	private ImportFramesTask mImportFramesTask;
 	private ProgressDialog mImportFramesProgressDialog;
@@ -435,13 +443,11 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 
 	protected void createMediaMenuNavigationButtons(MenuInflater inflater, Menu menu, boolean edited) {
 		inflater.inflate(R.menu.add_frame, menu);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			if (edited) {
-				inflater.inflate(R.menu.finished_editing, menu);
-			} else {
-				inflater.inflate(R.menu.back_without_editing, menu);
-			}
-		}
+		// if (edited) {
+		inflater.inflate(R.menu.finished_editing, menu);
+		// } else {
+		// 	inflater.inflate(R.menu.back_without_editing, menu);
+		// }
 	}
 
 	protected void prepareMediaMenuNavigationButtons(Menu menu, String mediaId) {
@@ -475,25 +481,23 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		if (preventSpannedMediaNavigation) {
 			menu.findItem(R.id.menu_add_frame).setEnabled(false);
 		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			if (edited) {
-				inflater.inflate(R.menu.finished_editing, menu);
-			} else {
-				inflater.inflate(R.menu.back_without_editing, menu);
-			}
-		}
+		// if (edited) {
+		inflater.inflate(R.menu.finished_editing, menu);
+		// } else {
+		//	inflater.inflate(R.menu.back_without_editing, menu);
+		// }
 	}
 
 	protected void setBackButtonIcons(Activity activity, int button1, int button2, boolean isEdited) {
-		if (button1 != 0) {
-			((CenteredImageTextButton) findViewById(button1)).setCompoundDrawablesWithIntrinsicBounds(0, (isEdited ? R
-					.drawable.ic_menu_accept : R.drawable.ic_menu_back), 0, 0);
-		}
-		if (button2 != 0) {
-			((CenteredImageTextButton) findViewById(button2)).setCompoundDrawablesWithIntrinsicBounds(0, (isEdited ? R
-					.drawable.ic_menu_accept : R.drawable.ic_menu_back), 0, 0);
-		}
-		UIUtilities.refreshActionBar(activity);
+		//if (button1 != 0) {
+		//	((CenteredImageTextButton) findViewById(button1)).setCompoundDrawablesWithIntrinsicBounds(0, (isEdited ? R
+		//			.drawable.ic_menu_accept : R.drawable.ic_menu_back), 0, 0);
+		//}
+		//if (button2 != 0) {
+		//	((CenteredImageTextButton) findViewById(button2)).setCompoundDrawablesWithIntrinsicBounds(0, (isEdited ? R
+		//			.drawable.ic_menu_accept : R.drawable.ic_menu_back), 0, 0);
+		//}
+		//UIUtilities.refreshActionBar(activity);
 	}
 
 	@Override
@@ -504,6 +508,19 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 				break;
 			default:
 				super.onActivityResult(requestCode, resultCode, resultIntent);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		switch (requestCode) {
+			case PERMISSION_EXPORT_STORAGE:
+				if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+					UIUtilities.showFormattedToast(MediaPhoneActivity.this, R.string.permission_storage_unavailable_hint,
+							getString(R.string.app_name));
+				}
+				break;
 		}
 	}
 
@@ -697,7 +714,6 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 						builder.setMessage(getString(R.string.import_file_hint, importedFile.getName().replace
 								(MediaUtilities.SYNC_FILE_EXTENSION, "").replace(MediaUtilities.SMIL_FILE_EXTENSION,
 								"")));
-						builder.setIcon(android.R.drawable.ic_dialog_info);
 						builder.setNegativeButton(R.string.import_not_now, null);
 						builder.setPositiveButton(R.string.import_file, new DialogInterface.OnClickListener() {
 							@Override
@@ -725,7 +741,7 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 						sequenceIncrement);
 				break;
 			case MediaUtilities.MSG_RECEIVED_HTML_FILE:
-				UIUtilities.showToast(MediaPhoneActivity.this, R.string.html_feature_coming_soon);
+				// UIUtilities.showToast(MediaPhoneActivity.this, R.string.html_feature_coming_soon);
 				narrativeFrames = ImportedFileParser.importHTMLNarrative(getContentResolver(), receivedFile,
 						sequenceIncrement);
 				break;
@@ -948,9 +964,9 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 			nextPreviousFrameIntent.putExtra(getString(R.string.extra_switched_frames), true);
 
 			// for API 11 and above, buttons are in the action bar, so this is unnecessary
-			if (showOptionsMenu && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-				nextPreviousFrameIntent.putExtra(getString(R.string.extra_show_options_menu), true);
-			}
+			//if (showOptionsMenu && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			//	nextPreviousFrameIntent.putExtra(getString(R.string.extra_show_options_menu), true);
+			//}
 
 			startActivity(nextPreviousFrameIntent); // no result so that the original can exit (TODO: will it?)
 			closeOptionsMenu(); // so onBackPressed doesn't just do this
@@ -1445,7 +1461,10 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		});
 
 		// state has changed, so disabled menu items may be enabled, and vice-versa
-		UIUtilities.refreshActionBar(MediaPhoneActivity.this);
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.invalidateOptionsMenu();
+		}
 
 		// finally, return the new media spanning state
 		mediaItem.setSpanFrames(!isFrameSpanning);
@@ -1507,7 +1526,6 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(MediaPhoneActivity.this);
 		builder.setTitle(R.string.delete_narrative_confirmation);
 		builder.setMessage(R.string.delete_narrative_hint);
-		builder.setIcon(android.R.drawable.ic_dialog_alert);
 		builder.setNegativeButton(R.string.button_cancel, null);
 		builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 			@Override
@@ -1517,7 +1535,6 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 				builder.setTitle(R.string.delete_narrative_second_confirmation);
 				builder.setMessage(getResources().getQuantityString(R.plurals.delete_narrative_second_hint,
 						numFramesDeleted, numFramesDeleted));
-				builder.setIcon(android.R.drawable.ic_dialog_alert);
 				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override
@@ -1540,6 +1557,17 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 	}
 
 	protected void exportContent(final String narrativeId, final boolean isTemplate) {
+		if (ContextCompat.checkSelfPermission(MediaPhoneActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+				PackageManager.PERMISSION_GRANTED) {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(MediaPhoneActivity.this, Manifest.permission
+					.WRITE_EXTERNAL_STORAGE)) {
+				UIUtilities.showFormattedToast(MediaPhoneActivity.this, R.string.permission_storage_rationale, getString(R
+						.string.app_name));
+			}
+			ActivityCompat.requestPermissions(MediaPhoneActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					PERMISSION_EXPORT_STORAGE);
+		}
+
 		if (MediaPhone.DIRECTORY_TEMP == null) {
 			UIUtilities.showToast(MediaPhoneActivity.this, R.string.export_missing_directory, true);
 			return;
@@ -1559,7 +1587,6 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(MediaPhoneActivity.this);
 		builder.setTitle(R.string.export_narrative_title);
 		// builder.setMessage(R.string.send_narrative_hint); //breaks dialog
-		builder.setIcon(android.R.drawable.ic_dialog_info);
 		builder.setNegativeButton(R.string.button_cancel, null);
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			@Override
@@ -1880,7 +1907,6 @@ public abstract class MediaPhoneActivity extends AppCompatActivity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(MediaPhoneActivity.this);
 			builder.setTitle(R.string.make_template_confirmation);
 			builder.setMessage(R.string.make_template_hint);
-			builder.setIcon(android.R.drawable.ic_dialog_info);
 			builder.setPositiveButton(R.string.button_ok, null);
 			AlertDialog alert = builder.create();
 			alert.show();

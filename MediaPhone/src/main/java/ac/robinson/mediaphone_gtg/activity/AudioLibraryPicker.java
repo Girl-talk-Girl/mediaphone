@@ -7,6 +7,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 
 import ac.robinson.mediaphone_gtg.MediaPhoneActivity;
@@ -20,6 +21,12 @@ public class AudioLibraryPicker extends MediaPhoneActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.audio_library_chooser);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		mMediaPlayer = null;

@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<!-- TODO: remember to update values-v11 at the same time -->
-
 	<!-- application properties -->
-	<string name="app_name">Girl-Talk-Girl</string>
-
-	<!-- temporary features -->
-	<string name="html_feature_coming_soon">Coming soon — HTML import</string>
+	<string name="app_name" translatable="false">Girl-Talk-Girl</string>
 
 	<!-- defaults/generic -->
 	<string name="button_ok">OK</string>
@@ -65,7 +60,7 @@
 	<string name="export_template">Export this template</string>
 	<string name="delete_template">Delete this template</string>
 	<string name="export_template_failed">Error: failed to export the template — please try again</string>
-	<string name="template_list_empty">No templates found\n\n\nTo make an existing narrative into a template, choose \"Make template\" from the frame editor or playback screen\'s options menu</string>
+	<string name="template_list_empty">No templates found\n\n\nTo make an existing narrative into a template, choose \"Make template\" from the frame editor\'s options menu</string>
 
 	<!-- text editor -->
 	<string name="error_loading_text_editor">Error loading text editor – please try again</string>
@@ -137,6 +132,10 @@
 	<string name="span_media_edit_original">Edit original</string>
 	<string name="span_media_add_new">Add new</string>
 	<string name="copy_frame_copied">The frame has been copied – add a new frame to paste</string>
+	<string name="permission_camera_rationale">%1$s needs camera access in order to be able to take photos. Please grant this permission if you would like to use images in your narrative</string>
+	<string name="permission_camera_error">Error: camera access has not been granted. Please allow %1$s to access the camera and try again</string>
+	<string name="permission_audio_rationale">%1$s needs microphone access in order to be able to record audio. Please grant this permission if you would like to use audio in your narrative</string>
+	<string name="permission_audio_error">Error: microphone access has not been granted. Please allow %1$s to access the microphone and try again</string>
 
 	<plurals name="delete_narrative_second_hint">
 		<item quantity="one">The entire narrative (one frame) will be permanently deleted</item>
@@ -163,6 +162,9 @@
 	<string name="narrative_folder_not_found">Error: couldn\'t find the folder to import narratives from – please set the import directory in settings</string>
 	<string name="narrative_import_not_found">No narratives found to import – all files from a SMIL export should be placed in the import directory selected in settings (currently %1$s)</string>
 	<string name="narrative_sample_not_editable">Create your own story to edit – touch + to get started</string>
+	<string name="permission_storage_rationale">%1$s needs storage access in order to be able to import narratives, save media to your library and export videos to some services (e.g., YouTube). Please grant this permission if you would like to use these features</string>
+	<string name="permission_storage_error">Error: storage access has not been granted. Please allow %1$s to access your device\'s storage and try again</string>
+	<string name="permission_storage_unavailable_hint">%1$s has been denied access to your device\'s storage – exporting to folders and some external services may fail</string>
 
 	<!-- helper narrative -->
 	<string name="helper_narrative_frame_1">Welcome to\n%1$s!\n\nTouch to edit,\nlong press to play</string>
@@ -179,8 +181,8 @@
 	<string name="title_playback">Narrative player</string>
 	<string name="title_save_locally">Save to SD card</string>
 	<string name="title_preferences">Settings</string>
-	<string name="title_resources_english">Resources</string>
-	<string name="title_resources_russian">Ресурсы</string>
+	<string name="title_resources_english" translatable="false">Resources</string>
+	<string name="title_resources_russian" translatable="false">Ресурсы</string>
 	<string name="title_audio_library">Audio library</string>
 	<string name="title_choose_colour">Choose a colour</string>
 	<string name="title_set_duration">Set duration</string>
@@ -251,8 +253,8 @@
 	<!-- menu items -->
 	<string name="menu_new_narrative">New narrative</string>
 	<string name="menu_scan_imports">Scan and import</string>
-	<string name="menu_resources_english">Resources (English)</string>
-	<string name="menu_resources_russian">Resources (Pусский)</string>
+	<string name="menu_resources_english" translatable="false">Resources (English)</string>
+	<string name="menu_resources_russian" translatable="false">Resources (Pусский)</string>
 	<string name="menu_make_template">Make template</string>
 	<string name="menu_delete_narrative">Delete narrative</string>
 	<string name="menu_copy_frame">Copy frame</string>

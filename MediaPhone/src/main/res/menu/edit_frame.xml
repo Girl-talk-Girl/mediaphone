@@ -5,7 +5,6 @@
 
 	<item
 		android:id="@+id/menu_edit_frame"
-		android:icon="@drawable/ic_menu_edit_frame"
 		android:showAsAction="never"
 		android:title="@string/menu_edit_frame"
 		app:showAsAction="never"

@@ -27,7 +27,6 @@
 				style="@style/default_audio_status_text"
 				android:layout_alignBottom="@id/vu_meter"
 				android:textIsSelectable="false"/>
-			<!-- VUMeter is *always* black, so its overlay must be too -->
 		</RelativeLayout>
 
 		<ac.robinson.view.CenteredImageTextButton

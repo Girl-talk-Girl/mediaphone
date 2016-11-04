@@ -21,7 +21,6 @@
 package ac.robinson.mediaphone_gtg.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,6 +29,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -67,8 +68,13 @@ public class TextActivity extends MediaPhoneActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_frame_editor, R.string.title_text);
 		setContentView(R.layout.text_view);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		mEditText = (EditText) findViewById(R.id.text_view);
 		mMediaItemInternalId = null;
@@ -298,6 +304,7 @@ public class TextActivity extends MediaPhoneActivity {
 	@Override
 	protected void configureInterfacePreferences(SharedPreferences mediaPhoneSettings) {
 		// the soft done/back button
+		// TODO: remove this to fit with new styling (Toolbar etc)
 		int newVisibility = View.VISIBLE;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB || !mediaPhoneSettings.getBoolean(getString(R
 				.string.key_show_back_button), getResources().getBoolean(R.bool.default_show_back_button))) {
@@ -384,7 +391,9 @@ public class TextActivity extends MediaPhoneActivity {
 			final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
 					mMediaItemInternalId);
 			if (durationMediaItem != null) {
-				if (value > 0) {
+				TypedValue minDuration = new TypedValue();
+				getResources().getValue(R.attr.minimum_frame_duration_min, minDuration, true);
+				if (value > minDuration.getFloat() * 1000) { // attr is in seconds; we need milliseconds
 					durationMediaItem.setDurationMilliseconds(value);
 				} else {
 					final Editable mediaText = mEditText.getText();
@@ -435,7 +444,6 @@ public class TextActivity extends MediaPhoneActivity {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(TextActivity.this);
 				builder.setTitle(R.string.delete_text_confirmation);
 				builder.setMessage(R.string.delete_text_hint);
-				builder.setIcon(android.R.drawable.ic_dialog_alert);
 				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override

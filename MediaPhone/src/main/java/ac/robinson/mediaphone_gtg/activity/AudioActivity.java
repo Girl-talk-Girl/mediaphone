@@ -22,7 +22,6 @@ package ac.robinson.mediaphone_gtg.activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -47,6 +46,8 @@ import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseInputStream;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -125,8 +126,13 @@ public class AudioActivity extends MediaPhoneActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_frame_editor, R.string.title_audio);
 		setContentView(R.layout.audio_view);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		// so that the volume controls always control media volume (rather than ringtone etc.)
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -337,6 +343,7 @@ public class AudioActivity extends MediaPhoneActivity {
 	@Override
 	protected void configureInterfacePreferences(SharedPreferences mediaPhoneSettings) {
 		// the soft done/back button
+		// TODO: remove this to fit with new styling (Toolbar etc)
 		int newVisibility = View.VISIBLE;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB || !mediaPhoneSettings.getBoolean(getString(R
 				.string.key_show_back_button), getResources().getBoolean(R.bool.default_show_back_button))) {
@@ -1094,7 +1101,6 @@ public class AudioActivity extends MediaPhoneActivity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(AudioActivity.this);
 				builder.setTitle(R.string.delete_audio_confirmation);
 				builder.setMessage(R.string.delete_audio_hint);
-				builder.setIcon(android.R.drawable.ic_dialog_alert);
 				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override

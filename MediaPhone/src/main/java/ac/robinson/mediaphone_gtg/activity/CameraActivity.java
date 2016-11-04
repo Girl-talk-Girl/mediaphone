@@ -21,7 +21,6 @@
 package ac.robinson.mediaphone_gtg.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -52,6 +51,8 @@ import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseInputStream;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -125,8 +126,13 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIUtilities.configureActionBar(this, true, true, R.string.title_frame_editor, R.string.title_camera);
 		setContentView(R.layout.camera_view);
+
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		mDoesNotHaveCamera = !CameraUtilities.deviceHasCamera(getPackageManager());
 
@@ -346,6 +352,7 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 	@Override
 	protected void configureInterfacePreferences(SharedPreferences mediaPhoneSettings) {
 		// the soft done/back button
+		// TODO: remove this to fit with new styling (Toolbar etc)
 		int newVisibility = View.VISIBLE;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB || !mediaPhoneSettings.getBoolean(getString(R
 				.string.key_show_back_button), getResources().getBoolean(R.bool.default_show_back_button))) {
@@ -443,8 +450,11 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 
 		// disable screen rotation while in the camera, and cope with devices that only support landscape pictures
 		UIUtilities.setScreenOrientationFixed(this, true); // before landscape check so we don't switch back
-		UIUtilities.actionBarVisibility(this, false); // before landscape so we know the full size of the display
 		UIUtilities.setFullScreen(getWindow()); // before landscape so we know the full size of the display
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.hide(); // before landscape so we know the full size of the display
+		}
 		if (DebugUtilities.supportsLandscapeCameraOnly()) {
 			WindowManager windowManager = getWindowManager();
 			int newRotation = -1;
@@ -885,8 +895,11 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 			mCameraView.setVisibility(View.GONE);
 		}
 
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.show();
+		}
 		UIUtilities.setNonFullScreen(getWindow());
-		UIUtilities.actionBarVisibility(this, true);
 		UIUtilities.setScreenOrientationFixed(this, false);
 
 		// show the hint (but only if we're opening for the first time)
@@ -1061,7 +1074,6 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 				AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
 				builder.setTitle(R.string.delete_image_confirmation);
 				builder.setMessage(R.string.delete_image_hint);
-				builder.setIcon(android.R.drawable.ic_dialog_alert);
 				builder.setNegativeButton(R.string.button_cancel, null);
 				builder.setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
 					@Override
@@ -1252,7 +1264,9 @@ public class CameraActivity extends MediaPhoneActivity implements OrientationMan
 			final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
 					mMediaItemInternalId);
 			if (durationMediaItem != null) {
-				if (value > 0) {
+				TypedValue minDuration = new TypedValue();
+				getResources().getValue(R.attr.minimum_frame_duration_min, minDuration, true);
+				if (value > minDuration.getFloat() * 1000) { // attr is in seconds; we need milliseconds
 					durationMediaItem.setDurationMilliseconds(value);
 				} else {
 					durationMediaItem.setDurationMilliseconds(-1);
