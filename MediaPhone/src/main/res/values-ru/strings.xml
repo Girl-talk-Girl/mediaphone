@@ -56,7 +56,7 @@
 	<string name="export_template">Экспортировать шаблон</string>
 	<string name="delete_template">Удалить шаблон</string>
 	<string name="export_template_failed">Ошибка: сбой в процессе экспортирования шаблона — пожалуйста, повторите попытку</string>
-	<string name="template_list_empty">Шаблон не найден\n\n\nЧтобы превратить текущую историю в шаблон, выберите \"Превратить в шаблон\" в меню настроек редактора кадра </string>
+	<string name="template_list_empty">Шаблон не найден\n\n\nЧтобы превратить историю в шаблон, выберите опцию "Превратить в шаблон" в меню редактирования рамки</string>
 
 	<!--text editor-->
 	<string name="error_loading_text_editor">Ошибка загрузки текстового редактора – пожалуйста, повторите попытку</string>
@@ -64,7 +64,7 @@
 	<string name="delete_text_hint">Весь текст в рамке будет удален без возможности восстановления</string>
 	<string name="delete_text_succeeded">Текст был удален</string>
 	<string name="split_text_add_content">Пожалуйста, добавьте текст до того как создать новую рамку</string>
-	<string name="span_text_add_content">Пожалуйста, добавьте текст, прежде чем распространять его на все рамки </string>
+	<string name="span_text_add_content">Пожалуйста, добавьте текст, прежде чем распространять его на все рамки</string>
 	<string name="span_text_multiple_frames">Данный текст теперь будет отображаться во всех последующих рамках, вплоть до следующей рамки содержащей текст</string>
 	<string name="span_text_single_frame">Данный текст теперь будет отображаться только в этой рамке</string>
 
@@ -83,7 +83,7 @@
 	<string name="delete_image_hint">Изображение будет удалено без возможности восстановления</string>
 	<string name="delete_image_succeeded">Изображение было удалено</string>
 	<string name="split_image_add_content">Пожалуйста, добавьте изображение до того как создать новую рамку</string>
-	<string name="span_image_add_content">Пожалуйста, добавьте изображение, прежде чем распространять его на все рамки </string>
+	<string name="span_image_add_content">Пожалуйста, добавьте изображение, прежде чем распространять его на все рамки</string>
 	<string name="span_image_multiple_frames">Данное изображение теперь будет отображаться во всех последующих рамках, вплоть до следующей рамки содержащей новое изображение</string>
 	<string name="span_image_single_frame">Данное изображение теперь будет отображаться только в этой рамке</string>
 
@@ -102,7 +102,7 @@
 	<string name="delete_audio_succeeded">Звук был удален</string>
 	<string name="split_audio_add_content">Пожалуйста, запишите аудио до того как создать новую рамку</string>
 	<string name="retake_audio_forbidden">Данная аудиозапись – в формате, который невозможно редактировать. Чтобы ее заменить, пожалуйста, удалите сначало настоящее аудио</string>
-	<string name="span_audio_add_content">Пожалуйста, добавьте аудио, прежде чем распространять его на все рамки </string>
+	<string name="span_audio_add_content">Пожалуйста, добавьте аудио, прежде чем распространять его на все рамки</string>
 	<string name="span_audio_multiple_frames">Данная аудиозапись теперь будет проигрываться во всех последующих рамках, вплоть до следующей рамки содержащей новую звукозапись</string>
 	<string name="span_audio_single_frame">Данная аудиозапись теперь будет проигрываться только в этой рамке</string>
 
@@ -128,10 +128,10 @@
 	<string name="span_media_edit_original">Редактировать оригинал</string>
 	<string name="span_media_add_new">Добавить новый</string>
 	<string name="copy_frame_copied">Рамка скопирована – добавьте новую рамку, чтобы ее вставить</string>
-	<string name="permission_camera_rationale">%1$s needs camera access in order to be able to take photos. Please grant this permission if you would like to use images in your narrative</string>
-	<string name="permission_camera_error">Error: camera access has not been granted. Please allow %1$s to access the camera and try again</string>
-	<string name="permission_audio_rationale">%1$s needs microphone access in order to be able to record audio. Please grant this permission if you would like to use audio in your narrative</string>
-	<string name="permission_audio_error">Error: microphone access has not been granted. Please allow %1$s to access the microphone and try again</string>
+	<string name="permission_camera_rationale">%1$s требуется доступ к камере. Пожалуйста, разрешите доступ, если вы желаете использовать фотографии в вашей истории</string>
+	<string name="permission_camera_error">Ошибка: нет доступа к камере. Пожалуйста, разрешите %1$s доступ к камере и повторите попытку</string>
+	<string name="permission_audio_rationale">%1$s требуется доступ к микрофону для записи аудио. Пожалуйста, разрешите доступ, если вы желаете использовать аудио в вашей истории</string>
+	<string name="permission_audio_error">Ошибка: нет доступа к микрофону. Пожалуйста, разрешите %1$s доступ к микрофону и повторите попытку</string>
 
 	<plurals name="delete_narrative_second_hint">
 		<item quantity="one">Вся история (%1$d рамка) будет удалена без возможности восстановления</item>
@@ -159,9 +159,9 @@
 	<string name="narrative_folder_not_found">Ошибка: не найдена исходная папка – пожалуйста, укажите директорию  импортирования в настройках</string>
 	<string name="narrative_import_not_found">История для импортирования не найдена – все файлы из SMIL экспорта должны быть помещены в директорию импортирования, выбранную в параметрах настроек  (в настоящее время %1$s)</string>
 	<string name="narrative_sample_not_editable">Чтобы создать свою историю, нажмите +</string>
-	<string name="permission_storage_rationale">%1$s needs storage access in order to be able to import narratives, save media to your library and export videos to some services (e.g., YouTube). Please grant this permission if you would like to use these features</string>
-	<string name="permission_storage_error">Error: storage access has not been granted. Please allow %1$s to access your device\'s storage and try again</string>
-	<string name="permission_storage_unavailable_hint">%1$s has been denied access to your device\'s storage – exporting to folders and some external services may fail</string>
+	<string name="permission_storage_rationale">%1$s требуется доступ к хранилищу, чтобы импортировать истории, сохранять медия и экспортировать видео (например, в YouTube). Пожалуйста, разрешите доступ, если в желаете использовать эти функции</string>
+	<string name="permission_storage_error">Ошибка: нет доступа к хранилищу. Пожалуйста, разрешите %1$s использовать хранилище вашего девайса и повторите попытку</string>
+	<string name="permission_storage_unavailable_hint">%1$s запрещен доступ к хранилищу на вашем девайсе - экспортирование в папки и некоторые внешние функции могут не работать</string>
 
 	<!--helper narrative-->
 	<string name="helper_narrative_frame_1">Добро пожаловать в\n%1$s!\n\nКоснитесь для редактирования,\nдлинное нажатие для воспроизведения</string>
@@ -213,7 +213,7 @@
 	<string name="preferences_confirm_importing_summary_off">Истории будут импортированы автоматически</string>
 	<string name="preferences_confirm_importing_summary_on">Перед началом импортирования истории будет запрошено разрешение</string>
 	<string name="preferences_delete_after_importing_title">Удалить файлы после импортирования</string>
-	<string name="preferences_delete_after_importing_summary_off">Местоположения импортированных файлов не изменится </string>
+	<string name="preferences_delete_after_importing_summary_off">Местоположения импортированных файлов не изменится</string>
 	<string name="preferences_delete_after_importing_summary_on">Файлы будут удалены из директории импортирования по окончанию обработки</string>
 	<string name="preferences_templates">Шаблоны</string>
 	<string name="preferences_allow_deleting_templates_title">Разрешить удаление шаблонов</string>
@@ -234,7 +234,7 @@
 	<string name="preferences_contact_us_email_body">Пожалуйста введите ваши комментарии. Если вы отправляете сообщение о неполадке, пожалуйста опишите как можно детальнее, что происходит.\n\n\n\n\nApplication version (please leave this in place): %1$s</string>
 	<string name="preferences_contact_us_email_error">Ошибка: не удалось отправить отчет – пожалуйста, отправьте его на email %1$s</string>
 	<string name="preferences_install_helper_narrative_title">Помощь и практические советы</string>
-	<string name="preferences_install_helper_narrative_summary">Коснитесь, чтобы добавить историю, содержащую помощь и практические советы  </string>
+	<string name="preferences_install_helper_narrative_summary">Коснитесь, чтобы добавить историю, содержащую помощь и практические советы</string>
 	<string name="preferences_install_helper_narrative_success">Помощь и практические советы установлены</string>
 	<string name="preferences_get_source_code_title">Получить исходный код</string>
 	<string name="preferences_get_source_code_summary">Искать, начать новый процесс или сообщить об ошибке на GitHub</string>
