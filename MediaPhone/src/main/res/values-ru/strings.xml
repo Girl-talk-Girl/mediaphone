@@ -12,7 +12,6 @@
 	<string name="frame_image_description">Изображение для данной рамки</string>
 	<string name="frame_image_action_description">Визуальная репрезентация текущего действия данной рамкой</string>
 	<string name="seconds">секунды</string>
-	<string name="version">версия</string>
 
 	<!--background tasks-->
 	<string name="background_task_progress">Пожалуйста подождите…</string>
