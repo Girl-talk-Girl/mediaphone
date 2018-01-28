@@ -5,6 +5,8 @@ import android.content.Context;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import ac.robinson.mediaphone_gtg.MediaPhone;
+
 public class RestClient {
 
 	private static final String BASE_URL = "http://www.girltalkgirl.org/resource%d/%s/";
@@ -23,14 +25,14 @@ public class RestClient {
 	public static void get(int timeout, int resourceId, String resourceLanguage, AsyncHttpResponseHandler
 			responseHandler) {
 		CLIENT.setConnectTimeout(timeout < 0 ? DEFAULT_TIMEOUT : timeout);
-		CLIENT.setUserAgent("GTG-android");
+		CLIENT.setUserAgent(MediaPhone.APPLICATION_NAME);
 		CLIENT.get(getUrl(resourceId, resourceLanguage), responseHandler);
 	}
 
 	public static void post(int timeout, int resourceId, String resourceLanguage, AsyncHttpResponseHandler 
 			responseHandler) {
 		CLIENT.setConnectTimeout(timeout < 0 ? DEFAULT_TIMEOUT : timeout);
-		CLIENT.setUserAgent("GTG-android");
+		CLIENT.setUserAgent(MediaPhone.APPLICATION_NAME);
 		CLIENT.post(getUrl(resourceId, resourceLanguage), responseHandler);
 	}
 

@@ -16,7 +16,6 @@
 	<string name="frame_image_action_description">A visual representation of the current action with this frame</string>
 	<string name="zero_length_audio" translatable="false">0:00.0</string>
 	<string name="seconds">seconds</string>
-	<string name="version">version</string>
 
 	<!-- background tasks -->
 	<string name="background_task_progress">Please wait…</string>
@@ -34,21 +33,21 @@
 	<string name="mov_export_task_complete">Video creation completed</string>
 
 	<!-- playback -->
-	<string name="error_loading_narrative_player">Error: couldn\'t open the narrative — please try again</string>
+	<string name="error_loading_narrative_player">Error: couldn\'t open the narrative – please try again</string>
 
 	<!-- export -->
 	<string name="export_narrative_title">Export this narrative</string>
 	<string name="export_mov">&#x2191;&#160;&#160;&#160;&#160;Video (share, upload, YouTube)</string>
 	<string name="export_html">&#x2191;&#160;&#160;&#160;&#160;HTML (create a webpage)</string>
 	<string name="export_smil">&#x2191;&#x2193;&#160;&#160;SMIL (send to %1$ss)</string>
-	<string name="export_narrative_failed">Error: failed to export the narrative — please try again</string>
+	<string name="export_narrative_failed">Error: failed to export the narrative – please try again</string>
 	<string name="export_missing_directory">Error: unable to find a temporary directory – please ensure your device or SD card has free space available</string>
-	<string name="export_potential_problem">Warning: No SD card found – on some devices this can cause export issues, and you may encounter problems playing the narrative</string>
+	<string name="export_potential_problem">Warning: No external storage found – on some devices this can cause export issues, and you may encounter problems playing the narrative</string>
 	<string name="export_creation_failed">Error: couldn\'t create the files to export – please try again</string>
-	<string name="export_narrative_name">Please enter a name for this narrative</string>
-	<string name="export_narrative_name_exists">Error: that narrative already exists – please choose a different name</string>
+	<string name="export_narrative_name">Please enter a name</string>
+	<string name="export_narrative_name_exists">Error: a file with that name already exists – please choose a different name</string>
 	<string name="export_narrative_name_blank">Error: please enter a name</string>
-	<string name="export_narrative_saved">The narrative has been saved to your SD card in the %1$s folder</string>
+	<string name="export_narrative_saved">The narrative has been saved to your device in the %1$s folder</string>
 
 	<!-- template browser -->
 	<string name="select_template_hint">Select a template to load, or long-press for additional options</string>
@@ -59,7 +58,7 @@
 	<string name="template_actions">Template actions</string>
 	<string name="export_template">Export this template</string>
 	<string name="delete_template">Delete this template</string>
-	<string name="export_template_failed">Error: failed to export the template — please try again</string>
+	<string name="export_template_failed">Error: failed to export the template – please try again</string>
 	<string name="template_list_empty">No templates found\n\n\nTo make an existing narrative into a template, choose \"Make template\" from the frame editor\'s options menu</string>
 
 	<!-- text editor -->
@@ -74,15 +73,17 @@
 
 	<!-- image editor -->
 	<string name="error_loading_image_editor">Error loading image editor – please try again</string>
-	<string name="error_camera_failed">Error: there was a problem communicating with the camera — please try again</string>
+	<string name="error_camera_failed">Error: there was a problem communicating with the camera – please try again</string>
 	<string name="error_taking_picture_no_camera">Unable to take pictures (no camera detected) – opening gallery instead</string>
 	<string name="retake_picture_hint">Tap the picture to re-take or import from your gallery</string>
 	<string name="retake_picture_hint_no_camera">Tap the picture to replace from your gallery</string>
 	<string name="focus_camera_hint">Tap the screen to focus the camera</string>
 	<string name="camera_image_description">The image taken with the camera</string>
-	<string name="save_picture_failed">Error: failed to save the picture — please try again</string>
-	<string name="import_picture_failed">Error: failed to import the picture — please try again</string>
+	<string name="save_picture_failed">Error: failed to save the picture – please try again</string>
+	<string name="import_picture_failed">Error: failed to import the picture – please try again</string>
 	<string name="import_picture_unavailable">Sorry, unable to import pictures on this device – no gallery found</string>
+	<string name="import_multiple_pictures_succeeded">Import complete – each picture has been added to a new frame after this one</string>
+	<string name="import_multiple_pictures_failed">Unable to complete multi-image import – please check frames after this one for errors</string>
 	<string name="delete_image_confirmation">Delete this image?</string>
 	<string name="delete_image_hint">The image will be permanently deleted</string>
 	<string name="delete_image_succeeded">The image has been deleted</string>
@@ -99,7 +100,7 @@
 	<string name="retake_audio_hint_no_recording">Tap the player to replace from your music library</string>
 	<string name="retake_audio_hint">Tap the player to add to the audio or import from your music library</string>
 	<string name="audio_playback_icon_description">Audio playback icon</string>
-	<string name="import_audio_failed">Error: failed to import the audio — please try again</string>
+	<string name="import_audio_failed">Error: failed to import the audio – please try again</string>
 	<string name="import_audio_unavailable">Sorry, unable to import audio on this device – no music library found</string>
 	<string name="delete_audio_confirmation">Delete this sound?</string>
 	<string name="delete_audio_hint">The sound will be permanently deleted</string>
@@ -138,19 +139,19 @@
 	<string name="permission_audio_error">Error: microphone access has not been granted. Please allow %1$s to access the microphone and try again</string>
 
 	<plurals name="delete_narrative_second_hint">
-		<item quantity="one">The entire narrative (one frame) will be permanently deleted</item>
+		<item quantity="one">The entire narrative (%1$d frame) will be permanently deleted</item>
 		<item quantity="other">The entire narrative (%1$d frames) will be permanently deleted</item>
 	</plurals>
 
 	<string name="delete_narrative_succeeded">The narrative has been deleted</string>
 
 	<!-- file errors -->
-	<string name="error_opening_narrative_content_sd">Error: unable to find your narratives. Please check that the SD card is available</string>
+	<string name="error_opening_narrative_content_sd">Error: unable to find your narratives. Please check that any removable storage (e.g., SD card) is still available</string>
 	<string name="error_opening_narrative_content">Error: unable to find your narratives</string>
 
 	<!-- narrative browser -->
-	<string name="narrative_list_header">My Narratives</string>
-	<string name="template_list_header">Narrative Templates</string>
+	<string name="narrative_list_header">My narratives</string>
+	<string name="template_list_header">Narrative templates</string>
 	<string name="new_narrative_icon" translatable="false">+</string>
 	<string name="title_add">Add a new narrative</string>
 	<string name="add_blank">Create a new blank narrative</string>
@@ -158,7 +159,7 @@
 	<string name="title_add_frame">Add a new frame</string>
 	<string name="add_blank_frame">Create a new blank frame</string>
 	<string name="add_paste_frame">Paste the copied frame</string>
-	<string name="narrative_list_empty">Press the + button above to get started&#160;&#160;&#160;&#x21E7;</string>
+	<string name="narrative_list_empty">Touch + to get started</string>
 	<string name="narrative_folder_not_found">Error: couldn\'t find the folder to import narratives from – please set the import directory in settings</string>
 	<string name="narrative_import_not_found">No narratives found to import – all files from a SMIL export should be placed in the import directory selected in settings (currently %1$s)</string>
 	<string name="narrative_sample_not_editable">Create your own story to edit – touch + to get started</string>
@@ -170,7 +171,7 @@
 	<string name="helper_narrative_frame_1">Welcome to\n%1$s!\n\nTouch to edit,\nlong press to play</string>
 	<string name="helper_narrative_frame_2">Editing: add pictures, sounds or text</string>
 	<string name="helper_narrative_frame_3">Playback: view or export your narrative</string>
-	<string name="helper_narrative_frame_4">Enjoy!\n\nWe\'d love to hear how you get on – you can send feedback via \"%1$s\" in %2$s</string>
+	<string name="helper_narrative_frame_4">Touch + to get started, and enjoy!\n\nWe\'d love to hear how you get on – you can send feedback via \"%1$s\" in %2$s</string>
 
 	<!-- activity titles (API v11+) -->
 	<string name="title_frame_editor">Edit this frame</string>
@@ -179,7 +180,7 @@
 	<string name="title_text">Add text</string>
 	<string name="title_template_browser">Open a template</string>
 	<string name="title_playback">Narrative player</string>
-	<string name="title_save_locally">Save to SD card</string>
+	<string name="title_save_locally">Save to folder</string>
 	<string name="title_preferences">Settings</string>
 	<string name="title_resources_english" translatable="false">Resources</string>
 	<string name="title_resources_russian" translatable="false">Ресурсы</string>
@@ -209,7 +210,7 @@
 	<string name="preferences_word_duration_summary">Default duration for each word of text. Double tap here to reset</string>
 	<string name="preferences_import">Import</string>
 	<string name="preferences_watch_for_files_title">Scan for new narratives</string>
-	<string name="preferences_watch_for_files_summary_off">Narratives sent via Bluetooth will not be imported automatically; you can import via the \'Scan and Import\' menu option</string>
+	<string name="preferences_watch_for_files_summary_off">Narratives sent via Bluetooth will not be imported automatically; you can import via the \"Scan and Import\" menu option</string>
 	<string name="preferences_watch_for_files_summary_on">The import directory will be monitored for incoming narratives</string>
 	<string name="preferences_bluetooth_directory_title">Import directory</string>
 	<string name="preferences_bluetooth_directory_summary">Set the directory to monitor for narratives. Choose your Bluetooth directory to automatically scan for incoming files</string>
@@ -233,6 +234,10 @@
 	<string name="preferences_show_back_button_title">Show \"done\" button</string>
 	<string name="preferences_show_back_button_summary_off">The button will not be shown – use your back button to navigate</string>
 	<string name="preferences_show_back_button_summary_on">The button will be shown</string>
+	<string name="preferences_beta">Beta: WARNING – these are experimental features – data loss may occur!</string>
+	<string name="preferences_spanning_media_summary_off">Media items will only appear on one frame</string>
+	<string name="preferences_spanning_media_summary_on">Media items will be able to span multiple frames</string>
+	<string name="preferences_spanning_media_title">Enable spanning media</string>
 	<string name="preferences_about">About</string>
 	<string name="preferences_contact_us_title">Get in touch</string>
 	<string name="preferences_contact_us_summary">Email us your feedback, or report a problem</string>
@@ -243,10 +248,16 @@
 	<string name="preferences_install_helper_narrative_title">Help and tips</string>
 	<string name="preferences_install_helper_narrative_summary">Tap to add a narrative containing help and tips</string>
 	<string name="preferences_install_helper_narrative_success">The help and tips narrative has been installed</string>
+	<string name="preferences_help_translate_title">Help translate</string>
+	<string name="preferences_help_translate_summary">Add your language, or suggest translation improvements</string>
+	<string name="preferences_help_translate_link" translatable="false">https://www.transifex.com/communitymedia/mediaphone/</string>
 	<string name="preferences_get_source_code_title">Get the source code</string>
 	<string name="preferences_get_source_code_summary">Browse, fork or report issues on GitHub</string>
 	<string name="preferences_get_source_code_link" translatable="false">https://github.com/Girl-talk-Girl/mediaphone</string>
-	<string name="preferences_about_app_title" translatable="false">%1$s %2$s %3$s</string>
+	<string name="preferences_show_contributors_title">Contributors</string>
+	<string name="preferences_show_contributors_summary">Translators and open source software licenses</string>
+	<string name="preferences_get_contributors_link" translatable="false">http://www.digitaleconomytoolkit.org/com-phone/contributors.html</string>
+	<string name="preferences_about_app_title" translatable="false">%1$s v%2$s</string>
 	<string name="preferences_about_app_summary" translatable="false">Build %1$d (%2$s); %3$s</string>
 	<string name="preferences_reset_default">The default value has been restored</string>
 
@@ -273,8 +284,8 @@
 	<string name="menu_preferences" translatable="false">@string/title_preferences</string>
 
 	<!-- gtg-resources (not translatable as these are in both languages in both versions) -->
-	<string name="error_loading_resource_english" translatable="false">Error: couldn\'t load the resource — please try again</string>
-	<string name="error_loading_resource_russian" translatable="false">Ошибка: не удалось загрузить ресурсы — пожалуйста повторите попытку</string>
+	<string name="error_loading_resource_english" translatable="false">Error: couldn\'t load the resource – please try again</string>
+	<string name="error_loading_resource_russian" translatable="false">Ошибка: не удалось загрузить ресурсы – пожалуйста повторите попытку</string>
 	<string name="resource_update_available_english" translatable="false">Resource updates available</string>
 	<string name="resource_update_available_russian" translatable="false">Доступны обновления ресурсов</string>
 	<string name="resource_update_accept_english" translatable="false">Update now</string>

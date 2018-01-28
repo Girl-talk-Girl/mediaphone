@@ -30,14 +30,14 @@
 	<string name="mov_export_task_complete">Создание видео завершено</string>
 
 	<!--playback-->
-	<string name="error_loading_narrative_player">Ошибка: не удалось открыть историю — пожалуйста повторите попытку</string>
+	<string name="error_loading_narrative_player">Ошибка: не удалось открыть историю – пожалуйста повторите попытку</string>
 
 	<!--export-->
 	<string name="export_narrative_title">Экспортировать данную историю</string>
 	<string name="export_mov">&#x2191;&#160;&#160;&#160;&#160;Видео (поделиться, закачать, YouTube)</string>
 	<string name="export_html">&#x2191;&#160;&#160;&#160;&#160;HTML (создать веб-страницу)</string>
 	<string name="export_smil">&#x2191;&#x2193;&#160;&#160;SMIL (отправить в %1$ss)</string>
-	<string name="export_narrative_failed">Ошибка: сбой в процессе экспортирования — пожалуйста, повторите попытку</string>
+	<string name="export_narrative_failed">Ошибка: сбой в процессе экспортирования – пожалуйста, повторите попытку</string>
 	<string name="export_missing_directory">Ошибка: временное хранилище не найдено – пожалуйста, убедитесь, что на вашем устройстве или SD-карте достаточно места</string>
 	<string name="export_potential_problem">Ошибка: SD-карта не найдена – на некоторых устройствах это может привести к проблемам экспортировки, и Вы можете столкнуться с проблемами при проигрывании истории</string>
 	<string name="export_creation_failed">Ошибка: файлы для экспорта не созданы – пожалуйста повторите попытку</string>
@@ -55,7 +55,7 @@
 	<string name="template_actions">Действия с шаблоном</string>
 	<string name="export_template">Экспортировать шаблон</string>
 	<string name="delete_template">Удалить шаблон</string>
-	<string name="export_template_failed">Ошибка: сбой в процессе экспортирования шаблона — пожалуйста, повторите попытку</string>
+	<string name="export_template_failed">Ошибка: сбой в процессе экспортирования шаблона – пожалуйста, повторите попытку</string>
 	<string name="template_list_empty">Шаблон не найден\n\n\nЧтобы превратить историю в шаблон, выберите опцию "Превратить в шаблон" в меню редактирования рамки</string>
 
 	<!--text editor-->
@@ -70,14 +70,14 @@
 
 	<!--image editor-->
 	<string name="error_loading_image_editor">Ошибка загрузки фото редактора – пожалуйста, повторите попытку</string>
-	<string name="error_camera_failed">Ошибка: не удалось найти камеру — пожалуйста, повторите попытку</string>
+	<string name="error_camera_failed">Ошибка: не удалось найти камеру – пожалуйста, повторите попытку</string>
 	<string name="error_taking_picture_no_camera">Невозможно сделать фотографию (камера не обнаружена) – открываем галерею</string>
 	<string name="retake_picture_hint">Коснитесь фотографии, чтобы изменить или импортировать из галереи</string>
 	<string name="retake_picture_hint_no_camera">Коснитесь фотографии, чтобы найти замену в галерее</string>
 	<string name="focus_camera_hint">Нажмите на экран, чтобы сфокусировать камеру</string>
 	<string name="camera_image_description">Фотография, сделанная с помощью камеры</string>
-	<string name="save_picture_failed">Ошибка: не удалось сохранить фотографию — пожалуйста, повторите попытку</string>
-	<string name="import_picture_failed">Ошибка: сбой в процессе импортирования фотографии — пожалуйста, повторите попытку</string>
+	<string name="save_picture_failed">Ошибка: не удалось сохранить фотографию – пожалуйста, повторите попытку</string>
+	<string name="import_picture_failed">Ошибка: сбой в процессе импортирования фотографии – пожалуйста, повторите попытку</string>
 	<string name="import_picture_unavailable">Не удалось импортировать фотографии на данном устройстве – галерея не обнаружена</string>
 	<string name="delete_image_confirmation">Удалить изображение?</string>
 	<string name="delete_image_hint">Изображение будет удалено без возможности восстановления</string>
@@ -95,7 +95,7 @@
 	<string name="retake_audio_hint_no_recording">Коснитесь проигрывателя, чтобы найти замену в музыкальной фонотеке</string>
 	<string name="retake_audio_hint">Коснитесь проигрывателя, чтобы добавить аудио или импортировать из музыкальной фонотеки</string>
 	<string name="audio_playback_icon_description">Иконка воспроизведения звукозаписи</string>
-	<string name="import_audio_failed">Ошибка: сбой в процессе импортирования аудио — пожалуйста, повторите попытку</string>
+	<string name="import_audio_failed">Ошибка: сбой в процессе импортирования аудио – пожалуйста, повторите попытку</string>
 	<string name="import_audio_unavailable">Не удалось импортировать аудио на данном устройстве – музыкальная фонотека не обнаружена</string>
 	<string name="delete_audio_confirmation">Удалить звукозапись?</string>
 	<string name="delete_audio_hint">Звук будет удален без возможности восстановления</string>
@@ -161,7 +161,7 @@
 	<string name="narrative_sample_not_editable">Чтобы создать свою историю, нажмите +</string>
 	<string name="permission_storage_rationale">%1$s требуется доступ к хранилищу, чтобы импортировать истории, сохранять медия и экспортировать видео (например, в YouTube). Пожалуйста, разрешите доступ, если в желаете использовать эти функции</string>
 	<string name="permission_storage_error">Ошибка: нет доступа к хранилищу. Пожалуйста, разрешите %1$s использовать хранилище вашего девайса и повторите попытку</string>
-	<string name="permission_storage_unavailable_hint">%1$s запрещен доступ к хранилищу на вашем девайсе - экспортирование в папки и некоторые внешние функции могут не работать</string>
+	<string name="permission_storage_unavailable_hint">%1$s запрещен доступ к хранилищу на вашем девайсе – экспортирование в папки и некоторые внешние функции могут не работать</string>
 
 	<!--helper narrative-->
 	<string name="helper_narrative_frame_1">Добро пожаловать в\n%1$s!\n\nКоснитесь для редактирования,\nдлинное нажатие для воспроизведения</string>

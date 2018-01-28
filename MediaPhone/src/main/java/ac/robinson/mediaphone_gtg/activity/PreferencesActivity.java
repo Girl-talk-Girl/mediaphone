@@ -288,8 +288,8 @@ public class PreferencesActivity extends PreferenceActivity implements Preferenc
 		try {
 			PackageManager manager = this.getPackageManager();
 			PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
-			aboutPreference.setTitle(getString(R.string.preferences_about_app_title, getString(R.string.app_name),
-					getString(R.string.version), info.versionName));
+			aboutPreference.setTitle(getString(R.string.preferences_about_app_title, getString(R.string.app_name), info
+					.versionName));
 			aboutPreference.setSummary(getString(R.string.preferences_about_app_summary, info.versionCode,
 					DebugUtilities.getApplicationBuildTime(getPackageManager(), getPackageName()), DebugUtilities
 							.getDeviceDebugSummary(getWindowManager(), getResources())));
