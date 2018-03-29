@@ -37,6 +37,7 @@
 		<item>Low</item>
 		<item>Medium</item>
 		<item>High</item>
+		<item>Automatic (recommended)</item>
 	</string-array>
 
 	<!-- audio resampling bitrate preference -->
