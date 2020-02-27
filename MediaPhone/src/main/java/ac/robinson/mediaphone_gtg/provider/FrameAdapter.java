@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -30,8 +30,6 @@ import android.widget.AbsListView;
 import android.widget.CursorAdapter;
 import android.widget.Filter;
 import android.widget.FilterQueryProvider;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import ac.robinson.mediaphone_gtg.BrowserActivity;
 import ac.robinson.mediaphone_gtg.MediaPhone;
@@ -74,8 +72,8 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 	private boolean mSelectAllFramesAsOne = false;
 
 	public FrameAdapter(BrowserActivity activity, String parentId) {
-		super(activity, activity.managedQuery(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, "1=?", new
-				String[]{"0"}, null), true); // hack to show no data initially
+		super(activity, activity.managedQuery(FrameItem.CONTENT_URI, FrameItem.PROJECTION_ALL, "1=?", new String[]{ "0" }, null)
+				, true); // hack to show no data initially
 
 		mActivity = activity;
 		mInflater = LayoutInflater.from(activity);
@@ -101,12 +99,12 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 		mSelectionKeyFrameEnd = selection.toString();
 
 		selection.setLength(0);
-		selection.append("(");
+		selection.append('(');
 		selection.append(FrameItem.DELETED);
 		selection.append("=0 AND ");
 		selection.append(FrameItem.PARENT_ID);
 		selection.append("=?");
-		selection.append(")");
+		selection.append(')');
 		mSelectionParentId = selection.toString();
 
 		setFilterQueryProvider(this);
@@ -177,8 +175,8 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 		final View view = mInflater.inflate(R.layout.frame_item, parent, false);
 
 		FrameViewHolder holder = new FrameViewHolder();
-		holder.display = (ImageView) view.findViewById(R.id.frame_item_image);
-		holder.loader = (ProgressBar) view.findViewById(R.id.frame_item_load_progress);
+		holder.display = view.findViewById(R.id.frame_item_image);
+		holder.loader = view.findViewById(R.id.frame_item_load_progress);
 		view.setTag(holder);
 
 		final CrossFadeDrawable transition = new CrossFadeDrawable(mDefaultIconBitmap, null);
@@ -197,8 +195,8 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 
 		String mediaCacheId = FrameItem.getCacheId(holder.frameInternalId);
 
-		if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId) || FrameItem.KEY_FRAME_ID_END.equals(holder
-				.frameInternalId)) {
+		if (FrameItem.KEY_FRAME_ID_START.equals(holder.frameInternalId) ||
+				FrameItem.KEY_FRAME_ID_END.equals(holder.frameInternalId)) {
 			holder.display.setImageResource(R.drawable.ic_narratives_add);
 			// holder.display.setBackgroundResource(R.drawable.button_white_small);
 			holder.loader.setVisibility(View.GONE);
@@ -207,26 +205,24 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 		} else {
 			final HorizontalListView list = mParentHolder.frameList;
 			// holder.display.setBackgroundResource(R.drawable.frame_item);
-			if (list.getScrollState() == AbsListView.OnScrollListener.SCROLL_STATE_FLING || list.isPendingIconsUpdate
-					()) {
+			if (list.getScrollState() == AbsListView.OnScrollListener.SCROLL_STATE_FLING || list.isPendingIconsUpdate()) {
 				holder.loader.setVisibility(View.VISIBLE);
 				holder.display.setImageDrawable(mDefaultIcon);
 				holder.queryIcon = true;
 			} else {
 				// if the icon has gone missing (recently imported or cache deletion), regenerate it
 				// this will happen on every new frame, but we check for media before generation, so not too bad
-				FastBitmapDrawable cachedIcon = ImageCacheUtilities.getCachedIcon(MediaPhone.DIRECTORY_THUMBS,
-						mediaCacheId, ImageCacheUtilities.NULL_DRAWABLE);
+				FastBitmapDrawable cachedIcon = ImageCacheUtilities.getCachedIcon(MediaPhone.DIRECTORY_THUMBS, mediaCacheId,
+						ImageCacheUtilities.NULL_DRAWABLE);
 				if (ImageCacheUtilities.LOADING_DRAWABLE.equals(cachedIcon)) {
 					holder.loader.setVisibility(View.VISIBLE);
 					holder.display.setImageDrawable(getLoadingIcon());
 					holder.queryIcon = true;
 					return; // this icon hasn't yet been updated
 				} else if (ImageCacheUtilities.NULL_DRAWABLE.equals(cachedIcon)) {
-					FramesManager.reloadFrameIcon(mActivity.getResources(), mActivity.getContentResolver(), holder
-							.frameInternalId);
-					cachedIcon = ImageCacheUtilities.getCachedIcon(MediaPhone.DIRECTORY_THUMBS, mediaCacheId,
-							mDefaultIcon);
+					FramesManager.reloadFrameIcon(mActivity.getResources(), mActivity.getContentResolver(),
+							holder.frameInternalId);
+					cachedIcon = ImageCacheUtilities.getCachedIcon(MediaPhone.DIRECTORY_THUMBS, mediaCacheId, mDefaultIcon);
 				}
 				holder.display.setImageDrawable(cachedIcon);
 				holder.loader.setVisibility(View.GONE);
@@ -255,7 +251,9 @@ public class FrameAdapter extends CursorAdapter implements FilterQueryProvider {
 	@Override
 	public void changeCursor(Cursor cursor) {
 		final Cursor oldCursor = getCursor();
-		if (oldCursor != null) mActivity.stopManagingCursor(oldCursor);
+		if (oldCursor != null) {
+			mActivity.stopManagingCursor(oldCursor);
+		}
 		super.changeCursor(cursor);
 	}
 

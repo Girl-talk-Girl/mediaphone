@@ -56,8 +56,9 @@ public class ColorPickerDialog extends Dialog {
 		ColorPickerView(Context c, OnColorChangedListener l, int color) {
 			super(c);
 			mListener = l;
-			mColors = new int[] { 0xFFFFFFFF, 0xFF000000, 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00,
-					0xFFFFFFFF };
+			mColors = new int[]{
+					0xFFFFFFFF, 0xFF000000, 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFFFFFF
+			};
 			Shader s = new SweepGradient(0, 0, mColors, null);
 
 			mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -118,7 +119,7 @@ public class ColorPickerDialog extends Dialog {
 			return s + Math.round(p * (d - s));
 		}
 
-		private int interpColor(int colors[], float unit) {
+		private int interpColor(int[] colors, float unit) {
 			if (unit <= 0) {
 				return colors[0];
 			}

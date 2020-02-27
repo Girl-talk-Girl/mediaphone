@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -21,6 +21,8 @@
 package ac.robinson.mediaphone_gtg;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,7 +38,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
@@ -75,14 +76,15 @@ public class MediaPhoneApplication extends Application {
 
 	@Override
 	public void onCreate() {
-		if (MediaPhone.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build());
-		}
+		// if (MediaPhone.DEBUG) {
+		// 	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
+		// 	StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build());
+		// }
 		super.onCreate();
 		initialiseDirectories();
 		initialiseParameters();
 		startWatchingExternalStorage();
+		createNotificationChannel();
 	}
 
 	private void initialiseDirectories() {
@@ -96,8 +98,7 @@ public class MediaPhoneApplication extends Application {
 		SharedPreferences mediaPhoneSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
 		if (mediaPhoneSettings.contains(storageKey)) {
 			// setting has previously been saved
-			useSDCard = mediaPhoneSettings.getBoolean(storageKey, true); // defValue is irrelevant,
-			// we know value exists
+			useSDCard = mediaPhoneSettings.getBoolean(storageKey, true); // defValue is irrelevant, we know value exists
 			MediaPhone.DIRECTORY_STORAGE = IOUtilities.getNewStoragePath(this, storageDirectoryName, useSDCard);
 			if (useSDCard && MediaPhone.DIRECTORY_STORAGE != null) {
 				// we needed the SD card but couldn't get it; our files will be missing - null shows warning and exits
@@ -112,21 +113,21 @@ public class MediaPhoneApplication extends Application {
 				useSDCard = !IOUtilities.isInternalPath(MediaPhone.DIRECTORY_STORAGE.getAbsolutePath());
 				SharedPreferences.Editor prefsEditor = mediaPhoneSettings.edit();
 				prefsEditor.putBoolean(storageKey, useSDCard);
-				prefsEditor.commit(); // apply() is better, but only in SDK >= 9
+				prefsEditor.apply();
 			}
 		}
 
 		// use cache directories for thumbnails and temp (outgoing) files; don't clear
-		MediaPhone.DIRECTORY_THUMBS = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
-				.name_thumbs_directory), useSDCard, false);
+		MediaPhone.DIRECTORY_THUMBS = IOUtilities.getNewCachePath(this,
+				MediaPhone.APPLICATION_NAME + getString(R.string.name_thumbs_directory), useSDCard, false);
 
 		// store cached resources separately
-		MediaPhone.DIRECTORY_RESOURCES = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
-				.name_resources_directory), useSDCard, false);
+		MediaPhone.DIRECTORY_RESOURCES = IOUtilities.getNewCachePath(this,
+				MediaPhone.APPLICATION_NAME + getString(R.string.name_resources_directory), useSDCard, false);
 
 		// temp directory must be world readable to be able to send files so always prefer external (checked on export)
-		MediaPhone.DIRECTORY_TEMP = IOUtilities.getNewCachePath(this, MediaPhone.APPLICATION_NAME + getString(R.string
-				.name_temp_directory), true, true);
+		MediaPhone.DIRECTORY_TEMP = IOUtilities.getNewCachePath(this,
+				MediaPhone.APPLICATION_NAME + getString(R.string.name_temp_directory), true, true);
 	}
 
 	private void startWatchingExternalStorage() {
@@ -183,14 +184,14 @@ public class MediaPhoneApplication extends Application {
 
 		// for flinging to the end of the horizontal frame list
 		TypedValue resourceValue = new TypedValue();
-		res.getValue(R.attr.fling_to_end_minimum_ratio, resourceValue, true);
+		res.getValue(R.dimen.fling_to_end_minimum_ratio, resourceValue, true);
 		MediaPhone.FLING_TO_END_MINIMUM_RATIO = resourceValue.getFloat();
 
 		// reset the copied frame
 		SharedPreferences copyFrameSettings = getSharedPreferences(MediaPhone.APPLICATION_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor prefsEditor = copyFrameSettings.edit();
 		prefsEditor.remove(getString(R.string.key_copied_frame));
-		prefsEditor.commit();
+		prefsEditor.apply();
 	}
 
 	public void registerActivityHandle(MediaPhoneActivity activity) {
@@ -220,8 +221,18 @@ public class MediaPhoneApplication extends Application {
 		}
 	}
 
-	private static class ImportingServiceMessageHandler extends Handler {
+	private void createNotificationChannel() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			NotificationChannel channel = new NotificationChannel(getPackageName(), getString(R.string.app_name),
+					NotificationManager.IMPORTANCE_DEFAULT);
+			NotificationManager notificationManager = getSystemService(NotificationManager.class);
+			if (notificationManager != null) {
+				notificationManager.createNotificationChannel(channel);
+			}
+		}
+	}
 
+	private static class ImportingServiceMessageHandler extends Handler {
 		@Override
 		public void handleMessage(final Message msg) {
 			if (mCurrentActivity != null) {
@@ -257,8 +268,7 @@ public class MediaPhoneApplication extends Application {
 	};
 
 	public boolean startWatchingBluetooth(boolean watchWithoutBluetoothEnabled) {
-		SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences(MediaPhoneApplication
-				.this);
+		SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences(MediaPhoneApplication.this);
 		String watchedDirectory = getString(R.string.default_bluetooth_directory);
 		if (!(new File(watchedDirectory).exists())) {
 			watchedDirectory = getString(R.string.default_bluetooth_directory_alternative);
@@ -267,11 +277,10 @@ public class MediaPhoneApplication extends Application {
 			String settingsDirectory = mediaPhoneSettings.getString(getString(R.string.key_bluetooth_directory),
 					watchedDirectory);
 			watchedDirectory = settingsDirectory; // could check exists, but don't, to ensure setting overrides default
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		boolean directoryExists = (new File(watchedDirectory)).exists();
-		if (watchWithoutBluetoothEnabled || !watchedDirectory.equals(MediaPhone.IMPORT_DIRECTORY) ||
-				!directoryExists) {
+		if (watchWithoutBluetoothEnabled || !watchedDirectory.equals(MediaPhone.IMPORT_DIRECTORY) || !directoryExists) {
 			stopWatchingBluetooth();
 			MediaPhone.IMPORT_DIRECTORY = watchedDirectory;
 		}
@@ -280,8 +289,8 @@ public class MediaPhoneApplication extends Application {
 		}
 		if (!mImportingServiceIsBound) {
 			final Intent bindIntent = new Intent(MediaPhoneApplication.this, ImportingService.class);
-			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_CLASS, MediaPhoneApplication.this.getPackageName() +
-					".importing.BluetoothObserver");
+			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_CLASS,
+					MediaPhoneApplication.this.getPackageName() + ".importing.BluetoothObserver");
 			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_PATH, MediaPhone.IMPORT_DIRECTORY);
 			bindIntent.putExtra(MediaUtilities.KEY_OBSERVER_REQUIRE_BT, !watchWithoutBluetoothEnabled);
 			bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -299,7 +308,7 @@ public class MediaPhoneApplication extends Application {
 				msg.setData(messageBundle);
 				msg.replyTo = mImportingServiceMessenger;
 				mImportingService.send(msg);
-			} catch (RemoteException e) {
+			} catch (RemoteException ignored) {
 			}
 		}
 	}
@@ -311,7 +320,7 @@ public class MediaPhoneApplication extends Application {
 					Message msg = Message.obtain(null, MediaUtilities.MSG_DISCONNECT_CLIENT);
 					msg.replyTo = mImportingServiceMessenger;
 					mImportingService.send(msg);
-				} catch (RemoteException e) {
+				} catch (RemoteException ignored) {
 				}
 			}
 			unbindService(mConnection);

@@ -7,7 +7,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import androidx.appcompat.app.ActionBar;
 import android.view.View;
 
 import ac.robinson.mediaphone_gtg.MediaPhoneActivity;

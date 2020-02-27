@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -59,19 +59,20 @@ public class VUMeter extends View {
 
 	public VUMeter(Context context) {
 		super(context);
-		init(context);
+		init();
 	}
 
 	public VUMeter(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		init();
 	}
 
-	void init(Context context) {
+	void init() {
 		mBackgroundBitmap = null;
 		mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mPaint.setColor(Color.BLACK);
 		mPaint.setStrokeWidth(LINE_WIDTH);
 		// mPaint.setStrokeCap(Cap.ROUND); // setStrokeCap doesn't work with hardware acceleration
 		mShadow = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -85,8 +86,7 @@ public class VUMeter extends View {
 		mCurrentAngle = 0;
 	}
 
-	public void setRecorder(PathAndStateSavingMediaRecorder recorder, RecordingStartedListener
-			recordingStartedCallback) {
+	public void setRecorder(PathAndStateSavingMediaRecorder recorder, RecordingStartedListener recordingStartedCallback) {
 		mRecorder = recorder;
 		mRecordingStartedCallback = recordingStartedCallback;
 		mRecordingStarted = false;
@@ -127,8 +127,7 @@ public class VUMeter extends View {
 		float y0 = mPivotY - mLineLength * sin;
 
 		canvas.drawCircle(x0, y0, SHADOW_RADIUS / 2f, mShadow); // setStrokeCap doesn't work with hardware acceleration
-		canvas.drawLine(x0 + SHADOW_OFFSET, y0 + SHADOW_OFFSET, mPivotX + SHADOW_OFFSET, mPivotY + SHADOW_OFFSET,
-				mShadow);
+		canvas.drawLine(x0 + SHADOW_OFFSET, y0 + SHADOW_OFFSET, mPivotX + SHADOW_OFFSET, mPivotY + SHADOW_OFFSET, mShadow);
 		canvas.drawCircle(mPivotX + SHADOW_OFFSET, mPivotY + SHADOW_OFFSET, SHADOW_RADIUS, mShadow);
 
 		canvas.drawCircle(x0, y0, LINE_WIDTH / 2f, mPaint); // setStrokeCap doesn't work with hardware acceleration
@@ -144,8 +143,8 @@ public class VUMeter extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int width = MeasureSpec.getSize(widthMeasureSpec);
-		super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(Math
-				.round(width * WIDTH_HEIGHT_RATIO), MeasureSpec.EXACTLY));
+		super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(Math.round(
+				width * WIDTH_HEIGHT_RATIO), MeasureSpec.EXACTLY));
 	}
 
 	@Override
@@ -165,7 +164,6 @@ public class VUMeter extends View {
 		if (changed && !isInEditMode()) { // isInEditMode so the Eclipse visual editor can load this component
 			SVG vumeterSVG = SVGParser.getSVGFromResource(getResources(), R.raw.vumeter_background);
 			mBackgroundBitmap = vumeterSVG.getBitmap(width, height);
-			vumeterSVG = null;
 		}
 
 		super.onLayout(changed, l, t, r, t + height);

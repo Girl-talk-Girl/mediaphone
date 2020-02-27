@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,17 +17,17 @@ public class ResourceManager {
 	private static final Pattern sMainContentPattern = Pattern.compile("<div id=\"mainContent\"(.*)</section></div>",
 			Pattern.DOTALL);
 	private static final Pattern sDateUpdatedPattern = Pattern.compile("data-updated-on=\"([0-9]+)\"");
-	private static final Pattern sBlockContentPattern = Pattern.compile("<div class=\"sqs-block-content\">(.*)" +
-			"</div></div></div></div></div></div>", Pattern.DOTALL);
+	private static final Pattern sBlockContentPattern = Pattern.compile(
+			"<div class=\"sqs-block-content\">(.*)" + "</div></div></div></div></div></div>", Pattern.DOTALL);
 
 	public static final String RESOURCE_FILE_EXTENSION = ".html"; // including the dot
 
 	public static String getResourceName(int resourceId, String resourceLanguage) {
-		return String.format("resource_%d_%s", resourceId, resourceLanguage);
+		return String.format(Locale.US, "resource_%d_%s", resourceId, resourceLanguage);
 	}
 
 	public static String loadAndUpdateResource(int resourceId, String resourceLanguage, SharedPreferences preferences,
-	                                           String remoteContent) {
+											   String remoteContent) {
 		Matcher mainContentMatcher = sMainContentPattern.matcher(remoteContent); // get the main content block
 		if (mainContentMatcher.find()) {
 			String mainContent = mainContentMatcher.group(1);
@@ -50,7 +51,7 @@ public class ResourceManager {
 						if (saveResource(resourceName, updatedContent)) {
 							SharedPreferences.Editor prefsEditor = preferences.edit();
 							prefsEditor.putLong(resourceName, dateUpdated);
-							prefsEditor.commit(); // apply() is better, but only in SDK >= 9
+							prefsEditor.apply();
 						}
 						return updatedContent;
 					}

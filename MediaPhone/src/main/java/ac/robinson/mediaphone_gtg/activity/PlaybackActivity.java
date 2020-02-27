@@ -1,14 +1,14 @@
 /*
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -18,7 +18,6 @@
 
 package ac.robinson.mediaphone_gtg.activity;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,10 +29,8 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -60,14 +57,16 @@ import ac.robinson.mediaphone_gtg.provider.NarrativeItem;
 import ac.robinson.mediaphone_gtg.provider.NarrativesManager;
 import ac.robinson.mediaphone_gtg.provider.PlaybackMediaHolder;
 import ac.robinson.mediaphone_gtg.provider.PlaybackNarrativeDescriptor;
-import ac.robinson.mediaphone_gtg.util.SystemUiHider;
 import ac.robinson.mediaphone_gtg.view.SendToBackRelativeLayout;
+import ac.robinson.mediaphone_gtg.view.SystemUiHider;
 import ac.robinson.util.BitmapUtilities;
 import ac.robinson.util.DebugUtilities;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.UIUtilities;
 import ac.robinson.view.AutoResizeTextView;
 import ac.robinson.view.PlaybackController;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 
 public class PlaybackActivity extends MediaPhoneActivity {
 
@@ -78,9 +77,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 
 	private static final int AUTO_HIDE_DELAY_MILLIS = 3000; // ms after interaction before hiding if mAutoHide is set
 	private static final int AUTO_HIDE_INITIAL_DELAY_MILLIS = AUTO_HIDE_DELAY_MILLIS; // ms after startup before hide (mAutoHide)
-	private static final boolean TOGGLE_HIDE_ON_CLICK = true; // whether to toggle system UI on interaction or just
-	// show
-	private static final int UI_HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION; // SystemUiHider.getInstance() flags
+	private static final boolean TOGGLE_HIDE_ON_CLICK = true; // whether to toggle system UI on interaction or just show
+	private static final int UI_HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION; // SystemUiHider flags
 
 	private boolean mAutoHide = true; // whether to hide system UI after AUTO_HIDE_DELAY_MILLIS ms
 
@@ -148,7 +146,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
 		// our screen size has most likely changed - must reload cached images
@@ -309,44 +307,34 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	private void setupUI() {
 
 		// keep hold of key UI elements
-		mPlaybackRoot = (SendToBackRelativeLayout) findViewById(R.id.playback_root);
-		mCurrentPlaybackImage = (ImageView) findViewById(R.id.playback_image);
-		mBackgroundPlaybackImage = (ImageView) findViewById(R.id.playback_image_background);
-		mPlaybackText = (AutoResizeTextView) findViewById(R.id.playback_text);
-		mPlaybackTextWithImage = (AutoResizeTextView) findViewById(R.id.playback_text_with_image);
+		mPlaybackRoot = findViewById(R.id.playback_root);
+		mCurrentPlaybackImage = findViewById(R.id.playback_image);
+		mBackgroundPlaybackImage = findViewById(R.id.playback_image_background);
+		mPlaybackText = findViewById(R.id.playback_text);
+		mPlaybackTextWithImage = findViewById(R.id.playback_text_with_image);
 
 		// set up a SystemUiHider instance to control the system UI for this activity
 		final View controlsView = findViewById(R.id.playback_controls_wrapper);
 		final View contentView = mPlaybackRoot;
-		mSystemUiHider = SystemUiHider.getInstance(PlaybackActivity.this, contentView, UI_HIDER_FLAGS);
+		mSystemUiHider = new SystemUiHider(PlaybackActivity.this, contentView, UI_HIDER_FLAGS);
 		mSystemUiHider.setup();
+		mSystemUiHider.hide(); // TODO: this is a slightly hacky way to ensure the initial screen size doesn't jump on hide
+		mSystemUiHider.show(); // (undo the above hide command so we still have controls visible on start
 		mSystemUiHider.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
 
 			int mControlsHeight;
 			int mShortAnimTime;
 
 			@Override
-			@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 			public void onVisibilityChange(boolean visible) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-					// if the ViewPropertyAnimator API is available (Honeycomb MR2 and later), use it to animate the
-					// playback controls at the bottom of the screen (sliding up or down)
-					if (mControlsHeight == 0) {
-						mControlsHeight = controlsView.getHeight();
-					}
-					if (mShortAnimTime == 0) {
-						mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-					}
-					controlsView.animate().translationY(visible ? 0 : mControlsHeight).setDuration(mShortAnimTime);
-				} else {
-					// if the animation isn't available, simply show or hide (fading out) the playback controls
-					controlsView.clearAnimation();
-					if (!visible && controlsView.getVisibility() == View.VISIBLE) {
-						controlsView.startAnimation(AnimationUtils.loadAnimation(PlaybackActivity.this,
-								android.R.anim.fade_out));
-					}
-					controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+				// use ViewPropertyAnimator API to animate the playback controls at the bottom of the screen (sliding up or down)
+				if (mControlsHeight == 0) {
+					mControlsHeight = controlsView.getHeight();
 				}
+				if (mShortAnimTime == 0) {
+					mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+				}
+				controlsView.animate().translationY(visible ? 0 : mControlsHeight).setDuration(mShortAnimTime);
 
 				// schedule the next hide
 				if (visible) {
@@ -356,7 +344,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		});
 
 		// set up non-playback button clicks
-		mPlaybackController = ((PlaybackController) findViewById(R.id.playback_controller));
+		mPlaybackController = findViewById(R.id.playback_controller);
 		mPlaybackController.setButtonListeners(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -372,10 +360,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 			}
 		});
 
-		// this animation is used between image frames - the duration value is subtracted from image items'
-		// durations so
-		// that they appear in the right place when fully loaded; use / 2 for exactly in the middle of the
-		// animation, or
+		// this animation is used between image frames - the duration value is subtracted from image items' durations so
+		// that they appear in the right place when fully loaded; use / 2 for exactly in the middle of the animation, or
 		// / 3 for nearer to the end of the animation
 		mFadeOutAnimation = AnimationUtils.loadAnimation(PlaybackActivity.this, android.R.anim.fade_out);
 		mFadeOutAnimationDuration = (int) mFadeOutAnimation.getDuration() / 3;
@@ -407,8 +393,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	}
 
 	// handler and runnable for system UI hiding
-	Handler mHideHandler = new Handler();
-	Runnable mHideRunnable = new Runnable() {
+	private Handler mHideHandler = new Handler();
+	private Runnable mHideRunnable = new Runnable() {
 		@Override
 		public void run() {
 			if (mAutoHide) {
@@ -446,8 +432,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	}
 
 	// handler and runnable for scheduling playback advances
-	Handler mMediaAdvanceHandler = new Handler();
-	Runnable mMediaAdvanceRunnable = new Runnable() {
+	private Handler mMediaAdvanceHandler = new Handler();
+	private Runnable mMediaAdvanceRunnable = new Runnable() {
 		@Override
 		public void run() {
 			if (!mPlaybackController.isDragging()) {
@@ -468,8 +454,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	 * Schedules a call to refreshPlayback() (via mMediaAdvanceRunnable), cancelling any previously scheduled calls
 	 */
 	private void delayedPlaybackAdvance() {
-		int delayMillis = Math.min(PLAYBACK_UPDATE_INTERVAL_MILLIS, mPlaybackDurationMilliseconds -
-				mPlaybackPositionMilliseconds);
+		int delayMillis = Math.min(PLAYBACK_UPDATE_INTERVAL_MILLIS,
+				mPlaybackDurationMilliseconds - mPlaybackPositionMilliseconds);
 
 		// we limit the lower bound to 50ms because otherwise we'd overload the message queue and nothing would happen
 		mMediaAdvanceHandler.removeCallbacks(mMediaAdvanceRunnable);
@@ -477,8 +463,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	}
 
 	// handler and runnable for scheduling loading the full quality image when seeking
-	Handler mImageLoadHandler = new Handler();
-	Runnable mImageLoadRunnable = new Runnable() {
+	private Handler mImageLoadHandler = new Handler();
+	private Runnable mImageLoadRunnable = new Runnable() {
 		@Override
 		public void run() {
 			if (mCurrentPlaybackImagePath != null) {
@@ -521,8 +507,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 			return false;
 		}
 		mNarrativeInternalId = currentFrame.getParentId();
-		NarrativeItem currentNarrative = NarrativesManager.findNarrativeByInternalId(contentResolver,
-				mNarrativeInternalId);
+		NarrativeItem currentNarrative = NarrativesManager.findNarrativeByInternalId(contentResolver, mNarrativeInternalId);
 		PlaybackNarrativeDescriptor narrativeProperties = new PlaybackNarrativeDescriptor(mFadeOutAnimationDuration);
 		mNarrativeContent = currentNarrative.getPlaybackContent(contentResolver, startFrameId, narrativeProperties);
 		mCurrentPlaybackItems.clear();
@@ -569,7 +554,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	/**
 	 * Refresh the current playback state, loading media where appropriate. Will call initialisePlayback() first if
 	 * mNarrativeContent is null
-	 * <p/>
+	 *
 	 * <b>Note:</b> this should never be called directly, except for in onCreate when first starting and in seekTo (a
 	 * special case) - use delayedPlaybackAdvance() at all other times
 	 */
@@ -595,22 +580,22 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		final int preCachedPlaybackTime = mPlaybackPositionMilliseconds + PRELOAD_SIZE;
 
 		// remove any media that is now outdated (also stopping outdated audio in the process)
-		boolean itemsRemoved = false;
+		boolean itemsRemoved;
 		if (mNarrativeContentIndex == 0) { // if we're resetting, remove all items to preserve their order
 			mCurrentPlaybackItems.clear();
 			itemsRemoved = true;
 		} else {
 			mOldPlaybackItems.clear();
 			for (PlaybackMediaHolder holder : mCurrentPlaybackItems) {
-				if (holder.getStartTime(true) > preCachedPlaybackTime || holder.getEndTime(true) <=
-						mPlaybackPositionMilliseconds) {
+				if (holder.getStartTime(true) > preCachedPlaybackTime ||
+						holder.getEndTime(true) <= mPlaybackPositionMilliseconds) {
 					mOldPlaybackItems.add(holder);
 					if (holder.mMediaType == MediaPhoneProvider.TYPE_AUDIO) {
 						CustomMediaPlayer p = getExistingAudio(holder.mMediaPath);
 						if (p != null) {
 							try {
 								p.stop();
-							} catch (IllegalStateException e) {
+							} catch (IllegalStateException ignored) {
 							}
 							p.resetCustomAttributes();
 						}
@@ -625,8 +610,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		boolean itemsAdded = false;
 		for (int i = mNarrativeContentIndex; i < narrativeSize; i++) {
 			final PlaybackMediaHolder holder = mNarrativeContent.get(i);
-			if (holder.getStartTime(true) <= preCachedPlaybackTime && holder.getEndTime(true) >
-					mPlaybackPositionMilliseconds && new File(holder.mMediaPath).length() > 0) {
+			if (holder.getStartTime(true) <= preCachedPlaybackTime && holder.getEndTime(true) > mPlaybackPositionMilliseconds &&
+					new File(holder.mMediaPath).length() > 0) {
 				if (!mCurrentPlaybackItems.contains(holder)) {
 					mCurrentPlaybackItems.add(holder);
 				}
@@ -697,8 +682,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 							cancelLoadingScreenSizedImageInBackground(mCurrentPlaybackImage);
 							Bitmap scaledBitmap = null;
 							try {
-								scaledBitmap = BitmapUtilities.loadAndCreateScaledBitmap(holder.mMediaPath,
-										mScreenSize.x, mScreenSize.y, BitmapUtilities.ScalingLogic.DOWNSCALE, true);
+								scaledBitmap = BitmapUtilities.loadAndCreateScaledBitmap(holder.mMediaPath, mScreenSize.x,
+										mScreenSize.y, BitmapUtilities.ScalingLogic.DOWNSCALE, true);
 							} catch (Throwable t) {
 								// out of memory...
 							}
@@ -720,8 +705,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 						} else {
 							Bitmap scaledBitmap = null;
 							try {
-								scaledBitmap = BitmapUtilities.loadAndCreateScaledBitmap(holder.mMediaPath,
-										mScreenSize.x, mScreenSize.y, BitmapUtilities.ScalingLogic.FIT, true);
+								scaledBitmap = BitmapUtilities.loadAndCreateScaledBitmap(holder.mMediaPath, mScreenSize.x,
+										mScreenSize.y, BitmapUtilities.ScalingLogic.FIT, true);
 							} catch (Throwable t) { // out of memory...
 							}
 							mCurrentPlaybackImage.setImageBitmap(scaledBitmap);
@@ -779,7 +764,6 @@ public class PlaybackActivity extends MediaPhoneActivity {
 								dataLoaded = true;
 							} catch (Throwable t) {
 								// sometimes setDataSource fails mysteriously - loop to open, rather than failing
-								dataLoaded = false;
 								dataLoadingErrorCount += 1;
 							} finally {
 								IOUtilities.closeStream(playerInputStream);
@@ -803,6 +787,9 @@ public class PlaybackActivity extends MediaPhoneActivity {
 						textItem = holder; // text is loaded after all other content
 					}
 					break;
+
+				default:
+					break;
 			}
 		}
 
@@ -824,19 +811,21 @@ public class PlaybackActivity extends MediaPhoneActivity {
 			// TODO: currently we load text every time - could check, but this would require loading the file anyway...
 			String textContents = IOUtilities.getFileContents(textItem.mMediaPath).trim();
 			if (!TextUtils.isEmpty(textContents)) {
+				// TODO: currently there is a strange bug where the previous text is shown briefly when switching from a
+				// TODO: non-image frame with text to one that has an image and text. See the welcome narrative as an example
 				int textColour = parentFrame.getForegroundColour();
 				if (hasImage) {
 					mPlaybackText.setVisibility(View.GONE);
 					mPlaybackTextWithImage.setText(textContents);
 					mPlaybackTextWithImage.setVisibility(View.VISIBLE);
-					mPlaybackTextWithImage.setTextColor(textColour < 0 ? textColour : getResources().getColor(
-							R.color.frame_icon_text_with_image));
+					mPlaybackTextWithImage.setTextColor(
+							textColour < 0 ? textColour : getResources().getColor(R.color.frame_icon_text_with_image));
 				} else {
 					mPlaybackTextWithImage.setVisibility(View.GONE);
 					mPlaybackText.setText(textContents);
 					mPlaybackText.setVisibility(View.VISIBLE);
-					mPlaybackText.setTextColor(textColour < 0 ? textColour : getResources().getColor(
-							R.color.frame_icon_text_no_image));
+					mPlaybackText.setTextColor(
+							textColour < 0 ? textColour : getResources().getColor(R.color.frame_icon_text_no_image));
 				}
 			} else {
 				mPlaybackText.setVisibility(View.GONE);
@@ -910,7 +899,6 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	 * Check whether the given file is currently being played by one of our CustomMediaPlayer instances. If so, return
 	 * the player; if not, return null.
 	 *
-	 * @param audioPath
 	 * @return the CustomMediaPlayer that is playing this file, or null if the file is not being played
 	 */
 	private CustomMediaPlayer getExistingAudio(String audioPath) {
@@ -947,8 +935,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 
 	/**
 	 * If the narrative is playing, start/resume/seek any audio items that are prepared, but only when <b>all</b> items
-	 * that apply to the current playback position have been prepared. If any applicable items are not prepared,
-	 * nothing
+	 * that apply to the current playback position have been prepared. If any applicable items are not prepared, nothing
 	 * will be done.
 	 */
 	private void playPreparedAudio(boolean force) {
@@ -968,8 +955,8 @@ public class PlaybackActivity extends MediaPhoneActivity {
 				for (CustomMediaPlayer player : mMediaPlayers) {
 					if (player.mPlaybackPrepared) {
 						try {
-							if (player.mMediaStartTime <= mPlaybackPositionMilliseconds && player.mMediaEndTime >
-									mPlaybackPositionMilliseconds) {
+							if (player.mMediaStartTime <= mPlaybackPositionMilliseconds &&
+									player.mMediaEndTime > mPlaybackPositionMilliseconds) {
 								if (!player.isPlaying() && (force || !player.mHasPlayed)) {
 									player.seekTo(mPlaybackPositionMilliseconds - player.mMediaStartTime);
 									player.start();
@@ -990,8 +977,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 
 	private void seekPlayingAudio() {
 		for (CustomMediaPlayer player : mMediaPlayers) {
-			if (player.mMediaStartTime <= mPlaybackPositionMilliseconds && player.mMediaEndTime >
-					mPlaybackPositionMilliseconds) {
+			if (player.mMediaStartTime <= mPlaybackPositionMilliseconds && player.mMediaEndTime > mPlaybackPositionMilliseconds) {
 				if (player.mPlaybackPrepared) {
 					try {
 						player.seekTo(mPlaybackPositionMilliseconds - player.mMediaStartTime);
@@ -1056,8 +1042,9 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	private OnErrorListener mMediaPlayerErrorListener = new OnErrorListener() {
 		@Override
 		public boolean onError(MediaPlayer mp, int what, int extra) {
-			if (MediaPhone.DEBUG)
+			if (MediaPhone.DEBUG) {
 				Log.d(DebugUtilities.getLogTag(this), "Playback error - what: " + what + ", extra: " + extra);
+			}
 			return false; // not handled -> onCompletionListener will be called
 		}
 	};
@@ -1077,13 +1064,13 @@ public class PlaybackActivity extends MediaPhoneActivity {
 	 * whether the player has been prepared
 	 */
 	private class CustomMediaPlayer extends MediaPlayer {
-		public boolean mPlaybackPrepared = false;
-		public boolean mHasPlayed = false;
-		public String mMediaPath = null;
-		public int mMediaStartTime = 0;
-		public int mMediaEndTime = 0;
+		private boolean mPlaybackPrepared = false;
+		private boolean mHasPlayed = false;
+		private String mMediaPath = null;
+		private int mMediaStartTime = 0;
+		private int mMediaEndTime = 0;
 
-		public void resetCustomAttributes() {
+		private void resetCustomAttributes() {
 			mPlaybackPrepared = false;
 			mHasPlayed = false;
 			mMediaPath = null;
@@ -1101,8 +1088,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 
 	/**
 	 * Handler for user interaction with the narrative player. Most operations are self explanatory, but seeking is
-	 * slightly more complex as we need to ensure that media items are loaded at the correct time and in the right
-	 * order
+	 * slightly more complex as we need to ensure that media items are loaded at the correct time and in the right order
 	 */
 	private PlaybackController.MediaPlayerControl mMediaController = new PlaybackController.MediaPlayerControl() {
 		@Override
@@ -1139,8 +1125,7 @@ public class PlaybackActivity extends MediaPhoneActivity {
 		public void seekTo(int pos) {
 			if (pos < mPlaybackPositionMilliseconds) {
 				// seeking backwards is far less efficient than forwards - we can't just loop back until we find a
-				// limit, because the list is ordered by start time and items can last a long time (we would need a
-				// list
+				// limit, because the list is ordered by start time and items can last a long time (we would need a list
 				// of items ordered by end time to be able to seek backwards more efficiently)
 				mNarrativeContentIndex = 0;
 			}

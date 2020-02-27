@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
 
-	<!--defaults/generic-->
+	<!-- defaults/generic -->
 	<string name="button_ok">OK</string>
 	<string name="button_save">Сохранить</string>
 	<string name="button_cancel">Отменить</string>
@@ -13,7 +13,7 @@
 	<string name="frame_image_action_description">Визуальная репрезентация текущего действия данной рамкой</string>
 	<string name="seconds">секунды</string>
 
-	<!--background tasks-->
+	<!-- background tasks -->
 	<string name="background_task_progress">Пожалуйста подождите…</string>
 	<string name="import_starting">Начало обработки импортированных файлов…</string>
 	<string name="import_file_confirmation">Импортировать файл</string>
@@ -22,20 +22,20 @@
 	<string name="import_file">Импортирование</string>
 	<string name="import_progress">Обработка новых файлов…</string>
 	<string name="import_finished">Импортировка новых файлов успешно завершена</string>
-	<string name="mov_export_mov_incompatible_title">Предупреждение</string>
-	<string name="mov_export_mov_incompatible_summary">История содержит аудио, которое несовместимо с MOV файлами (в данное время поддерживается формат M4A, MP3, AMR и WAV). Данное аудио не будет включено в видео. Продолжить экспортацию?</string>
-	<string name="mov_export_task_progress">Создание видео файла – подождите…</string>
-	<string name="mov_export_run_in_background">Прогон в фоновом режиме</string>
-	<string name="mov_export_task_complete">Создание видео завершено</string>
+	<string name="video_export_format_incompatible_title">Предупреждение</string>
+	<string name="video_export_format_incompatible_summary">История содержит аудио, которое несовместимо с видео файлами (в данное время поддерживается формат M4A, MP3 и WAV). Данное аудио не будет включено в видео. Продолжить экспортацию?</string>
+	<string name="video_export_task_progress">Создание видео файла – подождите…</string>
+	<string name="video_export_run_in_background">Прогон в фоновом режиме</string>
+	<string name="video_export_task_complete">Создание видео завершено</string>
 
-	<!--playback-->
+	<!-- playback -->
 	<string name="error_loading_narrative_player">Ошибка: не удалось открыть историю – пожалуйста повторите попытку</string>
 
-	<!--export-->
+	<!-- export -->
 	<string name="export_narrative_title">Экспортировать данную историю</string>
-	<string name="export_mov">&#x2191;&#160;&#160;&#160;&#160;Видео (поделиться, закачать, YouTube)</string>
-	<string name="export_html">&#x2191;&#160;&#160;&#160;&#160;HTML (создать веб-страницу)</string>
-	<string name="export_smil">&#x2191;&#x2193;&#160;&#160;SMIL (отправить в %1$ss)</string>
+	<string name="export_video">Видео (поделиться, закачать, YouTube)</string>
+	<string name="export_html">HTML (создать веб-страницу)</string>
+	<string name="export_smil">SMIL (отправить в %1$ss)</string>
 	<string name="export_narrative_failed">Ошибка: сбой в процессе экспортирования – пожалуйста, повторите попытку</string>
 	<string name="export_missing_directory">Ошибка: временное хранилище не найдено – пожалуйста, убедитесь, что на вашем устройстве или SD-карте достаточно места</string>
 	<string name="export_potential_problem">Ошибка: SD-карта не найдена – на некоторых устройствах это может привести к проблемам экспортировки, и Вы можете столкнуться с проблемами при проигрывании истории</string>
@@ -45,7 +45,7 @@
 	<string name="export_narrative_name_blank">Ошибка: пожалуйста, введите название</string>
 	<string name="export_narrative_saved">История сохранена на SD-карту в папку %1$s</string>
 
-	<!--template browser-->
+	<!-- template browser -->
 	<string name="select_template_hint">Выберите шаблон для загрузки или осуществите длинное нажатие экрана для вызова дополнительных настроек</string>
 	<string name="template_to_narrative_complete">Шаблон загружен</string>
 	<string name="delete_template_confirmation">Удалить шаблон?</string>
@@ -57,7 +57,7 @@
 	<string name="export_template_failed">Ошибка: сбой в процессе экспортирования шаблона – пожалуйста, повторите попытку</string>
 	<string name="template_list_empty">Шаблон не найден\n\n\nЧтобы превратить историю в шаблон, выберите опцию "Превратить в шаблон" в меню редактирования рамки</string>
 
-	<!--text editor-->
+	<!-- text editor -->
 	<string name="error_loading_text_editor">Ошибка загрузки текстового редактора – пожалуйста, повторите попытку</string>
 	<string name="delete_text_confirmation">Удалить текст?</string>
 	<string name="delete_text_hint">Весь текст в рамке будет удален без возможности восстановления</string>
@@ -67,7 +67,7 @@
 	<string name="span_text_multiple_frames">Данный текст теперь будет отображаться во всех последующих рамках, вплоть до следующей рамки содержащей текст</string>
 	<string name="span_text_single_frame">Данный текст теперь будет отображаться только в этой рамке</string>
 
-	<!--image editor-->
+	<!-- image editor -->
 	<string name="error_loading_image_editor">Ошибка загрузки фото редактора – пожалуйста, повторите попытку</string>
 	<string name="error_camera_failed">Ошибка: не удалось найти камеру – пожалуйста, повторите попытку</string>
 	<string name="error_taking_picture_no_camera">Невозможно сделать фотографию (камера не обнаружена) – открываем галерею</string>
@@ -86,7 +86,7 @@
 	<string name="span_image_multiple_frames">Данное изображение теперь будет отображаться во всех последующих рамках, вплоть до следующей рамки содержащей новое изображение</string>
 	<string name="span_image_single_frame">Данное изображение теперь будет отображаться только в этой рамке</string>
 
-	<!--audio editor-->
+	<!-- audio editor -->
 	<string name="error_loading_audio_editor">Ошибка загрузки редактора звука – пожалуйста, повторите попытку</string>
 	<string name="error_playing_audio">Ошибка проигрывания звука – пожалуйста, повторите попытку</string>
 	<string name="error_recording_audio">Ошибка записи звука – пожалуйста, повторите попытку</string>
@@ -105,7 +105,7 @@
 	<string name="span_audio_multiple_frames">Данная аудиозапись теперь будет проигрываться во всех последующих рамках, вплоть до следующей рамки содержащей новую звукозапись</string>
 	<string name="span_audio_single_frame">Данная аудиозапись теперь будет проигрываться только в этой рамке</string>
 
-	<!--frame editor-->
+	<!-- frame editor -->
 	<string name="error_loading_frame_editor">Ошибка загрузки редактора рамки – пожалуйста повторите попытку</string>
 	<string name="delete_frame_confirmation">Удалить рамку?</string>
 	<string name="delete_frame_hint">Всё содержимое рамки будет удалено без возможности восстановления</string>
@@ -141,11 +141,11 @@
 
 	<string name="delete_narrative_succeeded">История была удалена</string>
 
-	<!--file errors-->
+	<!-- file errors -->
 	<string name="error_opening_narrative_content_sd">Ошибка: история не найдена. Пожалуйста проверьте наличие SD-карты</string>
 	<string name="error_opening_narrative_content">Ошибка: история не найдена</string>
 
-	<!--narrative browser-->
+	<!-- narrative browser -->
 	<string name="narrative_list_header">Мои истории</string>
 	<string name="template_list_header">Шаблоны историй</string>
 	<string name="title_add">Добавить новую историю</string>
@@ -162,13 +162,13 @@
 	<string name="permission_storage_error">Ошибка: нет доступа к хранилищу. Пожалуйста, разрешите %1$s использовать хранилище вашего девайса и повторите попытку</string>
 	<string name="permission_storage_unavailable_hint">%1$s запрещен доступ к хранилищу на вашем девайсе – экспортирование в папки и некоторые внешние функции могут не работать</string>
 
-	<!--helper narrative-->
+	<!-- helper narrative -->
 	<string name="helper_narrative_frame_1">Добро пожаловать в\n%1$s!\n\nКоснитесь для редактирования,\nдлинное нажатие для воспроизведения</string>
 	<string name="helper_narrative_frame_2">Редактирование: добавьте фото, звук или текст</string>
 	<string name="helper_narrative_frame_3">Плейер: просмотр или экспортирование истории</string>
 	<string name="helper_narrative_frame_4">Желаем удачи!\n\nМы бы хотели узнать о Ваших успехах – присылайте отклики через \"%1$s\" в %2$s</string>
 
-	<!--activity titles (API v11+)-->
+	<!-- activity titles (API v11+) -->
 	<string name="title_frame_editor">Редактировать рамку</string>
 	<string name="title_camera">Добавить фотографию</string>
 	<string name="title_audio">Добавить звукозапись</string>
@@ -180,10 +180,10 @@
 	<string name="title_audio_library">Библиотека звукозаписи</string>
 	<string name="title_choose_colour">Выберите цвет</string>
 	<string name="title_set_duration">Установить длительность</string>
-	<string name="title_set_duration_value">Длительность (%1$sсек)</string>
+	<string name="title_set_duration_value">Длительность (%1$dсек)</string>
 	<string name="title_select_import_directory">Выберите директорию для импортирования</string>
 
-	<!--preferences-->
+	<!-- preferences -->
 	<string name="preferences_editing">Редактирование</string>
 	<string name="preferences_high_quality_pictures_title">Высокое качество фотографии</string>
 	<string name="preferences_high_quality_pictures_summary_off">Фотографирование в низком качестве (маленький размер файла)</string>
@@ -207,7 +207,6 @@
 	<string name="preferences_watch_for_files_summary_on">Будет осуществляться мониторинг директории импортирования на наличие входящих историй</string>
 	<string name="preferences_bluetooth_directory_title">Директория импортирования</string>
 	<string name="preferences_bluetooth_directory_summary">Определите директорию для мониторинга историй. Выберите директорию Bluetooth для сканирования входящих файлов</string>
-	<string name="preferences_bluetooth_directory_error">Ошибка: не в состоянии считать выбранную директорию; возвращаюсь в предыдущее местоположение</string>
 	<string name="preferences_confirm_importing_title">Запросить разрешение для импортирования</string>
 	<string name="preferences_confirm_importing_summary_off">Истории будут импортированы автоматически</string>
 	<string name="preferences_confirm_importing_summary_on">Перед началом импортирования истории будет запрошено разрешение</string>
@@ -239,7 +238,7 @@
 	<string name="preferences_get_source_code_summary">Искать, начать новый процесс или сообщить об ошибке на GitHub</string>
 	<string name="preferences_reset_default">Восстановлено значение, используемое по умолчанию</string>
 
-	<!--menu items-->
+	<!-- menu items -->
 	<string name="menu_new_narrative">Новая история</string>
 	<string name="menu_scan_imports">Сканирование и импорт</string>
 	<string name="menu_make_template">Создать шаблон</string>

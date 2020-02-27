@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ac.robinson.mediaphone_gtg.view.PressableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                         android:layout_width="wrap_content"
-                                                         android:layout_height="wrap_content"
-                                                         android:paddingBottom="@dimen/frame_icon_container_vertical_padding"
-                                                         android:paddingLeft="@dimen/frame_icon_container_horizontal_padding"
-                                                         android:paddingRight="@dimen/frame_icon_container_horizontal_padding"
-                                                         android:paddingTop="@dimen/frame_icon_container_vertical_padding">
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:focusable="true"
+	android:paddingLeft="@dimen/frame_icon_container_horizontal_padding"
+	android:paddingTop="@dimen/frame_icon_container_vertical_padding"
+	android:paddingRight="@dimen/frame_icon_container_horizontal_padding"
+	android:paddingBottom="@dimen/frame_icon_container_vertical_padding">
 
 	<ImageView
 		android:id="@+id/frame_item_image"
@@ -15,7 +16,7 @@
 		android:layout_gravity="center"
 		android:background="@drawable/frame_item"
 		android:contentDescription="@string/frame_image_description"
-		android:scaleType="center"/>
+		android:scaleType="center" />
 
 	<ProgressBar
 		android:id="@+id/frame_item_load_progress"
@@ -23,7 +24,7 @@
 		android:layout_height="@dimen/frame_icon_progress_size"
 		android:layout_centerInParent="true"
 		android:layout_gravity="center"
-		android:indeterminate="true"/>
+		android:indeterminate="true" />
 
 	<ImageView
 		android:id="@+id/frame_item_action_overlay"
@@ -33,6 +34,9 @@
 		android:layout_gravity="center"
 		android:contentDescription="@string/frame_image_action_description"
 		android:scaleType="centerInside"
-		android:src="@null"/>
+		android:src="@null" />
+
+	<!-- TODO: improve contentDescription to label frames (e.g., narrative frame 1, 2, 3) -->
+	<!-- TODO: adding clickable and longClickable to this layout breaks actual interaction, but means TalkBack works... -->
 
 </ac.robinson.mediaphone_gtg.view.PressableRelativeLayout>

@@ -26,20 +26,24 @@
 	<string name="import_file">Import</string>
 	<string name="import_progress">Processing new narrative files…</string>
 	<string name="import_finished">Successfully imported new narrative files</string>
-	<string name="mov_export_mov_incompatible_title">Warning</string>
-	<string name="mov_export_mov_incompatible_summary">This narrative contains audio that is incompatible with MOV files (currently M4A, MP3, AMR and WAV are supported). This audio will not be included in the video. Continue exporting?</string>
-	<string name="mov_export_task_progress">Creating video file – this may take some time…</string>
-	<string name="mov_export_run_in_background">Run in background</string>
-	<string name="mov_export_task_complete">Video creation completed</string>
+	<string name="video_export_format_incompatible_title">Warning</string>
+	<string name="video_export_format_incompatible_summary">This narrative contains audio that is incompatible with video files (currently M4A, MP3 and WAV are supported). This audio will not be included in the video. Continue exporting?</string>
+	<string name="video_export_task_progress">Creating video file – this may take some time…</string>
+	<string name="video_export_run_in_background">Run in background</string>
+	<string name="video_export_task_complete">Video creation completed</string>
+	<string name="video_export_task_complete_notification">Tap to save or share your video</string>
+	<string name="video_export_task_complete_hint">%1$s – tap the notification to save or share your video</string>
 
 	<!-- playback -->
 	<string name="error_loading_narrative_player">Error: couldn\'t open the narrative – please try again</string>
 
 	<!-- export -->
 	<string name="export_narrative_title">Export this narrative</string>
-	<string name="export_mov">&#x2191;&#160;&#160;&#160;&#160;Video (share, upload, YouTube)</string>
-	<string name="export_html">&#x2191;&#160;&#160;&#160;&#160;HTML (create a webpage)</string>
-	<string name="export_smil">&#x2191;&#x2193;&#160;&#160;SMIL (send to %1$ss)</string>
+	<string name="export_icon_one_way" translatable="false">&#x2191;&#160;&#160;&#160;&#160;%1$s</string>
+	<string name="export_icon_two_way" translatable="false">&#x2191;&#x2193;&#160;&#160;%1$s</string>
+	<string name="export_video">Video (share, upload, YouTube)</string>
+	<string name="export_html">HTML (create a webpage)</string>
+	<string name="export_smil">SMIL (send to %1$ss)</string>
 	<string name="export_narrative_failed">Error: failed to export the narrative – please try again</string>
 	<string name="export_missing_directory">Error: unable to find a temporary directory – please ensure your device or SD card has free space available</string>
 	<string name="export_potential_problem">Warning: No external storage found – on some devices this can cause export issues, and you may encounter problems playing the narrative</string>
@@ -82,8 +86,6 @@
 	<string name="save_picture_failed">Error: failed to save the picture – please try again</string>
 	<string name="import_picture_failed">Error: failed to import the picture – please try again</string>
 	<string name="import_picture_unavailable">Sorry, unable to import pictures on this device – no gallery found</string>
-	<string name="import_multiple_pictures_succeeded">Import complete – each picture has been added to a new frame after this one</string>
-	<string name="import_multiple_pictures_failed">Unable to complete multi-image import – please check frames after this one for errors</string>
 	<string name="delete_image_confirmation">Delete this image?</string>
 	<string name="delete_image_hint">The image will be permanently deleted</string>
 	<string name="delete_image_succeeded">The image has been deleted</string>
@@ -137,6 +139,8 @@
 	<string name="permission_camera_error">Error: camera access has not been granted. Please allow %1$s to access the camera and try again</string>
 	<string name="permission_audio_rationale">%1$s needs microphone access in order to be able to record audio. Please grant this permission if you would like to use audio in your narrative</string>
 	<string name="permission_audio_error">Error: microphone access has not been granted. Please allow %1$s to access the microphone and try again</string>
+	<string name="import_multiple_items_succeeded">Import complete – each item has been added to a new frame after this one</string>
+	<string name="import_multiple_items_failed">Unable to complete multi-item import – please check frames after this one for errors</string>
 
 	<plurals name="delete_narrative_second_hint">
 		<item quantity="one">The entire narrative (%1$d frame) will be permanently deleted</item>
@@ -187,7 +191,7 @@
 	<string name="title_audio_library">Audio library</string>
 	<string name="title_choose_colour">Choose a colour</string>
 	<string name="title_set_duration">Set duration</string>
-	<string name="title_set_duration_value">Set duration (%1$ss)</string>
+	<string name="title_set_duration_value">Set duration (%1$ds)</string>
 	<string name="title_select_import_directory">Select the import directory</string>
 
 	<!-- preferences -->
@@ -208,13 +212,15 @@
 	<string name="preferences_minimum_frame_duration_summary">Default duration for each frame. Double tap here to reset</string>
 	<string name="preferences_word_duration_title">Word duration</string>
 	<string name="preferences_word_duration_summary">Default duration for each word of text. Double tap here to reset</string>
+	<string name="preferences_export_directory_title">Export directory</string>
+	<string name="preferences_export_directory_summary">Choose where to save exported narratives. The default location is your Downloads folder</string>
+	<string name="preferences_directory_error">Error: unable to read the selected directory; reverting to the previous location</string>
 	<string name="preferences_import">Import</string>
 	<string name="preferences_watch_for_files_title">Scan for new narratives</string>
 	<string name="preferences_watch_for_files_summary_off">Narratives sent via Bluetooth will not be imported automatically; you can import via the \"Scan and Import\" menu option</string>
 	<string name="preferences_watch_for_files_summary_on">The import directory will be monitored for incoming narratives</string>
 	<string name="preferences_bluetooth_directory_title">Import directory</string>
 	<string name="preferences_bluetooth_directory_summary">Set the directory to monitor for narratives. Choose your Bluetooth directory to automatically scan for incoming files</string>
-	<string name="preferences_bluetooth_directory_error">Error: unable to read the selected directory; reverting to the previous location</string>
 	<string name="preferences_confirm_importing_title">Ask before importing</string>
 	<string name="preferences_confirm_importing_summary_off">Narratives will be imported automatically</string>
 	<string name="preferences_confirm_importing_summary_on">You will be prompted before importing each narrative</string>
@@ -239,7 +245,12 @@
 	<string name="preferences_spanning_media_summary_off">Media items will only appear on one frame</string>
 	<string name="preferences_spanning_media_summary_on">Media items will be able to span multiple frames</string>
 	<string name="preferences_audio_resampling_title">Exported audio quality</string>
-	<string name="preferences_audio_resampling_summary">Resampled audio is slower to export, but more compatible with external video players</string>
+	<string name="preferences_video_quality_title">Exported video quality</string>
+	<string name="preferences_export_quality_summary">Higher quality leads to larger exported file sizes. Lower quality is faster to export</string>
+	<string name="preferences_audio_resampling_summary_legacy">Resampled audio is slower to export, but more compatible with external video players</string>
+	<string name="preferences_export_square_videos_title">Export square videos</string>
+	<string name="preferences_export_square_videos_summary_off">Exported videos will match the combined aspect ratio of the images they contain</string>
+	<string name="preferences_export_square_videos_summary_on">Exported videos will be square, regardless of their image aspect ratio</string>
 	<string name="preferences_about">About</string>
 	<string name="preferences_contact_us_title">Get in touch</string>
 	<string name="preferences_contact_us_summary">Email us your feedback, or report a problem</string>
@@ -262,6 +273,9 @@
 	<string name="preferences_about_app_title" translatable="false">%1$s v%2$s</string>
 	<string name="preferences_about_app_summary" translatable="false">Build %1$d (%2$s); %3$s</string>
 	<string name="preferences_reset_default">The default value has been restored</string>
+	<string name="preferences_low">Low</string>
+	<string name="preferences_medium">Medium</string>
+	<string name="preferences_high">High</string>
 
 	<!-- menu items -->
 	<string name="menu_new_narrative">New narrative</string>
@@ -284,6 +298,14 @@
 	<string name="menu_play_narrative">Play / export</string>
 	<string name="menu_export">Export</string>
 	<string name="menu_preferences" translatable="false">@string/title_preferences</string>
+
+	<!-- accessibility -->
+	<string name="hint_narrative_item">Narrative frame</string>
+	<string name="hint_record_audio">Record audio</string>
+	<string name="hint_take_photo">Take a photo</string>
+	<string name="hint_rotate_image">Rotate</string>
+	<string name="hint_flash">Flash</string>
+	<string name="hint_switch_camera">Switch camera</string>
 
 	<!-- gtg-resources (not translatable as these are in both languages in both versions) -->
 	<string name="error_loading_resource_english" translatable="false">Error: couldn\'t load the resource – please try again</string>

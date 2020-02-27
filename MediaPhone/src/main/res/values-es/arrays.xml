@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- screen orientation preference -->
+	<string-array name="preferences_orientation_entries">
+		<item>Sistema por defecto</item>
+		<item>retrato</item>
+		<item>Paisaje</item>
+		<item>Orientación del dispositivo</item>
+	</string-array>
+
+	<!-- audio recording bitrate preference -->
+	<string-array name="preferences_audio_bitrate_entries">
+		<item>Bajo</item>
+		<item>Medio</item>
+		<item>Alto</item>
+	</string-array>
+
+	<!-- audio resampling bitrate preference -->
+	<string-array name="preferences_audio_resampling_entries">
+		<item>Original (sin remuestreo)</item>
+		<item>Bajo</item>
+		<item>Medio</item>
+		<item>Alto</item>
+		<item>Automático (recomendado)</item>
+	</string-array>
+
+</resources>

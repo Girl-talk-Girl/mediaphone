@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -34,14 +34,17 @@ import java.util.Locale;
 
 import ac.robinson.mediaphone_gtg.MediaPhone;
 import ac.robinson.util.BitmapUtilities;
+import androidx.annotation.NonNull;
 
 public class MediaItem implements BaseColumns {
 
-	public static final Uri CONTENT_URI = Uri.parse(MediaPhoneProvider.URI_PREFIX + MediaPhoneProvider.URI_AUTHORITY +
-			MediaPhoneProvider.URI_SEPARATOR + MediaPhoneProvider.MEDIA_LOCATION);
+	public static final Uri CONTENT_URI = Uri.parse(
+			MediaPhoneProvider.URI_PREFIX + MediaPhoneProvider.URI_AUTHORITY + MediaPhoneProvider.URI_SEPARATOR +
+					MediaPhoneProvider.MEDIA_LOCATION);
 
-	public static final Uri CONTENT_URI_LINK = Uri.parse(MediaPhoneProvider.URI_PREFIX + MediaPhoneProvider
-			.URI_AUTHORITY + MediaPhoneProvider.URI_SEPARATOR + MediaPhoneProvider.MEDIA_LINKS_LOCATION);
+	public static final Uri CONTENT_URI_LINK = Uri.parse(
+			MediaPhoneProvider.URI_PREFIX + MediaPhoneProvider.URI_AUTHORITY + MediaPhoneProvider.URI_SEPARATOR +
+					MediaPhoneProvider.MEDIA_LINKS_LOCATION);
 
 	public static final String INTERNAL_ID = "internal_id";
 	public static final String PARENT_ID = "parent_id";
@@ -52,12 +55,13 @@ public class MediaItem implements BaseColumns {
 	public static final String SPAN_FRAMES = "span_frames";
 	public static final String DELETED = "deleted";
 
-	public static final String[] PROJECTION_ALL = new String[]{MediaItem._ID, INTERNAL_ID, PARENT_ID, DATE_CREATED,
-			FILE_EXTENSION, DURATION, TYPE, SPAN_FRAMES, DELETED};
+	public static final String[] PROJECTION_ALL = new String[]{
+			MediaItem._ID, INTERNAL_ID, PARENT_ID, DATE_CREATED, FILE_EXTENSION, DURATION, TYPE, SPAN_FRAMES, DELETED
+	};
 
-	public static final String[] PROJECTION_INTERNAL_ID = new String[]{INTERNAL_ID};
+	public static final String[] PROJECTION_INTERNAL_ID = new String[]{ INTERNAL_ID };
 
-	public static final String[] PROJECTION_PARENT_ID = new String[]{PARENT_ID};
+	public static final String[] PROJECTION_PARENT_ID = new String[]{ PARENT_ID };
 
 	public static final String DEFAULT_SORT_ORDER = TYPE + " ASC, " + DATE_CREATED + " ASC";
 
@@ -119,8 +123,6 @@ public class MediaItem implements BaseColumns {
 
 	/**
 	 * Currently only used for changing the type of an image between front/back camera.
-	 *
-	 * @param type
 	 */
 	public void setType(int type) {
 		mType = type;
@@ -131,8 +133,7 @@ public class MediaItem implements BaseColumns {
 	}
 
 	public static File getFile(String mediaParentId, String mediaInternalId, String mediaFileExtension) {
-		return new File(FrameItem.getStorageDirectory(mediaParentId),
-				mediaInternalId + "." + mediaFileExtension);
+		return new File(FrameItem.getStorageDirectory(mediaParentId), mediaInternalId + "." + mediaFileExtension);
 	}
 
 	/**
@@ -153,24 +154,20 @@ public class MediaItem implements BaseColumns {
 
 	/**
 	 * Whether this media item is set to span multiple frames
-	 *
-	 * @return
 	 */
 	public boolean getSpanFrames() {
-		return mSpanFrames == 0 ? false : true;
+		return mSpanFrames != 0;
 	}
 
 	/**
 	 * Set whether this media item should span multiple frames
-	 *
-	 * @param spanFrames
 	 */
 	public void setSpanFrames(boolean spanFrames) {
 		mSpanFrames = spanFrames ? 1 : 0;
 	}
 
 	public boolean getDeleted() {
-		return mDeleted == 0 ? false : true;
+		return mDeleted != 0;
 	}
 
 	public void setDeleted(boolean deleted) {
@@ -194,9 +191,11 @@ public class MediaItem implements BaseColumns {
 
 			case MediaPhoneProvider.TYPE_VIDEO:
 				// MINI_KIND: 512 x 384; MICRO_KIND: 96 x 96
-				mediaBitmap = BitmapUtilities.scaleBitmap(ThumbnailUtils.createVideoThumbnail(getFile()
-						.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND), width, height,
-						BitmapUtilities.ScalingLogic.CROP);
+				mediaBitmap = BitmapUtilities.scaleBitmap(ThumbnailUtils.createVideoThumbnail(getFile().getAbsolutePath(),
+						MediaStore.Video.Thumbnails.MINI_KIND), width, height, BitmapUtilities.ScalingLogic.CROP);
+				break;
+
+			default:
 				break;
 		}
 
@@ -205,9 +204,6 @@ public class MediaItem implements BaseColumns {
 
 	/**
 	 * Get the duration of a text string (number of words/lines * word duration in settings), or 0 if empty
-	 *
-	 * @param textString
-	 * @return
 	 */
 	public static int getTextDurationMilliseconds(String textString) {
 		int frameDuration = 0;
@@ -239,8 +235,7 @@ public class MediaItem implements BaseColumns {
 		return values;
 	}
 
-	public static MediaItem fromExisting(MediaItem existing, String newInternalId, String newParentId,
-	                                     long newCreationDate) {
+	public static MediaItem fromExisting(MediaItem existing, String newInternalId, String newParentId, long newCreationDate) {
 		final MediaItem media = new MediaItem();
 		media.mInternalId = newInternalId;
 		media.mParentId = newParentId;
@@ -266,9 +261,10 @@ public class MediaItem implements BaseColumns {
 		return media;
 	}
 
+	@NonNull
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[" + mInternalId + "," + mParentId + "," + mCreationDate + "," +
-				"" + mFileExtension + "," + mDuration + "," + mType + "," + mSpanFrames + "," + mDeleted + "]";
+		return this.getClass().getName() + "[" + mInternalId + "," + mParentId + "," + mCreationDate + "," + "" + mFileExtension +
+				"," + mDuration + "," + mType + "," + mSpanFrames + "," + mDeleted + "]";
 	}
 }

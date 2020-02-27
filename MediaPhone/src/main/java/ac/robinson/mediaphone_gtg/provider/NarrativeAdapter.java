@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -22,7 +22,6 @@ package ac.robinson.mediaphone_gtg.provider;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +34,7 @@ import ac.robinson.mediaphone_gtg.BrowserActivity;
 import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.mediaphone_gtg.view.HorizontalListView;
 import ac.robinson.mediaphone_gtg.view.NarrativeViewHolder;
+import androidx.cursoradapter.widget.CursorAdapter;
 
 public class NarrativeAdapter extends CursorAdapter {
 	private static int mInternalIdIndex = -1;
@@ -82,7 +82,7 @@ public class NarrativeAdapter extends CursorAdapter {
 
 		NarrativeViewHolder holder = new NarrativeViewHolder();
 		// TODO: soft references to the list view? delete on destroy?
-		holder.frameList = (HorizontalListView) view.findViewById(R.id.narrative_list_view);
+		holder.frameList = view.findViewById(R.id.narrative_list_view);
 		view.setTag(holder);
 
 		holder.frameList.setOnItemClickListener(mActivity.getFrameClickListener());
@@ -106,8 +106,7 @@ public class NarrativeAdapter extends CursorAdapter {
 		holder.narrativeSequenceId = cursor.getInt(mSequenceIdIndex);
 
 		final BrowserActivity activity = mActivity;
-		if (activity.getScrollState() == AbsListView.OnScrollListener.SCROLL_STATE_FLING || activity
-				.isPendingIconsUpdate()) {
+		if (activity.getScrollState() == AbsListView.OnScrollListener.SCROLL_STATE_FLING || activity.isPendingIconsUpdate()) {
 			holder.queryIcons = true;
 			holder.frameList.setAdapter(mEmptyAdapter);
 		} else {
@@ -117,13 +116,10 @@ public class NarrativeAdapter extends CursorAdapter {
 
 		// alternating row colours
 		int cursorPosition = cursor.getPosition();
-		if ((cursor.getCount() - cursorPosition) % 2 == 0) { // so the colour stays the same when adding a new
-		// narrative
-			holder.frameList.setBackgroundResource(mIsTemplateView ? R.color.template_list_dark : R.color
-					.narrative_list_dark);
+		if ((cursor.getCount() - cursorPosition) % 2 == 0) { // so the colour stays the same when adding a new narrative
+			holder.frameList.setBackgroundResource(mIsTemplateView ? R.color.template_list_dark : R.color.narrative_list_dark);
 		} else {
-			holder.frameList.setBackgroundResource(mIsTemplateView ? R.color.template_list_light : R.color
-					.narrative_list_light);
+			holder.frameList.setBackgroundResource(mIsTemplateView ? R.color.template_list_light : R.color.narrative_list_light);
 		}
 	}
 

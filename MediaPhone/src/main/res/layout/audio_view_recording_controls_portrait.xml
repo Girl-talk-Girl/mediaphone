@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:tools="http://schemas.android.com/tools"
-       xmlns:util="http://schemas.android.com/apk/res-auto"
-       tools:ignore="MissingRegistered">
+	xmlns:util="http://schemas.android.com/apk/res-auto">
 
 	<LinearLayout
 		android:id="@+id/audio_recording_controls"
@@ -15,28 +13,31 @@
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
+			android:contentDescription="@string/menu_finished_editing"
 			android:drawableTop="@drawable/ic_menu_back"
 			android:visibility="gone"
 			util:filterColorDefault="@color/button_default"
-			util:filterColorTouched="@color/button_touched"/>
+			util:filterColorTouched="@color/button_touched" />
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_import_audio"
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
+			android:contentDescription="@string/import_file"
 			android:drawableTop="@drawable/ic_menu_import_music"
 			util:filterColorDefault="@color/button_default"
-			util:filterColorTouched="@color/button_touched"/>
+			util:filterColorTouched="@color/button_touched" />
 
 		<ac.robinson.view.CenteredImageTextButton
 			android:id="@+id/button_import_library_audio"
 			style="@style/default_coloured_button"
 			android:layout_width="0dp"
 			android:layout_weight="1"
+			android:contentDescription="@string/import_file"
 			android:drawableTop="@drawable/ic_menu_sound_library"
 			util:filterColorDefault="@color/button_default"
-			util:filterColorTouched="@color/button_touched"/>
+			util:filterColorTouched="@color/button_touched" />
 	</LinearLayout>
 
 </merge>

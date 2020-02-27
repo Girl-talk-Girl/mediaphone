@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<!-- TODO: remember to update values-v11 at the same time -->
-
 	<!-- theme -->
 	<color name="primary">#e91e63</color>
 	<color name="primary_dark">#c2185b</color>
+	<color name="primary_task_description">@color/primary_dark</color>
 	<color name="accent">#f44336</color>
 
 	<!-- defaults/generic -->
@@ -35,6 +34,7 @@
 
 	<!-- playback -->
 	<color name="playback_background">@color/frame_icon_background</color>
+	<color name="media_controller_background">#ccf48fb1</color><!-- overrides mediautilities version -->
 
 	<!-- export -->
 	<color name="export_background">@color/frame_icon_background</color>

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -29,23 +30,23 @@ public class UpgradeManager {
 		final String versionKey = context.getString(R.string.key_application_version);
 		final int currentVersion = applicationVersionSettings.getInt(versionKey, 0);
 
-		// this is only ever for things like deleting caches and showing changes, so it doesn't really matter if we
-		// fail
+		// this is only ever for things like deleting caches and showing changes, so it doesn't really matter if we fail
 		final int newVersion;
 		try {
 			PackageManager manager = context.getPackageManager();
 			PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
 			newVersion = info.versionCode;
 		} catch (Exception e) {
-			Log.d(DebugUtilities.getLogTag(context), "Unable to find version code - not upgrading (will try again on " +
-					"next launch)");
+			Log.d(DebugUtilities.getLogTag(context),
+					"Unable to find version code - not upgrading (will try again on next " + "launch)");
 			return;
 		}
 		if (newVersion > currentVersion) {
 			SharedPreferences.Editor prefsEditor = applicationVersionSettings.edit();
 			prefsEditor.putInt(versionKey, newVersion);
-			prefsEditor.commit(); // apply() is better, but only in SDK >= 9
+			prefsEditor.apply();
 		} else {
+			handleUpgradeFixes(context); // need to check these every time we launch in case Android version has been upgraded
 			return; // no need to upgrade - version number has not changed
 		}
 
@@ -53,8 +54,7 @@ public class UpgradeManager {
 		SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences(context);
 		if (currentVersion == 0) {
 			// before version 15 the version code wasn't stored (and default preference values weren't set) - instead,
-			// we use the number of narratives as a rough guess as to whether this is the first install or not;
-			// upgrades
+			// we use the number of narratives as a rough guess as to whether this is the first install or not; upgrades
 			// after v15 have a version number, so will still be processed even if no narratives exist
 			// TODO: one side effect of this is that upgrades from pre-v15 to the latest version will *not* perform the
 			// upgrade steps if there are no narratives; for example, upgrading to v16 will not save duration prefs
@@ -86,7 +86,7 @@ public class UpgradeManager {
 			try {
 				newValue = Float.valueOf(mediaPhoneSettings.getString(preferenceKey, Float.toString(newValue)));
 				prefsEditor.remove(preferenceKey);
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 			prefsEditor.putFloat(context.getString(R.string.key_minimum_frame_duration), newValue);
 
@@ -95,11 +95,11 @@ public class UpgradeManager {
 			try {
 				newValue = Float.valueOf(mediaPhoneSettings.getString(preferenceKey, Float.toString(newValue)));
 				prefsEditor.remove(preferenceKey);
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 			prefsEditor.putFloat(context.getString(R.string.key_word_duration), newValue);
 
-			prefsEditor.commit(); // apply() is better, but only in SDK >= 9
+			prefsEditor.apply();
 		}
 
 		// v17 added a helper narrative - add to the list if there are none in place already
@@ -121,8 +121,8 @@ public class UpgradeManager {
 				// delete old internally cached thumbnails if we've moved to using an external directory
 				if (MediaPhone.DIRECTORY_THUMBS != null) {
 					if (!IOUtilities.isInternalPath(MediaPhone.DIRECTORY_THUMBS.getAbsolutePath())) {
-						File internalThumbsDir = IOUtilities.getNewCachePath(context, MediaPhone.APPLICATION_NAME +
-								context.getString(R.string.name_thumbs_directory), false, false);
+						File internalThumbsDir = IOUtilities.getNewCachePath(context,
+								MediaPhone.APPLICATION_NAME + context.getString(R.string.name_thumbs_directory), false, false);
 						if (internalThumbsDir != null) {
 							IOUtilities.deleteRecursive(internalThumbsDir);
 						}
@@ -132,30 +132,50 @@ public class UpgradeManager {
 		}
 
 		// v19 added AMR audio pause/resume/export and moved to a list preference for audio quality
+		// *note* AMR was subsequently removed as newer devices support M4A far more easily
 		if (currentVersion < 19) {
 			// used to transfer the value here; no need any more as what used to be high quality is now default
 			SharedPreferences.Editor prefsEditor = mediaPhoneSettings.edit();
 			try {
 				prefsEditor.remove("high_quality_audio"); // remove unnecessary preference key
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
-			prefsEditor.commit(); // apply() is better, but only in SDK >= 9
+			prefsEditor.apply();
 		} // never else - we want to check every previous step every time we do this
 
-		// v22 changed thumbnail presentation method - remove old thumbnails
+		// v22 changed the app theme significantly so icons need to be re-generated - delete thumbs folder to achieve this
 		if (currentVersion < 22) {
 			if (MediaPhone.DIRECTORY_THUMBS != null) {
-				IOUtilities.getNewCachePath(context, MediaPhone.APPLICATION_NAME +
-						context.getString(R.string.name_thumbs_directory),
-						!IOUtilities.isInternalPath(MediaPhone.DIRECTORY_THUMBS.getAbsolutePath()), true);
+				IOUtilities.deleteRecursive(MediaPhone.DIRECTORY_THUMBS);
+				MediaPhone.DIRECTORY_THUMBS.mkdirs();
 			}
 		} // never else - we want to check every previous step every time we do this
 
 		// TODO: remember that pre-v15 versions will not get here if no narratives exist (i.e., don't do major changes)
+
+		handleUpgradeFixes(context); // need to check these every time we launch in case Android version has been upgraded
+	}
+
+	// these operations are things that depend not on the app version but on the Android platform version, so must be done on
+	// every launch in case the platform has changed (in most cases these are runtime-dependent, but some (like resampling rates)
+	// are better handled by fixing a preference value to ensure that we don't have to constantly check for edge cases
+	// NOTE: we don't need to check the app version here: all version-dependent changes take place in the standard way, above
+	private static void handleUpgradeFixes(Context context) {
+		// versions after 32 support mp4 export, but we need to make sure we remove the preference to disable resampling as this
+		// is not compatible - all narratives are now passed through the resampling process
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences(context);
+			String resamplingKey = context.getString(R.string.key_audio_resampling_bitrate);
+			if ("0".equals(mediaPhoneSettings.getString(resamplingKey, null))) {
+				SharedPreferences.Editor prefsEditor = mediaPhoneSettings.edit();
+				prefsEditor.putString(resamplingKey, String.valueOf(context.getResources()
+						.getInteger(R.integer.default_resampling_bitrate))); // string rather than int due to ListPreference
+				prefsEditor.apply();
+			}
+		} // never else - we want to check every previous step every time we do this
 	}
 
 	public static void installHelperNarrative(Context context) {
-
 		ContentResolver contentResolver = context.getContentResolver();
 		if (NarrativesManager.findNarrativeByInternalId(contentResolver, NarrativeItem.HELPER_NARRATIVE_ID) != null) {
 			return; // don't install if the helper narrative already exists
@@ -166,9 +186,13 @@ public class UpgradeManager {
 		final int narrativeSequenceIdIncrement = res.getInteger(R.integer.frame_narrative_sequence_increment);
 
 		// add a narrative that gives a few tips on first use
-		int[] mediaStrings = {R.string.helper_narrative_frame_1, R.string.helper_narrative_frame_2,
-				R.string.helper_narrative_frame_3, R.string.helper_narrative_frame_4,};
-		int[] frameImages = {0, R.drawable.help_frame_editor, R.drawable.help_frame_export, 0};
+		int[] mediaStrings = {
+				R.string.helper_narrative_frame_1,
+				R.string.helper_narrative_frame_2,
+				R.string.helper_narrative_frame_3,
+				R.string.helper_narrative_frame_4,
+		};
+		int[] frameImages = { 0, R.drawable.help_frame_editor, R.drawable.help_frame_export, 0 };
 
 		for (int i = 0, n = mediaStrings.length; i < n; i++) {
 			final FrameItem newFrame = new FrameItem(narrativeId, i * narrativeSequenceIdIncrement);
@@ -178,29 +202,26 @@ public class UpgradeManager {
 			if (i == 0) {
 				frameText = context.getString(mediaStrings[i], context.getString(R.string.app_name));
 			} else if (i == n - 1) {
-				frameText = context.getString(mediaStrings[i], context.getString(R.string
-						.preferences_contact_us_title), context.getString(R.string.title_preferences));
+				frameText = context.getString(mediaStrings[i], context.getString(R.string.preferences_contact_us_title),
+						context.getString(R.string.title_preferences));
 			} else {
 				frameText = context.getString(mediaStrings[i]);
 			}
 			final String textUUID = MediaPhoneProvider.getNewInternalId();
-			final File textContentFile = MediaItem.getFile(newFrame.getInternalId(), textUUID,
-					MediaPhone.EXTENSION_TEXT_FILE);
+			final File textContentFile = MediaItem.getFile(newFrame.getInternalId(), textUUID, MediaPhone.EXTENSION_TEXT_FILE);
 
-			if (textContentFile != null) {
-				try {
-					FileWriter fileWriter = new FileWriter(textContentFile);
-					BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-					bufferedWriter.write(frameText);
-					bufferedWriter.close();
-				} catch (Exception e) {
-				}
-
-				MediaItem textMediaItem = new MediaItem(textUUID, newFrame.getInternalId(),
-						MediaPhone.EXTENSION_TEXT_FILE, MediaPhoneProvider.TYPE_TEXT);
-				textMediaItem.setDurationMilliseconds(7500); // TODO: this is a hack to improve playback
-				MediaManager.addMedia(contentResolver, textMediaItem);
+			try {
+				FileWriter fileWriter = new FileWriter(textContentFile);
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+				bufferedWriter.write(frameText);
+				bufferedWriter.close();
+			} catch (Exception ignored) {
 			}
+
+			MediaItem textMediaItem = new MediaItem(textUUID, newFrame.getInternalId(), MediaPhone.EXTENSION_TEXT_FILE,
+					MediaPhoneProvider.TYPE_TEXT);
+			textMediaItem.setDurationMilliseconds(7500); // TODO: this is a hack to improve helper narrative playback
+			MediaManager.addMedia(contentResolver, textMediaItem);
 
 			// add the image, if applicable
 			if (frameImages[i] != 0) {
@@ -222,8 +243,8 @@ public class UpgradeManager {
 			FramesManager.addFrameAndPreloadIcon(res, contentResolver, newFrame);
 		}
 
-		NarrativeItem newNarrative = new NarrativeItem(narrativeId, NarrativesManager.getNextNarrativeExternalId
-				(contentResolver));
+		NarrativeItem newNarrative = new NarrativeItem(narrativeId,
+				NarrativesManager.getNextNarrativeExternalId(contentResolver));
 		NarrativesManager.addNarrative(contentResolver, newNarrative);
 	}
 }

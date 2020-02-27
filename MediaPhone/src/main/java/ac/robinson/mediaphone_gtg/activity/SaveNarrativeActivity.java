@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -32,10 +32,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.provider.OpenableColumns;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -54,6 +53,10 @@ import ac.robinson.mediaphone_gtg.MediaPhoneActivity;
 import ac.robinson.mediaphone_gtg.R;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.UIUtilities;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 /**
  * This Activity is a bit of a hack to allow saving from an extra item in an Intent chooser - its only purpose is to
@@ -65,7 +68,10 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 
 	private static final int PERMISSION_SD_STORAGE = 104;
 
+	private File mOutputDirectory;
+	private boolean mUsingDefaultOutputDirectory;
 	private ArrayList<Uri> mFileUris;
+	private String mSelectedFileName = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +83,9 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 			return;
 		}
 
+		// TODO: this is a hack to try to hide the activity title bar below the keyboard
+		getWindow().setGravity(Gravity.BOTTOM);
+
 		String action = intent.getAction();
 		String type = intent.getType();
 		mFileUris = null;
@@ -85,17 +94,38 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 				ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 				if (fileUris != null && fileUris.size() > 0) {
 					mFileUris = fileUris;
+
+					Uri singleFile = mFileUris.get(0);
+					String fileScheme = singleFile.getScheme();
+					if ("file".equals(fileScheme)) {
+						mSelectedFileName = new File(singleFile.toString()).getName();
+					} else if ("content".equals(fileScheme)) {
+						try {
+							Cursor cursor = getContentResolver().query(singleFile, null, null, null, null);
+							int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+							cursor.moveToFirst();
+							mSelectedFileName = cursor.getString(nameIndex);
+							cursor.close();
+						} catch (Exception ignored) {
+						}
+					}
+					if (!TextUtils.isEmpty(mSelectedFileName)) {
+						mSelectedFileName = IOUtilities.removeExtension(mSelectedFileName);
+					}
+
 					displayFileNameDialog(0);
 
-					if (ContextCompat.checkSelfPermission(SaveNarrativeActivity.this, Manifest.permission
-							.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-						if (ActivityCompat.shouldShowRequestPermissionRationale(SaveNarrativeActivity.this, Manifest.permission
-								.WRITE_EXTERNAL_STORAGE)) {
+					if (ContextCompat.checkSelfPermission(SaveNarrativeActivity.this,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+							PackageManager.PERMISSION_GRANTED) {
+						if (ActivityCompat.shouldShowRequestPermissionRationale(SaveNarrativeActivity.this,
+								Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 							UIUtilities.showFormattedToast(SaveNarrativeActivity.this, R.string.permission_storage_rationale,
 									getString(R.string.app_name));
 						}
-						ActivityCompat.requestPermissions(SaveNarrativeActivity.this, new String[]{Manifest.permission
-								.WRITE_EXTERNAL_STORAGE}, PERMISSION_SD_STORAGE);
+						ActivityCompat.requestPermissions(SaveNarrativeActivity.this, new String[]{
+								Manifest.permission.WRITE_EXTERNAL_STORAGE
+						}, PERMISSION_SD_STORAGE);
 					}
 				}
 			}
@@ -104,7 +134,20 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 
 	@Override
 	protected void loadPreferences(SharedPreferences mediaPhoneSettings) {
-		// no normal preferences apply to this activity
+		mOutputDirectory = null;
+		String selectedOutputDirectory = mediaPhoneSettings.getString(getString(R.string.key_export_directory), null);
+		if (!TextUtils.isEmpty(selectedOutputDirectory)) {
+			File outputFile = new File(selectedOutputDirectory);
+			if (outputFile.exists()) {
+				mOutputDirectory = outputFile;
+				mUsingDefaultOutputDirectory = false;
+			}
+		}
+		if (mOutputDirectory == null) {
+			mOutputDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+					getString(R.string.export_local_directory));
+			mUsingDefaultOutputDirectory = true;
+		}
 	}
 
 	@Override
@@ -124,25 +167,30 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 			case R.id.export_save_sd_file_exists:
 				displayFileNameDialog(R.string.export_narrative_name_exists);
 				break;
+			default:
+				break;
 		}
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		switch (requestCode) {
 			case PERMISSION_SD_STORAGE:
 				if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-					UIUtilities.showFormattedToast(SaveNarrativeActivity.this, R.string.permission_storage_error, getString(R
-							.string.app_name));
+					UIUtilities.showFormattedToast(SaveNarrativeActivity.this, R.string.permission_storage_error,
+							getString(R.string.app_name));
 					finish();
 				}
+				break;
+			default:
+				super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 				break;
 		}
 	}
 
 	private void displayFileNameDialog(int errorMessage) {
-		AlertDialog.Builder nameDialog = new AlertDialog.Builder(this);
+		AlertDialog.Builder nameDialog = new AlertDialog.Builder(SaveNarrativeActivity.this,
+				R.style.Theme_GirlTalkGirl_AlertDialog);
 		nameDialog.setTitle(R.string.export_narrative_name);
 		if (errorMessage != 0) {
 			nameDialog.setMessage(errorMessage);
@@ -157,9 +205,14 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 		layout.setPadding(dialogPadding, 0, dialogPadding, 0);
 
 		final EditText fileInput = new EditText(SaveNarrativeActivity.this);
+		if (!TextUtils.isEmpty(mSelectedFileName)) {
+			fileInput.setText(mSelectedFileName);
+		}
 		fileInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		fileInput.setInputType(EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		fileInput.setMaxLines(1);
+		fileInput.setSelectAllOnFocus(true);
+		fileInput.setFilters(new InputFilter[]{ mFileNameFilter });
 		layout.addView(fileInput);
 		nameDialog.setView(layout);
 
@@ -198,17 +251,28 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 		});
 
 		createdDialog.show();
+		fileInput.requestFocus();
 	}
 
-	private void handleSaveClick(TextView fileInput) {
-		File outputDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-				getString(R.string.export_local_directory));
+	InputFilter mFileNameFilter = new InputFilter() {
+		public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+			if (source.length() < 1) {
+				return null;
+			}
+			char last = source.charAt(source.length() - 1);
+			String reservedChars = "?:\"*|/\\<>";
+			if (reservedChars.indexOf(last) > -1) {
+				return source.subSequence(0, source.length() - 1);
+			}
+			return null;
+		}
+	};
 
+	private void handleSaveClick(TextView fileInput) {
 		String chosenName = fileInput.getText().toString();
 		if (!TextUtils.isEmpty(chosenName)) {
-			chosenName = chosenName.replaceAll("[^a-zA-Z0-9 ]+", ""); // only valid filenames
-			saveFilesToSD(outputDirectory, chosenName); // not yet detected duplicate html/mov names; may
-			// return
+			// chosenName = chosenName.replaceAll("[^a-zA-Z0-9 ]+", ""); // only valid filenames (now replaced by filter, above)
+			saveFilesToSD(mOutputDirectory, chosenName); // not yet detected duplicate html/mov names; may return
 		} else {
 			displayFileNameDialog(R.string.export_narrative_name_blank); // error - enter a name
 		}
@@ -259,13 +323,13 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 					if ("content".equals(mediaUri.getScheme())) {
 						// movies are a special case - their uri is in the media database
 						ContentResolver contentResolver = getContentResolver();
-						Cursor movieCursor = contentResolver.query(mediaUri, new String[]{MediaStore.Video.Media.DATA}, null,
+						Cursor movieCursor = contentResolver.query(mediaUri, new String[]{ MediaStore.Video.Media.DATA }, null,
 								null, null);
-						boolean movFailed = true;
+						boolean renameFailed = true;
 						if (movieCursor != null) {
 							if (movieCursor.moveToFirst()) {
-								File movieFile = new File(movieCursor.getString(movieCursor.getColumnIndex(MediaStore.Video
-										.Media.DATA)));
+								File movieFile =
+										new File(movieCursor.getString(movieCursor.getColumnIndex(MediaStore.Video.Media.DATA)));
 								File newMovieFile = new File(outputDirectory, chosenName == null ? movieFile.getName() :
 										chosenName + "." + IOUtilities.getFileExtension(movieFile.getName()));
 								if (uriCount == 1 && newMovieFile.exists()) { // only relevant for single file exports
@@ -273,15 +337,14 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 									movieCursor.close();
 									return;
 								}
-								if (movieFile.renameTo(newMovieFile)) { // renameTo is fine as temp is always on SD
-									// card
-									movFailed = false;
+								if (movieFile.renameTo(newMovieFile)) { // renameTo is fine as temp is always on SD card
+									renameFailed = false;
 									contentResolver.delete(mediaUri, null, null); // no longer here, so delete
 								}
 							}
 							movieCursor.close();
 						}
-						if (movFailed) {
+						if (renameFailed) {
 							failure = true;
 							break;
 						}
@@ -289,8 +352,8 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 						// for other files, we can move if they're in temp; if we have the actual media path (as with
 						// smil content) we must copy to ensure we don't break the narrative by removing the originals
 						File mediaFile = new File(mediaUri.getPath());
-						File newMediaFile = new File(outputDirectory, chosenName == null ? mediaFile.getName() : chosenName + "" +
-								"." + IOUtilities.getFileExtension(mediaFile.getName()));
+						File newMediaFile = new File(outputDirectory, chosenName == null ? mediaFile.getName() :
+								chosenName + "" + "." + IOUtilities.getFileExtension(mediaFile.getName()));
 						if (uriCount == 1 && newMediaFile.exists()) { // only relevant for single file exports (html)
 							mTaskResult = R.id.export_save_sd_file_exists;
 							return;
@@ -319,8 +382,14 @@ public class SaveNarrativeActivity extends MediaPhoneActivity {
 	}
 
 	private void successMessage() {
-		UIUtilities.showFormattedToast(SaveNarrativeActivity.this, R.string.export_narrative_saved, Environment
-				.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getName());
+		// TODO: we probably don't need to echo the directory name here (and it is a little confusing for the root folder)
+		File outputDirectoryToDisplay = mUsingDefaultOutputDirectory ?
+				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) : mOutputDirectory;
+		String directoryName = outputDirectoryToDisplay.getName();
+		if (outputDirectoryToDisplay.equals(Environment.getExternalStorageDirectory())) {
+			directoryName = "/";
+		}
+		UIUtilities.showFormattedToast(SaveNarrativeActivity.this, R.string.export_narrative_saved, directoryName);
 		finish();
 	}
 

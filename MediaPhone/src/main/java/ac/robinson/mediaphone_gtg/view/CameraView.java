@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -104,7 +104,6 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 		// install callback so we're notified when surface is created/destroyed
 		mHolder = surfaceView.getHolder();
 		mHolder.addCallback(this);
-		UIUtilities.setPushBuffers(mHolder);
 
 		mIsAutoFocusing = false;
 		mTakePicture = false;
@@ -125,8 +124,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 			try {
 				mCamera.setPreviewDisplay(holder);
 			} catch (Exception e) {
-				if (MediaPhone.DEBUG)
+				if (MediaPhone.DEBUG) {
 					Log.d(DebugUtilities.getLogTag(this), "surfaceCreated() -> setPreviewDisplay()", e);
+				}
 			}
 		}
 		mFocusSoundId = -1;
@@ -148,8 +148,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 			try {
 				mCamera.setPreviewDisplay(null);
 			} catch (Exception e) {
-				if (MediaPhone.DEBUG)
+				if (MediaPhone.DEBUG) {
 					Log.d(DebugUtilities.getLogTag(this), "surfaceDestroyed() -> setPreviewDisplay()", e);
+				}
 			}
 		}
 		if (mFocusSoundPlayer != null) {
@@ -167,8 +168,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 			Camera.Parameters parameters = mCamera.getParameters();
 
 			// supported preview and picture sizes checked earlier
-			// TODO: do we need to worry about swapping these to account for screen rotation,
-			// or will setRotation be ok?
+			// TODO: do we need to worry about swapping these to account for screen rotation, or will setRotation be ok?
 			parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
 			parameters.setPictureSize(mPictureSize.width, mPictureSize.height);
 
@@ -251,13 +251,10 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 	}
 
 	/**
-	 * @param camera
-	 * @param rotation
-	 * @param jpegQuality
 	 * @param autoFocusInterval Set to 0 to disable automatic refocusing
 	 */
-	public void setCamera(Camera camera, int displayRotation, int cameraRotation, int jpegQuality, int
-			autoFocusInterval, String flashMode, ErrorCallback errorCallback) {
+	public void setCamera(Camera camera, int displayRotation, int cameraRotation, int jpegQuality, int autoFocusInterval,
+						  String flashMode, ErrorCallback errorCallback) {
 		mErrorCallback = errorCallback;
 		mCamera = camera;
 		mDisplayRotation = displayRotation;
@@ -309,7 +306,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 						}
 					}
 				}
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 
 			// TODO: use Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE where supported
@@ -327,11 +324,13 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 	}
 
 	public void setRotation(int displayRotation, int cameraRotation) {
-		mCameraRotation = cameraRotation;
-		Camera.Parameters parameters = mCamera.getParameters();
-		parameters.setRotation(mCameraRotation);
-		mCamera.setParameters(parameters);
-		requestLayout();
+		if (mCamera != null) { // TODO: return false?
+			mCameraRotation = cameraRotation;
+			Camera.Parameters parameters = mCamera.getParameters();
+			parameters.setRotation(mCameraRotation);
+			mCamera.setParameters(parameters);
+			requestLayout();
+		}
 	}
 
 	public int getDisplayRotation() {
@@ -365,8 +364,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 		float difference = Float.MAX_VALUE;
 		for (Size s : sortedSizes) {
 			int sizePixels = s.width * s.height;
-			if (sizePixels < MediaPhone.CAMERA_MIN_PREVIEW_PIXELS || sizePixels > MediaPhone
-					.CAMERA_MAX_PREVIEW_PIXELS) {
+			if (sizePixels < MediaPhone.CAMERA_MIN_PREVIEW_PIXELS || sizePixels > MediaPhone.CAMERA_MAX_PREVIEW_PIXELS) {
 				continue;
 			}
 			boolean sizePortrait = s.width < s.height;
@@ -439,8 +437,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 				mCamera.startPreview();
 				mPreviewStarted = true;
 			} catch (Throwable t) {
-				if (MediaPhone.DEBUG)
+				if (MediaPhone.DEBUG) {
 					Log.d(DebugUtilities.getLogTag(this), "startCameraPreview() -> startPreview() failed", t);
+				}
 				if (mErrorCallback != null) {
 					mErrorCallback.onError(ErrorCallback.PREVIEW_FAILED);
 				}
@@ -508,8 +507,8 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 		return pictureConfiguration;
 	}
 
-	public void takePicture(Camera.ShutterCallback shutterCallback, Camera.PictureCallback pictureCallback, Camera
-			.PictureCallback pictureJpegCallback) {
+	public void takePicture(Camera.ShutterCallback shutterCallback, Camera.PictureCallback pictureCallback,
+							Camera.PictureCallback pictureJpegCallback) {
 		mTakePicture = true;
 		mCamera.takePicture(shutterCallback, pictureCallback, pictureJpegCallback);
 
@@ -519,20 +518,20 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 			mCamera.stopPreview();
 			try {
 				mCamera.setPreviewDisplay(null);
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 		}
 	}
 
 	public void refreshCameraState() {
-		// as a result of the issue above, we need to re-connect the surface when switching back without changing
-		// camera
+		// as a result of the issue above, we need to re-connect the surface when switching back without changing camera
 		if (mLandscapeCameraOnly) {
 			try {
 				mCamera.setPreviewDisplay(mHolder);
 			} catch (IOException e) {
-				if (MediaPhone.DEBUG)
+				if (MediaPhone.DEBUG) {
 					Log.d(DebugUtilities.getLogTag(this), "refreshCameraState() -> setPreviewDisplay()", e);
+				}
 			}
 			mCamera.startPreview();
 		}
@@ -583,8 +582,8 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 	}
 
 	// see:
-	// http://code.google.com/p/zxing/source/browse/trunk/android/src/com/google/zxing/client/android/camera
-	// /AutoFocusCallback.java?r=1698
+	// http://code.google.com/p/zxing/source/browse/trunk/android/src/com/google/zxing/client/android/camera/AutoFocusCallback
+	// .java?r=1698
 	private class AutoFocusCallback implements Camera.AutoFocusCallback {
 
 		private Handler mAutoFocusHandler;
@@ -606,7 +605,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 			}
 
 			if (mStopPreview) {
-				mCamera.stopPreview();
+				if (mCamera != null) {
+					mCamera.stopPreview();
+				}
 				mPreviewStarted = false;
 				mAutoFocusHandler = null;
 				return;
@@ -620,7 +621,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 								CameraView.this), mAutoFocusInterval);
 						mAutoFocusHandler = null;
 					} else {
-						if (MediaPhone.DEBUG) Log.d(DebugUtilities.getLogTag(this), "Focus callback without handler");
+						if (MediaPhone.DEBUG) {
+							Log.d(DebugUtilities.getLogTag(this), "Focus callback without handler");
+						}
 					}
 				}
 			}

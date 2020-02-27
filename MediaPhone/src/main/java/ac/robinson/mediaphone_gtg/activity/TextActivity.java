@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2012 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -29,8 +29,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -57,6 +55,8 @@ import ac.robinson.mediaphone_gtg.view.ColorPickerDialog;
 import ac.robinson.mediaphone_gtg.view.MediaDurationDialog;
 import ac.robinson.util.IOUtilities;
 import ac.robinson.util.UIUtilities;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 
 public class TextActivity extends MediaPhoneActivity {
 
@@ -149,8 +149,7 @@ public class TextActivity extends MediaPhoneActivity {
 
 					// update the text duration if not user-set (note negative value)
 					if (textMediaItem.getDurationMilliseconds() <= 0) {
-						textMediaItem.setDurationMilliseconds(-MediaItem.getTextDurationMilliseconds(mediaText
-								.toString()));
+						textMediaItem.setDurationMilliseconds(-MediaItem.getTextDurationMilliseconds(mediaText.toString()));
 						MediaManager.updateMedia(getContentResolver(), textMediaItem);
 					}
 
@@ -189,9 +188,10 @@ public class TextActivity extends MediaPhoneActivity {
 
 		// force hide the soft keyboard so that the layout refreshes next time we launch TODO: refresh layout?
 		try {
-			InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context
-					.INPUT_METHOD_SERVICE);
-			inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+			InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			if (inputMethodManager != null) {
+				inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+			}
 		} catch (Throwable t) {
 			// on some phones, and with custom keyboards, this fails, and crashes - catch instead
 		}
@@ -228,8 +228,7 @@ public class TextActivity extends MediaPhoneActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_add_frame:
-				final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
-						mMediaItemInternalId);
+				final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
 				if (textMediaItem != null && !TextUtils.isEmpty(mEditText.getText())) {
 					final String newFrameId = insertFrameAfterMedia(textMediaItem);
 					final Intent addTextIntent = new Intent(TextActivity.this, TextActivity.class);
@@ -248,10 +247,10 @@ public class TextActivity extends MediaPhoneActivity {
 				return true;
 
 			case R.id.menu_change_text_colour:
-				final MediaItem colourMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
-						mMediaItemInternalId);
+				final MediaItem colourMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
 				if (colourMediaItem != null) {
-					FrameItem colourChangeFrame = FramesManager.findFrameByInternalId(getContentResolver(), colourMediaItem.getParentId());
+					FrameItem colourChangeFrame = FramesManager.findFrameByInternalId(getContentResolver(),
+							colourMediaItem.getParentId());
 					int currentColour = colourChangeFrame.getForegroundColour();
 					new ColorPickerDialog(TextActivity.this, mColourChangedListener, currentColour).show();
 				}
@@ -268,13 +267,14 @@ public class TextActivity extends MediaPhoneActivity {
 							currentDuration = MediaItem.getTextDurationMilliseconds(mediaText.toString());
 						} else {
 							TypedValue resourceValue = new TypedValue();
-							getResources().getValue(R.attr.default_minimum_frame_duration, resourceValue, true);
+							getResources().getValue(R.dimen.default_minimum_frame_duration, resourceValue, true);
 							float minimumFrameDuration;
 							try {
-								SharedPreferences mediaPhoneSettings = PreferenceManager.getDefaultSharedPreferences
-										(TextActivity.this);
-								minimumFrameDuration = mediaPhoneSettings.getFloat(getString(R.string.key_minimum_frame_duration),
-										resourceValue.getFloat());
+								SharedPreferences mediaPhoneSettings =
+										PreferenceManager.getDefaultSharedPreferences(TextActivity.this);
+								minimumFrameDuration =
+										mediaPhoneSettings.getFloat(getString(R.string.key_minimum_frame_duration), resourceValue
+										.getFloat());
 								if (minimumFrameDuration <= 0) {
 									throw new NumberFormatException();
 								}
@@ -306,8 +306,9 @@ public class TextActivity extends MediaPhoneActivity {
 		// the soft done/back button
 		// TODO: remove this to fit with new styling (Toolbar etc)
 		int newVisibility = View.VISIBLE;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB || !mediaPhoneSettings.getBoolean(getString(R
-				.string.key_show_back_button), getResources().getBoolean(R.bool.default_show_back_button))) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ||
+				!mediaPhoneSettings.getBoolean(getString(R.string.key_show_back_button),
+						getResources().getBoolean(R.bool.default_show_back_button))) {
 			newVisibility = View.GONE;
 		}
 		findViewById(R.id.button_finished_text).setVisibility(newVisibility);
@@ -354,29 +355,28 @@ public class TextActivity extends MediaPhoneActivity {
 			}
 			// show the keyboard as a further hint (below Honeycomb it is automatic)
 			// TODO: improve/remove these keyboard manipulations
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				try {
-					InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			try {
+				InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				if (manager != null) {
 					manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-				} catch (Throwable t) {
-					// on some phones this causes problems
 				}
+			} catch (Throwable t) {
+				// on some phones this causes problems
 			}
 			mEditText.requestFocus();
 		} else {
 			UIUtilities.showToast(TextActivity.this, R.string.error_loading_text_editor);
 			onBackPressed();
-			return;
 		}
 	}
 
 	private ColorPickerDialog.OnColorChangedListener mColourChangedListener = new ColorPickerDialog.OnColorChangedListener() {
 		@Override
 		public void colorChanged(int colour) {
-			final MediaItem colourMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
-					mMediaItemInternalId);
+			final MediaItem colourMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
 			if (colourMediaItem != null) {
-				FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(), colourMediaItem.getParentId());
+				FrameItem currentFrame = FramesManager.findFrameByInternalId(getContentResolver(),
+						colourMediaItem.getParentId());
 				currentFrame.setForegroundColour(colour);
 				FramesManager.updateFrame(getContentResolver(), currentFrame);
 				mHasEditedMedia = true;
@@ -385,21 +385,20 @@ public class TextActivity extends MediaPhoneActivity {
 		}
 	};
 
-	private MediaDurationDialog.OnValueSelectedListener mDurationSelectedListener = new MediaDurationDialog.OnValueSelectedListener() {
+	private MediaDurationDialog.OnValueSelectedListener mDurationSelectedListener =
+			new MediaDurationDialog.OnValueSelectedListener() {
 		@Override
 		public void valueSelected(int value) {
-			final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
-					mMediaItemInternalId);
+			final MediaItem durationMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
 			if (durationMediaItem != null) {
 				TypedValue minDuration = new TypedValue();
-				getResources().getValue(R.attr.minimum_frame_duration_min, minDuration, true);
+				getResources().getValue(R.dimen.minimum_frame_duration_min, minDuration, true);
 				if (value > minDuration.getFloat() * 1000) { // attr is in seconds; we need milliseconds
 					durationMediaItem.setDurationMilliseconds(value);
 				} else {
 					final Editable mediaText = mEditText.getText();
 					if (!TextUtils.isEmpty(mediaText)) {
-						durationMediaItem.setDurationMilliseconds(-MediaItem.getTextDurationMilliseconds(
-								mediaText.toString())); // use the default calculated value when we reset
+						durationMediaItem.setDurationMilliseconds(-MediaItem.getTextDurationMilliseconds(mediaText.toString())); // use the default calculated value when we reset
 					} else {
 						durationMediaItem.setDurationMilliseconds(-1);
 					}
@@ -422,19 +421,17 @@ public class TextActivity extends MediaPhoneActivity {
 				break;
 
 			case R.id.button_toggle_mode_text:
-				// TODO: only relevant for text, but if they update text, set spanning,
-				// then update text again we end up
+				// TODO: only relevant for text, but if they update text, set spanning, then update text again we end up
 				// updating all following frame icons twice, which is unnecessary. Could track whether they've entered
 				// text after toggling frame spanning, but this may be overkill for a situation that rarely happens?
-				final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(),
-						mMediaItemInternalId);
+				final MediaItem textMediaItem = MediaManager.findMediaByInternalId(getContentResolver(), mMediaItemInternalId);
 				if (textMediaItem != null && !TextUtils.isEmpty(mEditText.getText())) {
 					mHasEditedMedia = true; // so we update/inherit on exit and show the media edited icon
 					setBackButtonIcons(TextActivity.this, R.id.button_finished_text, 0, true);
 					boolean frameSpanning = toggleFrameSpanningMedia(textMediaItem);
 					updateSpanFramesButtonIcon(R.id.button_toggle_mode_text, frameSpanning, true);
-					UIUtilities.showToast(TextActivity.this, frameSpanning ? R.string.span_text_multiple_frames : R
-							.string.span_text_single_frame);
+					UIUtilities.showToast(TextActivity.this, frameSpanning ? R.string.span_text_multiple_frames :
+							R.string.span_text_single_frame);
 				} else {
 					UIUtilities.showToast(TextActivity.this, R.string.span_text_add_content);
 				}
@@ -454,6 +451,9 @@ public class TextActivity extends MediaPhoneActivity {
 					}
 				});
 				builder.show();
+				break;
+
+			default:
 				break;
 		}
 	}

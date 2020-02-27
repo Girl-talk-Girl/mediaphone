@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools">
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<!--<item-->
 	<!--android:id="@+id/menu_add_narrative"-->
@@ -14,23 +13,17 @@
 
 	<item
 		android:id="@+id/menu_resources_english"
-		android:showAsAction="never"
 		android:title="@string/menu_resources_english"
-		app:showAsAction="never"
-		tools:ignore="AppCompatResource,UnusedAttribute"/>
+		app:showAsAction="never" />
 
 	<item
 		android:id="@+id/menu_resources_russian"
-		android:showAsAction="never"
 		android:title="@string/menu_resources_russian"
-		app:showAsAction="never"
-		tools:ignore="AppCompatResource,UnusedAttribute"/>
+		app:showAsAction="never" />
 
 	<item
 		android:id="@+id/menu_scan_imports"
-		android:showAsAction="never"
 		android:title="@string/menu_scan_imports"
-		app:showAsAction="never"
-		tools:ignore="AppCompatResource,UnusedAttribute"/>
+		app:showAsAction="never" />
 
 </menu>

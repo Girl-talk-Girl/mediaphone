@@ -1,16 +1,16 @@
 /*
  *  Copyright (C) 2013 Simon Robinson
- * 
+ *
  *  This file is part of Com-Me.
- * 
- *  Com-Me is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU Lesser General Public License as 
- *  published by the Free Software Foundation; either version 3 of the 
+ *
+ *  Com-Me is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of the
  *  License, or (at your option) any later version.
  *
- *  Com-Me is distributed in the hope that it will be useful, but WITHOUT 
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General 
+ *  Com-Me is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
  *  Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
@@ -96,7 +96,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 			// for some ridiculous reason, Android's inbuilt preference values don't resolve references!
 			float defaultValueFloat = 0;
 			if (defaultValue != null && defaultValue.length() > 1 && defaultValue.charAt(0) == '@') {
-				int resourceId = 0;
+				int resourceId;
 				try {
 					resourceId = Integer.parseInt(defaultValue.substring(1));
 				} catch (Throwable t2) {
@@ -117,8 +117,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 						try {
 							defaultValueFloat = context.getResources().getInteger(resourceId);
 							defaultValueFound = true;
-						} catch (Throwable t3) {
-							defaultValueFound = false;
+						} catch (Throwable ignored) {
 						}
 					}
 					if (!defaultValueFound) {
@@ -126,8 +125,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 						try {
 							defaultValueFloat = Float.valueOf(context.getString(resourceId));
 							defaultValueFound = true;
-						} catch (Throwable t3) {
-							defaultValueFound = false;
+						} catch (Throwable ignored) {
 						}
 					}
 					if (defaultValueFound) {
@@ -143,7 +141,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 		if (mInterval > mMaxValue - mMinValue) {
 			mInterval = mMaxValue - mMinValue;
 		}
-		BigDecimal intervalFormat = new BigDecimal(new Float(mInterval).toString()).stripTrailingZeros();
+		BigDecimal intervalFormat = new BigDecimal(Float.toString(mInterval)).stripTrailingZeros();
 		if (intervalFormat.scale() >= 0) {
 			mStringFormat = "%." + intervalFormat.scale() + "f";
 		}
@@ -178,12 +176,11 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 		if (summary != null) {
 			ViewParent summaryParent = summary.getParent();
 			if (summaryParent instanceof ViewGroup) {
-				final LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context
-						.LAYOUT_INFLATER_SERVICE);
+				final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
 				ViewGroup summaryParentGroup = (ViewGroup) summaryParent;
 				layoutInflater.inflate(R.layout.seek_bar_preference, summaryParentGroup);
 
-				mSeekBar = (SeekBar) summaryParentGroup.findViewById(R.id.preference_seek_bar);
+				mSeekBar = summaryParentGroup.findViewById(R.id.preference_seek_bar);
 				mSeekBar.setMax(floatToRangeInt(mMaxValue));
 				mSeekBar.setOnSeekBarChangeListener(this);
 				mSeekBar.setOnTouchListener(new OnTouchListener() {
@@ -204,8 +201,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 								mLastTouchTime = event.getEventTime();
 								// intentionally not breaking/returning so we cancel if appropriate
 							default:
-								// because we can't change the action in the parent's onInterceptTouchEvent,
-								// we dispatch
+								// because we can't change the action in the parent's onInterceptTouchEvent, we dispatch
 								// the same event twice - an *identical* action after a cancel implies another cancel
 								if (event.getRawX() == mLastTouchX && event.getRawY() == mLastTouchY) {
 									return true;
@@ -218,9 +214,9 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 					}
 				});
 
-				mValueTextView = (TextView) summaryParentGroup.findViewById(R.id.preference_seek_bar_value);
-				mPrependUnitsView = (TextView) summaryParentGroup.findViewById(R.id.preference_seek_bar_prepend_units);
-				mAppendUnitsView = (TextView) summaryParentGroup.findViewById(R.id.preference_seek_bar_append_units);
+				mValueTextView = summaryParentGroup.findViewById(R.id.preference_seek_bar_value);
+				mPrependUnitsView = summaryParentGroup.findViewById(R.id.preference_seek_bar_prepend_units);
+				mAppendUnitsView = summaryParentGroup.findViewById(R.id.preference_seek_bar_append_units);
 			}
 		}
 
@@ -232,7 +228,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 	public void onBindView(View view) {
 		super.onBindView(view);
 		if (mValueTextView != null) {
-			mValueTextView.setText(String.format((Locale) null, mStringFormat, mCurrentValue));
+			mValueTextView.setText(String.format(Locale.getDefault(), mStringFormat, mCurrentValue));
 		}
 		if (mSeekBar != null) {
 			mSeekBar.setProgress(floatToRangeInt(mCurrentValue));
@@ -253,7 +249,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 				mSeekBar.setProgress(floatToRangeInt(mCurrentValue));
 			}
 			if (mValueTextView != null) {
-				mValueTextView.setText(String.format((Locale) null, mStringFormat, mCurrentValue));
+				mValueTextView.setText(String.format(Locale.getDefault(), mStringFormat, mCurrentValue));
 			}
 			persistFloat(mCurrentValue);
 			UIUtilities.showToast(v.getContext(), R.string.preferences_reset_default);
@@ -274,7 +270,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 		// store the new value
 		mCurrentValue = newValue;
 		if (mValueTextView != null) {
-			mValueTextView.setText(String.format((Locale) null, mStringFormat, mCurrentValue));
+			mValueTextView.setText(String.format(Locale.getDefault(), mStringFormat, mCurrentValue));
 		}
 		persistFloat(newValue);
 	}
@@ -293,7 +289,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
 		} catch (Throwable t) {
 			try {
 				mDefaultValue = Float.valueOf(typedArray.getString(index));
-			} catch (Throwable t2) {
+			} catch (Throwable ignored) {
 			}
 		}
 		return mDefaultValue;
